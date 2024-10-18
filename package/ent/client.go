@@ -11,11 +11,14 @@ import (
 
 	"bulbasaur/package/ent/migrate"
 
-	"bulbasaur/package/ent/example"
+	"bulbasaur/package/ent/google"
+	"bulbasaur/package/ent/myid"
+	"bulbasaur/package/ent/user"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 
 	stdsql "database/sql"
 )
@@ -25,8 +28,12 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// Example is the client for interacting with the Example builders.
-	Example *ExampleClient
+	// Google is the client for interacting with the Google builders.
+	Google *GoogleClient
+	// MyID is the client for interacting with the MyID builders.
+	MyID *MyIDClient
+	// User is the client for interacting with the User builders.
+	User *UserClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -38,7 +45,9 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.Example = NewExampleClient(c.config)
+	c.Google = NewGoogleClient(c.config)
+	c.MyID = NewMyIDClient(c.config)
+	c.User = NewUserClient(c.config)
 }
 
 type (
@@ -129,9 +138,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		Example: NewExampleClient(cfg),
+		ctx:    ctx,
+		config: cfg,
+		Google: NewGoogleClient(cfg),
+		MyID:   NewMyIDClient(cfg),
+		User:   NewUserClient(cfg),
 	}, nil
 }
 
@@ -149,16 +160,18 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		Example: NewExampleClient(cfg),
+		ctx:    ctx,
+		config: cfg,
+		Google: NewGoogleClient(cfg),
+		MyID:   NewMyIDClient(cfg),
+		User:   NewUserClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Example.
+//		Google.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -180,126 +193,134 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Example.Use(hooks...)
+	c.Google.Use(hooks...)
+	c.MyID.Use(hooks...)
+	c.User.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Example.Intercept(interceptors...)
+	c.Google.Intercept(interceptors...)
+	c.MyID.Intercept(interceptors...)
+	c.User.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
-	case *ExampleMutation:
-		return c.Example.mutate(ctx, m)
+	case *GoogleMutation:
+		return c.Google.mutate(ctx, m)
+	case *MyIDMutation:
+		return c.MyID.mutate(ctx, m)
+	case *UserMutation:
+		return c.User.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
 }
 
-// ExampleClient is a client for the Example schema.
-type ExampleClient struct {
+// GoogleClient is a client for the Google schema.
+type GoogleClient struct {
 	config
 }
 
-// NewExampleClient returns a client for the Example from the given config.
-func NewExampleClient(c config) *ExampleClient {
-	return &ExampleClient{config: c}
+// NewGoogleClient returns a client for the Google from the given config.
+func NewGoogleClient(c config) *GoogleClient {
+	return &GoogleClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `example.Hooks(f(g(h())))`.
-func (c *ExampleClient) Use(hooks ...Hook) {
-	c.hooks.Example = append(c.hooks.Example, hooks...)
+// A call to `Use(f, g, h)` equals to `google.Hooks(f(g(h())))`.
+func (c *GoogleClient) Use(hooks ...Hook) {
+	c.hooks.Google = append(c.hooks.Google, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `example.Intercept(f(g(h())))`.
-func (c *ExampleClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Example = append(c.inters.Example, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `google.Intercept(f(g(h())))`.
+func (c *GoogleClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Google = append(c.inters.Google, interceptors...)
 }
 
-// Create returns a builder for creating a Example entity.
-func (c *ExampleClient) Create() *ExampleCreate {
-	mutation := newExampleMutation(c.config, OpCreate)
-	return &ExampleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a Google entity.
+func (c *GoogleClient) Create() *GoogleCreate {
+	mutation := newGoogleMutation(c.config, OpCreate)
+	return &GoogleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Example entities.
-func (c *ExampleClient) CreateBulk(builders ...*ExampleCreate) *ExampleCreateBulk {
-	return &ExampleCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of Google entities.
+func (c *GoogleClient) CreateBulk(builders ...*GoogleCreate) *GoogleCreateBulk {
+	return &GoogleCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *ExampleClient) MapCreateBulk(slice any, setFunc func(*ExampleCreate, int)) *ExampleCreateBulk {
+func (c *GoogleClient) MapCreateBulk(slice any, setFunc func(*GoogleCreate, int)) *GoogleCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &ExampleCreateBulk{err: fmt.Errorf("calling to ExampleClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &GoogleCreateBulk{err: fmt.Errorf("calling to GoogleClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*ExampleCreate, rv.Len())
+	builders := make([]*GoogleCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &ExampleCreateBulk{config: c.config, builders: builders}
+	return &GoogleCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Example.
-func (c *ExampleClient) Update() *ExampleUpdate {
-	mutation := newExampleMutation(c.config, OpUpdate)
-	return &ExampleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for Google.
+func (c *GoogleClient) Update() *GoogleUpdate {
+	mutation := newGoogleMutation(c.config, OpUpdate)
+	return &GoogleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *ExampleClient) UpdateOne(e *Example) *ExampleUpdateOne {
-	mutation := newExampleMutation(c.config, OpUpdateOne, withExample(e))
-	return &ExampleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *GoogleClient) UpdateOne(_go *Google) *GoogleUpdateOne {
+	mutation := newGoogleMutation(c.config, OpUpdateOne, withGoogle(_go))
+	return &GoogleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *ExampleClient) UpdateOneID(id int) *ExampleUpdateOne {
-	mutation := newExampleMutation(c.config, OpUpdateOne, withExampleID(id))
-	return &ExampleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *GoogleClient) UpdateOneID(id uint64) *GoogleUpdateOne {
+	mutation := newGoogleMutation(c.config, OpUpdateOne, withGoogleID(id))
+	return &GoogleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Example.
-func (c *ExampleClient) Delete() *ExampleDelete {
-	mutation := newExampleMutation(c.config, OpDelete)
-	return &ExampleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for Google.
+func (c *GoogleClient) Delete() *GoogleDelete {
+	mutation := newGoogleMutation(c.config, OpDelete)
+	return &GoogleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *ExampleClient) DeleteOne(e *Example) *ExampleDeleteOne {
-	return c.DeleteOneID(e.ID)
+func (c *GoogleClient) DeleteOne(_go *Google) *GoogleDeleteOne {
+	return c.DeleteOneID(_go.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *ExampleClient) DeleteOneID(id int) *ExampleDeleteOne {
-	builder := c.Delete().Where(example.ID(id))
+func (c *GoogleClient) DeleteOneID(id uint64) *GoogleDeleteOne {
+	builder := c.Delete().Where(google.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &ExampleDeleteOne{builder}
+	return &GoogleDeleteOne{builder}
 }
 
-// Query returns a query builder for Example.
-func (c *ExampleClient) Query() *ExampleQuery {
-	return &ExampleQuery{
+// Query returns a query builder for Google.
+func (c *GoogleClient) Query() *GoogleQuery {
+	return &GoogleQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeExample},
+		ctx:    &QueryContext{Type: TypeGoogle},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a Example entity by its id.
-func (c *ExampleClient) Get(ctx context.Context, id int) (*Example, error) {
-	return c.Query().Where(example.ID(id)).Only(ctx)
+// Get returns a Google entity by its id.
+func (c *GoogleClient) Get(ctx context.Context, id uint64) (*Google, error) {
+	return c.Query().Where(google.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *ExampleClient) GetX(ctx context.Context, id int) *Example {
+func (c *GoogleClient) GetX(ctx context.Context, id uint64) *Google {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -307,38 +328,368 @@ func (c *ExampleClient) GetX(ctx context.Context, id int) *Example {
 	return obj
 }
 
+// QueryUser queries the user edge of a Google.
+func (c *GoogleClient) QueryUser(_go *Google) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _go.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(google.Table, google.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, google.UserTable, google.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(_go.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
-func (c *ExampleClient) Hooks() []Hook {
-	return c.hooks.Example
+func (c *GoogleClient) Hooks() []Hook {
+	return c.hooks.Google
 }
 
 // Interceptors returns the client interceptors.
-func (c *ExampleClient) Interceptors() []Interceptor {
-	return c.inters.Example
+func (c *GoogleClient) Interceptors() []Interceptor {
+	return c.inters.Google
 }
 
-func (c *ExampleClient) mutate(ctx context.Context, m *ExampleMutation) (Value, error) {
+func (c *GoogleClient) mutate(ctx context.Context, m *GoogleMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&ExampleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&GoogleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&ExampleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&GoogleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&ExampleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&GoogleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&ExampleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&GoogleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown Example mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown Google mutation op: %q", m.Op())
+	}
+}
+
+// MyIDClient is a client for the MyID schema.
+type MyIDClient struct {
+	config
+}
+
+// NewMyIDClient returns a client for the MyID from the given config.
+func NewMyIDClient(c config) *MyIDClient {
+	return &MyIDClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `myid.Hooks(f(g(h())))`.
+func (c *MyIDClient) Use(hooks ...Hook) {
+	c.hooks.MyID = append(c.hooks.MyID, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `myid.Intercept(f(g(h())))`.
+func (c *MyIDClient) Intercept(interceptors ...Interceptor) {
+	c.inters.MyID = append(c.inters.MyID, interceptors...)
+}
+
+// Create returns a builder for creating a MyID entity.
+func (c *MyIDClient) Create() *MyIDCreate {
+	mutation := newMyIDMutation(c.config, OpCreate)
+	return &MyIDCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of MyID entities.
+func (c *MyIDClient) CreateBulk(builders ...*MyIDCreate) *MyIDCreateBulk {
+	return &MyIDCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *MyIDClient) MapCreateBulk(slice any, setFunc func(*MyIDCreate, int)) *MyIDCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &MyIDCreateBulk{err: fmt.Errorf("calling to MyIDClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*MyIDCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &MyIDCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for MyID.
+func (c *MyIDClient) Update() *MyIDUpdate {
+	mutation := newMyIDMutation(c.config, OpUpdate)
+	return &MyIDUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MyIDClient) UpdateOne(mi *MyID) *MyIDUpdateOne {
+	mutation := newMyIDMutation(c.config, OpUpdateOne, withMyID(mi))
+	return &MyIDUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MyIDClient) UpdateOneID(id uint64) *MyIDUpdateOne {
+	mutation := newMyIDMutation(c.config, OpUpdateOne, withMyIDID(id))
+	return &MyIDUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for MyID.
+func (c *MyIDClient) Delete() *MyIDDelete {
+	mutation := newMyIDMutation(c.config, OpDelete)
+	return &MyIDDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *MyIDClient) DeleteOne(mi *MyID) *MyIDDeleteOne {
+	return c.DeleteOneID(mi.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *MyIDClient) DeleteOneID(id uint64) *MyIDDeleteOne {
+	builder := c.Delete().Where(myid.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MyIDDeleteOne{builder}
+}
+
+// Query returns a query builder for MyID.
+func (c *MyIDClient) Query() *MyIDQuery {
+	return &MyIDQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeMyID},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a MyID entity by its id.
+func (c *MyIDClient) Get(ctx context.Context, id uint64) (*MyID, error) {
+	return c.Query().Where(myid.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MyIDClient) GetX(ctx context.Context, id uint64) *MyID {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a MyID.
+func (c *MyIDClient) QueryUser(mi *MyID) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := mi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(myid.Table, myid.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, myid.UserTable, myid.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(mi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *MyIDClient) Hooks() []Hook {
+	return c.hooks.MyID
+}
+
+// Interceptors returns the client interceptors.
+func (c *MyIDClient) Interceptors() []Interceptor {
+	return c.inters.MyID
+}
+
+func (c *MyIDClient) mutate(ctx context.Context, m *MyIDMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&MyIDCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&MyIDUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&MyIDUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&MyIDDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown MyID mutation op: %q", m.Op())
+	}
+}
+
+// UserClient is a client for the User schema.
+type UserClient struct {
+	config
+}
+
+// NewUserClient returns a client for the User from the given config.
+func NewUserClient(c config) *UserClient {
+	return &UserClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `user.Hooks(f(g(h())))`.
+func (c *UserClient) Use(hooks ...Hook) {
+	c.hooks.User = append(c.hooks.User, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `user.Intercept(f(g(h())))`.
+func (c *UserClient) Intercept(interceptors ...Interceptor) {
+	c.inters.User = append(c.inters.User, interceptors...)
+}
+
+// Create returns a builder for creating a User entity.
+func (c *UserClient) Create() *UserCreate {
+	mutation := newUserMutation(c.config, OpCreate)
+	return &UserCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of User entities.
+func (c *UserClient) CreateBulk(builders ...*UserCreate) *UserCreateBulk {
+	return &UserCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserClient) MapCreateBulk(slice any, setFunc func(*UserCreate, int)) *UserCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserCreateBulk{err: fmt.Errorf("calling to UserClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &UserCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for User.
+func (c *UserClient) Update() *UserUpdate {
+	mutation := newUserMutation(c.config, OpUpdate)
+	return &UserUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *UserClient) UpdateOne(u *User) *UserUpdateOne {
+	mutation := newUserMutation(c.config, OpUpdateOne, withUser(u))
+	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *UserClient) UpdateOneID(id uint64) *UserUpdateOne {
+	mutation := newUserMutation(c.config, OpUpdateOne, withUserID(id))
+	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for User.
+func (c *UserClient) Delete() *UserDelete {
+	mutation := newUserMutation(c.config, OpDelete)
+	return &UserDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *UserClient) DeleteOne(u *User) *UserDeleteOne {
+	return c.DeleteOneID(u.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *UserClient) DeleteOneID(id uint64) *UserDeleteOne {
+	builder := c.Delete().Where(user.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &UserDeleteOne{builder}
+}
+
+// Query returns a query builder for User.
+func (c *UserClient) Query() *UserQuery {
+	return &UserQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeUser},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a User entity by its id.
+func (c *UserClient) Get(ctx context.Context, id uint64) (*User, error) {
+	return c.Query().Where(user.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *UserClient) GetX(ctx context.Context, id uint64) *User {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryMyID queries the my_id edge of a User.
+func (c *UserClient) QueryMyID(u *User) *MyIDQuery {
+	query := (&MyIDClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(myid.Table, myid.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, user.MyIDTable, user.MyIDColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryGoogle queries the google edge of a User.
+func (c *UserClient) QueryGoogle(u *User) *GoogleQuery {
+	query := (&GoogleClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(google.Table, google.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, user.GoogleTable, user.GoogleColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *UserClient) Hooks() []Hook {
+	return c.hooks.User
+}
+
+// Interceptors returns the client interceptors.
+func (c *UserClient) Interceptors() []Interceptor {
+	return c.inters.User
+}
+
+func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown User mutation op: %q", m.Op())
 	}
 }
 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Example []ent.Hook
+		Google, MyID, User []ent.Hook
 	}
 	inters struct {
-		Example []ent.Interceptor
+		Google, MyID, User []ent.Interceptor
 	}
 )
 

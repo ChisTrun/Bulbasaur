@@ -8,16 +8,40 @@ import (
 	"fmt"
 )
 
-// The ExampleFunc type is an adapter to allow the use of ordinary
-// function as Example mutator.
-type ExampleFunc func(context.Context, *ent.ExampleMutation) (ent.Value, error)
+// The GoogleFunc type is an adapter to allow the use of ordinary
+// function as Google mutator.
+type GoogleFunc func(context.Context, *ent.GoogleMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f ExampleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.ExampleMutation); ok {
+func (f GoogleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.GoogleMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ExampleMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GoogleMutation", m)
+}
+
+// The MyIDFunc type is an adapter to allow the use of ordinary
+// function as MyID mutator.
+type MyIDFunc func(context.Context, *ent.MyIDMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f MyIDFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.MyIDMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MyIDMutation", m)
+}
+
+// The UserFunc type is an adapter to allow the use of ordinary
+// function as User mutator.
+type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f UserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.UserMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserMutation", m)
 }
 
 // Condition is a hook condition function.

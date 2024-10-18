@@ -3,7 +3,9 @@
 package ent
 
 import (
-	"bulbasaur/package/ent/example"
+	"bulbasaur/package/ent/google"
+	"bulbasaur/package/ent/myid"
+	"bulbasaur/package/ent/user"
 	"context"
 	"errors"
 	"fmt"
@@ -73,7 +75,9 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			example.Table: example.ValidColumn,
+			google.Table: google.ValidColumn,
+			myid.Table:   myid.ValidColumn,
+			user.Table:   user.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

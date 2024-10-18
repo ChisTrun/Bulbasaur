@@ -6,5 +6,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// Example is the predicate function for example builders.
-type Example func(*sql.Selector)
+// Google is the predicate function for google builders.
+type Google func(*sql.Selector)
+
+// MyID is the predicate function for myid builders.
+type MyID func(*sql.Selector)
+
+// User is the predicate function for user builders.
+type User func(*sql.Selector)
