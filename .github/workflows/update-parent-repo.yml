@@ -19,7 +19,7 @@ jobs:
 
       - name: Update submodule in parent repo
         run: |
-          cd parentrepo
+          cd  ${{ secrets.PARENT_REPO }}
           git checkout -b ${{ secrets.UPDATE_BRANCH }}
           git submodule update --remote ${{ secrets.MODULE_PATH }}
           git add ${{ secrets.MODULE_PATH }}
