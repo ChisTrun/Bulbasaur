@@ -15,19 +15,21 @@ jobs:
           submodules: 'recursive'
 
       - name: Clone parent repo
-        run: git clone --recursive https://github.com/ChisTrun/SkillSharp
+        run: git clone --recursive ${{ secrets.PARENT_REPO_URL }}
 
       - name: Update submodule in parent repo
         run: |
           cd parentrepo
-          git checkout -b update-bulbasaur
-          git submodule update --remote backend/Bulbasaur
-          git add backend/Bulbasaur
-          git commit -m "Update bulbasaur to latest commit"
-          git push origin update-bulbasaur
+          git checkout -b ${{ secrets.UPDATE_BRANCH }}
+          git submodule update --remote ${{ secrets.MODULE_PATH }}
+          git add ${{ secrets.MODULE_PATH }}
+          git commit -m "Update module to latest commit"
+          git push origin ${{ secrets.UPDATE_BRANCH }}
 
       - name: Create Pull Request
         run: |
           curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -d '{"title":"Update bulbasaur","head":"update-bulbasaur","base":"main"}' \
+          -d '{"title":"Update module","head":"${{ secrets.UPDATE_BRANCH }}","base":"main"}' \
           https://api.github.com/repos/yourorg/parentrepo/pulls
+
+          
