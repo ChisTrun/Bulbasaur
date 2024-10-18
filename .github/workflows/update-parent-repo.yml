@@ -9,6 +9,13 @@ jobs:
   update_submodule:
     runs-on: ubuntu-latest
     steps:
+
+      - name: Set up Git config
+        run: |
+          git config --global user.name "ChisTrun"
+          git config --global user.email "vochitrung.pst@gmail.com"
+
+          
       - name: Checkout submodule
         uses: actions/checkout@v2
         with:
