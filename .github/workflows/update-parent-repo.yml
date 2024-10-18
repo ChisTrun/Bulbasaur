@@ -22,16 +22,15 @@ jobs:
           submodules: 'recursive'
 
       - name: Clone parent repo
-        run: git clone --recursive ${{ secrets.PARENT_REPO_URL }}
-
+        run: git clone --recursive https://github.com/ChisTrun/SkillSharp
       - name: Update submodule in parent repo
         run: |
-          cd  ${{ secrets.PARENT_REPO }}
+          cd  SkillSharp
           git checkout -b ${{ secrets.UPDATE_BRANCH }}
           git submodule update --remote ${{ secrets.MODULE_PATH }}
           git add ${{ secrets.MODULE_PATH }}
           git commit -m "Update module to latest commit"
-          git push origin ${{ secrets.UPDATE_BRANCH }}
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/ChisTrun/SkillSharp.git ${{ secrets.UPDATE_BRANCH }}
 
       - name: Create Pull Request
         run: |
