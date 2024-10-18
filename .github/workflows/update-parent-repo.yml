@@ -26,16 +26,16 @@ jobs:
       - name: Update submodule in parent repo
         run: |
           cd  SkillSharp
-          git checkout -b ${{ secrets.UPDATE_BRANCH }}
-          git submodule update --remote ${{ secrets.MODULE_PATH }}
-          git add ${{ secrets.MODULE_PATH }}
+          git checkout -b bulbasour_update
+          git submodule update --remote backend/Bulbasaur
+          git add backend/Bulbasaur
           git commit -m "Update module to latest commit"
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/ChisTrun/SkillSharp.git ${{ secrets.UPDATE_BRANCH }}
+          git push https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/ChisTrun/SkillSharp.git bulbasour_update
 
       - name: Create Pull Request
         run: |
           curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -d '{"title":"Update module","head":"${{ secrets.UPDATE_BRANCH }}","base":"main"}' \
+          -d '{"title":"Update module","head":"bulbasour_update","base":"main"}' \
           https://api.github.com/repos/yourorg/parentrepo/pulls
 
           
