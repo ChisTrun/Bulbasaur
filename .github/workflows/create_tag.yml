@@ -49,4 +49,4 @@ jobs:
       run: |
         NEW_TAG="${{ steps.increment_tag.outputs.new_tag }}"
         git tag "$NEW_TAG"
-        https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} --tags
+        https://@github.com/${{ github.repository }} --tags
