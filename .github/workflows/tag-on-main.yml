@@ -33,25 +33,25 @@ jobs:
 
       - name: Bump version and create tag
         id: tag_version
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # Sử dụng token từ secret
         run: |
           latest_tag=${{ steps.get_latest_tag.outputs.tag }}
-          # Split tag into parts (e.g., v1.0.0 -> v 1 0 0)
           IFS='.' read -r -a version_parts <<< "${latest_tag#v}"
           major=${version_parts[0]}
           minor=${version_parts[1]}
           patch=${version_parts[2]}
-
-          # Bump the patch version (or adjust this logic as needed)
           new_patch=$((patch + 1))
           new_tag="v$major.$minor.$new_patch"
 
-          # Create new tag and push to the repository
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git tag "$new_tag"
-          git push origin "$new_tag"
-          echo "$new_tag" > new_tag.txt
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/ChisTrun/Bulbasaur.git "$new_tag"  # Sử dụng token cho push
+          
+          echo "::set-output name=new_tag::$new_tag"
 
+      
       - name: Output new tag
         run: |
             echo "New tag: ${{ steps.tag_version.outputs.new_tag }}"
