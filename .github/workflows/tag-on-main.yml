@@ -1,0 +1,57 @@
+name: Create Tag
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+jobs:
+  tag:
+    if: github.event.pull_request.merged == true || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get the current version tag
+        id: get_latest_tag
+        run: |
+          # Try to get the latest tag, if none exists, set default to v1.0.0
+          if git describe --tags --abbrev=0 > /dev/null 2>&1; then
+            latest_tag=$(git describe --tags --abbrev=0)
+          else
+            latest_tag="v1.0.0"
+          fi
+          echo "Latest tag: $latest_tag"
+          echo "::set-output name=tag::$latest_tag"
+
+      - name: Bump version and create tag
+        id: tag_version
+        run: |
+          latest_tag=${{ steps.get_latest_tag.outputs.tag }}
+          # Split tag into parts (e.g., v1.0.0 -> v 1 0 0)
+          IFS='.' read -r -a version_parts <<< "${latest_tag#v}"
+          major=${version_parts[0]}
+          minor=${version_parts[1]}
+          patch=${version_parts[2]}
+
+          # Bump the patch version (or adjust this logic as needed)
+          new_patch=$((patch + 1))
+          new_tag="v$major.$minor.$new_patch"
+
+          # Create new tag and push to the repository
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "$new_tag"
+          git push origin "$new_tag"
+          echo "$new_tag" > new_tag.txt
+
+      - name: Output new tag
+        run: |
+            echo "New tag: ${{ steps.tag_version.outputs.new_tag }}"
