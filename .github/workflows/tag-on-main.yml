@@ -38,6 +38,7 @@ jobs:
           echo "Latest tag: $latest_tag"
           echo "::set-output name=tag::$latest_tag"
 
+          
       - name: Bump version and create tag
         id: tag_version
         run: |
