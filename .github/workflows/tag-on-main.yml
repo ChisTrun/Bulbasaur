@@ -43,7 +43,6 @@ jobs:
           patch=${version_parts[2]}
           new_patch=$((patch + 1))
           new_tag="v$major.$minor.$new_patch"
-
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git tag "$new_tag"
