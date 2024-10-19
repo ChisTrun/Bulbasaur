@@ -49,7 +49,7 @@ jobs:
           new_tag="v$major.$minor.$new_patch"
 
           git tag "$new_tag"
-          git push https://x-access-token:${{secrets.PERSONAL_ACCESS_TOKEN}}@github.com/ChisTrun/Bulbasaur.git "$new_tag"  # Sử dụng token cho push
+          git push https://${{secrets.PERSONAL_ACCESS_TOKEN}}@github.com/ChisTrun/Bulbasaur.git "$new_tag"  # Sử dụng token cho push
           
           echo "::set-output name=new_tag::$new_tag"
 
