@@ -48,4 +48,4 @@ jobs:
     - name: Create and push new tag
       run: |
         NEW_TAG="${{ steps.increment_tag.outputs.new_tag }}"
-        git tag "$NEW_TAG" https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} --tags
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} --tags
