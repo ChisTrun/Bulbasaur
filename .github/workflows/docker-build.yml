@@ -1,10 +1,9 @@
-name: Build and Push Docker Image with Tag
+name: Build and Push Docker Image with Commit Timestamp
 
 on:
-  workflow_run:
-    workflows: ["Create Tag"]
-    types:
-      - completed
+  push:
+    branches:
+      - main # Kích hoạt khi có push vào nhánh chính
 
 jobs:
   build:
@@ -13,14 +12,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Get the new tag
-        id: get_new_tag
-        run: |
-          # Tải tag từ file new_tag.txt
-          new_tag=$(cat new_tag.txt)
-          echo "New tag: $new_tag"
-          echo "::set-output name=new_tag::$new_tag"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -31,6 +22,10 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Get Unix timestamp
+        id: timestamp
+        run: echo "TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
@@ -39,40 +34,4 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_APP_NAME }}:latest 
-            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_APP_NAME }}:${{ steps.get_new_tag.outputs.new_tag }}  # Sử dụng tag mới từ output của step trước
-
-
-
-# name: Build and Push Docker Image with Commit SHA
-
-# on:
-#   push:
-#     branches:
-#       - main # Kích hoạt khi có push vào nhánh chính
-
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v2
-
-#       - name: Set up Docker Buildx
-#         uses: docker/setup-buildx-action@v1
-
-#       - name: Log in to Docker Hub
-#         uses: docker/login-action@v1
-#         with:
-#           username: ${{ secrets.DOCKER_USERNAME }}
-#           password: ${{ secrets.DOCKER_PASSWORD }}
-
-#       - name: Build and push Docker image
-#         uses: docker/build-push-action@v2
-#         with:
-#           context: .
-#           file: ./build/dockerfile
-#           push: true
-#           tags: |
-#             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_APP_NAME }}:latest 
-#             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_APP_NAME }}:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_APP_NAME }}:${{ env.TIMESTAMP }}

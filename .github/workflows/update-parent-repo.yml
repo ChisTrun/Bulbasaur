@@ -1,10 +1,9 @@
 name: Update Submodule in Parent Repo
 
 on:
-  workflow_run:
-    workflows: ["Create Tag"]
-    types:
-      - completed
+  push:
+    branches:
+      - main
 
 jobs:
   update_submodule:
@@ -16,14 +15,6 @@ jobs:
           git config --global user.name "ChisTrun"
           git config --global user.email "vochitrung.pst@gmail.com"
 
-      - name: Get the new tag
-        id: get_new_tag
-        run: |
-          # Tải tag từ file new_tag.txt
-          new_tag=$(cat new_tag.txt)
-          echo "New tag: $new_tag"
-          echo "::set-output name=new_tag::$new_tag"
-
           
       - name: Checkout submodule
         uses: actions/checkout@v2
@@ -32,19 +23,22 @@ jobs:
 
       - name: Clone parent repo
         run: git clone --recursive https://github.com/ChisTrun/SkillSharp
+
       - name: Update submodule in parent repo
         run: |
-          cd  SkillSharp
-          git checkout -b bulbasour_update_${{ steps.get_new_tag.outputs.new_tag }}
+          cd SkillSharp
+          TIMESTAMP=$(date +%s)
+          BRANCH_NAME="bulbasour_update_${TIMESTAMP}"
+          git checkout -b $BRANCH_NAME
           git submodule update --remote backend/Bulbasaur
           git add backend/Bulbasaur
           git commit -m "Update module to latest commit"
-          git push https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/ChisTrun/SkillSharp.git bulbasour_update_${{ steps.get_new_tag.outputs.new_tag }}
+          git push https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/ChisTrun/SkillSharp.git $BRANCH_NAME
 
       - name: Create Pull Request
         run: |
+          TIMESTAMP=$(date +%s)
+          BRANCH_NAME="bulbasour_update_${TIMESTAMP}"
           curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -d '{"title":"Update module","head":"bulbasour_update_${{ steps.get_new_tag.outputs.new_tag }}","base":"main"}' \
+          -d "{\"title\":\"Update module\",\"head\":\"${BRANCH_NAME}\",\"base\":\"main\"}" \
           https://api.github.com/repos/yourorg/parentrepo/pulls
-
-          
