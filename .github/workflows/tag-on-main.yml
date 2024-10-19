@@ -17,6 +17,12 @@ jobs:
 
     steps:
 
+      - name: Set up Git config
+        run: |
+          git config --global user.name "ChisTrun"
+          git config --global user.email "vochitrung.pst@gmail.com"
+
+
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -42,11 +48,9 @@ jobs:
           patch=${version_parts[2]}
           new_patch=$((patch + 1))
           new_tag="v$major.$minor.$new_patch"
-
-          git config --global user.name "ChisTrun"
-          git config --global user.email "vochitrung.pst@gmail.com"
+       
           git tag "$new_tag"
-          git push https://${{secrets.PERSONAL_ACCESS_TOKEN}}@github.com/ChisTrun/Bulbasaur.git "$new_tag"  # Sử dụng token cho push
+          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/ChisTrun/Bulbasaur.git "$new_tag"
           
           echo "::set-output name=new_tag::$new_tag"
 
