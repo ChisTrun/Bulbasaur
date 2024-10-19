@@ -21,12 +21,14 @@ func (User) Mixin() []ent.Mixin {
 func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("tenant_id"),
+		field.String("email").Optional(),
 		field.Text("metadata").
 			Optional().
 			Nillable(),
 		field.Time("last_signed_in").
 			Optional().
 			Nillable(),
+		field.Uint64("role_id"),
 	}
 }
 
@@ -40,6 +42,7 @@ func (User) Edges() []ent.Edge {
 			OnDelete: entsql.Cascade,
 		}).
 			Unique(),
+		edge.From("role", Role.Type).Required().Unique().Ref("user").Field("role_id"),
 	}
 }
 

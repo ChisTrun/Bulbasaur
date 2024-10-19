@@ -5,6 +5,7 @@ package ent
 import (
 	"bulbasaur/package/ent/google"
 	"bulbasaur/package/ent/myid"
+	"bulbasaur/package/ent/role"
 	"bulbasaur/package/ent/user"
 	"fmt"
 	"strings"
@@ -25,10 +26,14 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// TenantID holds the value of the "tenant_id" field.
 	TenantID string `json:"tenant_id,omitempty"`
+	// Email holds the value of the "email" field.
+	Email string `json:"email,omitempty"`
 	// Metadata holds the value of the "metadata" field.
 	Metadata *string `json:"metadata,omitempty"`
 	// LastSignedIn holds the value of the "last_signed_in" field.
 	LastSignedIn *time.Time `json:"last_signed_in,omitempty"`
+	// RoleID holds the value of the "role_id" field.
+	RoleID uint64 `json:"role_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges        UserEdges `json:"edges"`
@@ -41,9 +46,11 @@ type UserEdges struct {
 	MyID *MyID `json:"my_id,omitempty"`
 	// Google holds the value of the google edge.
 	Google *Google `json:"google,omitempty"`
+	// Role holds the value of the role edge.
+	Role *Role `json:"role,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // MyIDOrErr returns the MyID value or an error if the edge
@@ -68,14 +75,25 @@ func (e UserEdges) GoogleOrErr() (*Google, error) {
 	return nil, &NotLoadedError{edge: "google"}
 }
 
+// RoleOrErr returns the Role value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e UserEdges) RoleOrErr() (*Role, error) {
+	if e.Role != nil {
+		return e.Role, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: role.Label}
+	}
+	return nil, &NotLoadedError{edge: "role"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldID:
+		case user.FieldID, user.FieldRoleID:
 			values[i] = new(sql.NullInt64)
-		case user.FieldTenantID, user.FieldMetadata:
+		case user.FieldTenantID, user.FieldEmail, user.FieldMetadata:
 			values[i] = new(sql.NullString)
 		case user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldLastSignedIn:
 			values[i] = new(sql.NullTime)
@@ -118,6 +136,12 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.TenantID = value.String
 			}
+		case user.FieldEmail:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field email", values[i])
+			} else if value.Valid {
+				u.Email = value.String
+			}
 		case user.FieldMetadata:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field metadata", values[i])
@@ -131,6 +155,12 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.LastSignedIn = new(time.Time)
 				*u.LastSignedIn = value.Time
+			}
+		case user.FieldRoleID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field role_id", values[i])
+			} else if value.Valid {
+				u.RoleID = uint64(value.Int64)
 			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
@@ -153,6 +183,11 @@ func (u *User) QueryMyID() *MyIDQuery {
 // QueryGoogle queries the "google" edge of the User entity.
 func (u *User) QueryGoogle() *GoogleQuery {
 	return NewUserClient(u.config).QueryGoogle(u)
+}
+
+// QueryRole queries the "role" edge of the User entity.
+func (u *User) QueryRole() *RoleQuery {
+	return NewUserClient(u.config).QueryRole(u)
 }
 
 // Update returns a builder for updating this User.
@@ -187,6 +222,9 @@ func (u *User) String() string {
 	builder.WriteString("tenant_id=")
 	builder.WriteString(u.TenantID)
 	builder.WriteString(", ")
+	builder.WriteString("email=")
+	builder.WriteString(u.Email)
+	builder.WriteString(", ")
 	if v := u.Metadata; v != nil {
 		builder.WriteString("metadata=")
 		builder.WriteString(*v)
@@ -196,6 +234,9 @@ func (u *User) String() string {
 		builder.WriteString("last_signed_in=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("role_id=")
+	builder.WriteString(fmt.Sprintf("%v", u.RoleID))
 	builder.WriteByte(')')
 	return builder.String()
 }

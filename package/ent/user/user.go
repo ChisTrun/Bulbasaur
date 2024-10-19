@@ -20,14 +20,20 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldTenantID holds the string denoting the tenant_id field in the database.
 	FieldTenantID = "tenant_id"
+	// FieldEmail holds the string denoting the email field in the database.
+	FieldEmail = "email"
 	// FieldMetadata holds the string denoting the metadata field in the database.
 	FieldMetadata = "metadata"
 	// FieldLastSignedIn holds the string denoting the last_signed_in field in the database.
 	FieldLastSignedIn = "last_signed_in"
+	// FieldRoleID holds the string denoting the role_id field in the database.
+	FieldRoleID = "role_id"
 	// EdgeMyID holds the string denoting the my_id edge name in mutations.
 	EdgeMyID = "my_id"
 	// EdgeGoogle holds the string denoting the google edge name in mutations.
 	EdgeGoogle = "google"
+	// EdgeRole holds the string denoting the role edge name in mutations.
+	EdgeRole = "role"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// MyIDTable is the table that holds the my_id relation/edge.
@@ -44,6 +50,13 @@ const (
 	GoogleInverseTable = "googles"
 	// GoogleColumn is the table column denoting the google relation/edge.
 	GoogleColumn = "user_id"
+	// RoleTable is the table that holds the role relation/edge.
+	RoleTable = "users"
+	// RoleInverseTable is the table name for the Role entity.
+	// It exists in this package in order to avoid circular dependency with the "role" package.
+	RoleInverseTable = "roles"
+	// RoleColumn is the table column denoting the role relation/edge.
+	RoleColumn = "role_id"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -52,8 +65,10 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldTenantID,
+	FieldEmail,
 	FieldMetadata,
 	FieldLastSignedIn,
+	FieldRoleID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -98,6 +113,11 @@ func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTenantID, opts...).ToFunc()
 }
 
+// ByEmail orders the results by the email field.
+func ByEmail(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEmail, opts...).ToFunc()
+}
+
 // ByMetadata orders the results by the metadata field.
 func ByMetadata(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldMetadata, opts...).ToFunc()
@@ -106,6 +126,11 @@ func ByMetadata(opts ...sql.OrderTermOption) OrderOption {
 // ByLastSignedIn orders the results by the last_signed_in field.
 func ByLastSignedIn(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastSignedIn, opts...).ToFunc()
+}
+
+// ByRoleID orders the results by the role_id field.
+func ByRoleID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRoleID, opts...).ToFunc()
 }
 
 // ByMyIDField orders the results by my_id field.
@@ -121,6 +146,13 @@ func ByGoogleField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newGoogleStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByRoleField orders the results by role field.
+func ByRoleField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRoleStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newMyIDStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -133,5 +165,12 @@ func newGoogleStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(GoogleInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2O, false, GoogleTable, GoogleColumn),
+	)
+}
+func newRoleStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RoleInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, RoleTable, RoleColumn),
 	)
 }

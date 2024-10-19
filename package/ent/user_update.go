@@ -6,6 +6,7 @@ import (
 	"bulbasaur/package/ent/google"
 	"bulbasaur/package/ent/myid"
 	"bulbasaur/package/ent/predicate"
+	"bulbasaur/package/ent/role"
 	"bulbasaur/package/ent/user"
 	"context"
 	"errors"
@@ -51,6 +52,26 @@ func (uu *UserUpdate) SetNillableTenantID(s *string) *UserUpdate {
 	return uu
 }
 
+// SetEmail sets the "email" field.
+func (uu *UserUpdate) SetEmail(s string) *UserUpdate {
+	uu.mutation.SetEmail(s)
+	return uu
+}
+
+// SetNillableEmail sets the "email" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableEmail(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetEmail(*s)
+	}
+	return uu
+}
+
+// ClearEmail clears the value of the "email" field.
+func (uu *UserUpdate) ClearEmail() *UserUpdate {
+	uu.mutation.ClearEmail()
+	return uu
+}
+
 // SetMetadata sets the "metadata" field.
 func (uu *UserUpdate) SetMetadata(s string) *UserUpdate {
 	uu.mutation.SetMetadata(s)
@@ -88,6 +109,20 @@ func (uu *UserUpdate) SetNillableLastSignedIn(t *time.Time) *UserUpdate {
 // ClearLastSignedIn clears the value of the "last_signed_in" field.
 func (uu *UserUpdate) ClearLastSignedIn() *UserUpdate {
 	uu.mutation.ClearLastSignedIn()
+	return uu
+}
+
+// SetRoleID sets the "role_id" field.
+func (uu *UserUpdate) SetRoleID(u uint64) *UserUpdate {
+	uu.mutation.SetRoleID(u)
+	return uu
+}
+
+// SetNillableRoleID sets the "role_id" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableRoleID(u *uint64) *UserUpdate {
+	if u != nil {
+		uu.SetRoleID(*u)
+	}
 	return uu
 }
 
@@ -129,6 +164,11 @@ func (uu *UserUpdate) SetGoogle(g *Google) *UserUpdate {
 	return uu.SetGoogleID(g.ID)
 }
 
+// SetRole sets the "role" edge to the Role entity.
+func (uu *UserUpdate) SetRole(r *Role) *UserUpdate {
+	return uu.SetRoleID(r.ID)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -143,6 +183,12 @@ func (uu *UserUpdate) ClearMyID() *UserUpdate {
 // ClearGoogle clears the "google" edge to the Google entity.
 func (uu *UserUpdate) ClearGoogle() *UserUpdate {
 	uu.mutation.ClearGoogle()
+	return uu
+}
+
+// ClearRole clears the "role" edge to the Role entity.
+func (uu *UserUpdate) ClearRole() *UserUpdate {
+	uu.mutation.ClearRole()
 	return uu
 }
 
@@ -182,6 +228,14 @@ func (uu *UserUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (uu *UserUpdate) check() error {
+	if uu.mutation.RoleCleared() && len(uu.mutation.RoleIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "User.role"`)
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (uu *UserUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *UserUpdate {
 	uu.modifiers = append(uu.modifiers, modifiers...)
@@ -189,6 +243,9 @@ func (uu *UserUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *UserUpdat
 }
 
 func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := uu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeUint64))
 	if ps := uu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -202,6 +259,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.TenantID(); ok {
 		_spec.SetField(user.FieldTenantID, field.TypeString, value)
+	}
+	if value, ok := uu.mutation.Email(); ok {
+		_spec.SetField(user.FieldEmail, field.TypeString, value)
+	}
+	if uu.mutation.EmailCleared() {
+		_spec.ClearField(user.FieldEmail, field.TypeString)
 	}
 	if value, ok := uu.mutation.Metadata(); ok {
 		_spec.SetField(user.FieldMetadata, field.TypeString, value)
@@ -273,6 +336,35 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.RoleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.RoleTable,
+			Columns: []string{user.RoleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RoleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.RoleTable,
+			Columns: []string{user.RoleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(uu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -312,6 +404,26 @@ func (uuo *UserUpdateOne) SetNillableTenantID(s *string) *UserUpdateOne {
 	if s != nil {
 		uuo.SetTenantID(*s)
 	}
+	return uuo
+}
+
+// SetEmail sets the "email" field.
+func (uuo *UserUpdateOne) SetEmail(s string) *UserUpdateOne {
+	uuo.mutation.SetEmail(s)
+	return uuo
+}
+
+// SetNillableEmail sets the "email" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableEmail(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetEmail(*s)
+	}
+	return uuo
+}
+
+// ClearEmail clears the value of the "email" field.
+func (uuo *UserUpdateOne) ClearEmail() *UserUpdateOne {
+	uuo.mutation.ClearEmail()
 	return uuo
 }
 
@@ -355,6 +467,20 @@ func (uuo *UserUpdateOne) ClearLastSignedIn() *UserUpdateOne {
 	return uuo
 }
 
+// SetRoleID sets the "role_id" field.
+func (uuo *UserUpdateOne) SetRoleID(u uint64) *UserUpdateOne {
+	uuo.mutation.SetRoleID(u)
+	return uuo
+}
+
+// SetNillableRoleID sets the "role_id" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableRoleID(u *uint64) *UserUpdateOne {
+	if u != nil {
+		uuo.SetRoleID(*u)
+	}
+	return uuo
+}
+
 // SetMyIDID sets the "my_id" edge to the MyID entity by ID.
 func (uuo *UserUpdateOne) SetMyIDID(id uint64) *UserUpdateOne {
 	uuo.mutation.SetMyIDID(id)
@@ -393,6 +519,11 @@ func (uuo *UserUpdateOne) SetGoogle(g *Google) *UserUpdateOne {
 	return uuo.SetGoogleID(g.ID)
 }
 
+// SetRole sets the "role" edge to the Role entity.
+func (uuo *UserUpdateOne) SetRole(r *Role) *UserUpdateOne {
+	return uuo.SetRoleID(r.ID)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -407,6 +538,12 @@ func (uuo *UserUpdateOne) ClearMyID() *UserUpdateOne {
 // ClearGoogle clears the "google" edge to the Google entity.
 func (uuo *UserUpdateOne) ClearGoogle() *UserUpdateOne {
 	uuo.mutation.ClearGoogle()
+	return uuo
+}
+
+// ClearRole clears the "role" edge to the Role entity.
+func (uuo *UserUpdateOne) ClearRole() *UserUpdateOne {
+	uuo.mutation.ClearRole()
 	return uuo
 }
 
@@ -459,6 +596,14 @@ func (uuo *UserUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (uuo *UserUpdateOne) check() error {
+	if uuo.mutation.RoleCleared() && len(uuo.mutation.RoleIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "User.role"`)
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (uuo *UserUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *UserUpdateOne {
 	uuo.modifiers = append(uuo.modifiers, modifiers...)
@@ -466,6 +611,9 @@ func (uuo *UserUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *UserU
 }
 
 func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
+	if err := uuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeUint64))
 	id, ok := uuo.mutation.ID()
 	if !ok {
@@ -496,6 +644,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.TenantID(); ok {
 		_spec.SetField(user.FieldTenantID, field.TypeString, value)
+	}
+	if value, ok := uuo.mutation.Email(); ok {
+		_spec.SetField(user.FieldEmail, field.TypeString, value)
+	}
+	if uuo.mutation.EmailCleared() {
+		_spec.ClearField(user.FieldEmail, field.TypeString)
 	}
 	if value, ok := uuo.mutation.Metadata(); ok {
 		_spec.SetField(user.FieldMetadata, field.TypeString, value)
@@ -560,6 +714,35 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(google.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.RoleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.RoleTable,
+			Columns: []string{user.RoleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RoleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.RoleTable,
+			Columns: []string{user.RoleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

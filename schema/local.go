@@ -7,11 +7,11 @@ import (
 	"entgo.io/ent/schema/index"
 )
 
-type MyID struct {
+type Local struct {
 	ent.Schema
 }
 
-func (MyID) Fields() []ent.Field {
+func (Local) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("tenant_id"),
 		field.Uint64("user_id"),
@@ -20,13 +20,13 @@ func (MyID) Fields() []ent.Field {
 	}
 }
 
-func (MyID) Mixin() []ent.Mixin {
+func (Local) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		Base{},
 	}
 }
 
-func (MyID) Edges() []ent.Edge {
+func (Local) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).
 			Ref("my_id").
@@ -36,7 +36,7 @@ func (MyID) Edges() []ent.Edge {
 	}
 }
 
-func (MyID) Indexes() []ent.Index {
+func (Local) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("tenant_id", "username").Unique(),
 	}

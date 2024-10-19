@@ -5,6 +5,7 @@ package ent
 import (
 	"bulbasaur/package/ent/google"
 	"bulbasaur/package/ent/myid"
+	"bulbasaur/package/ent/role"
 	"bulbasaur/package/ent/user"
 	"context"
 	"errors"
@@ -58,6 +59,20 @@ func (uc *UserCreate) SetTenantID(s string) *UserCreate {
 	return uc
 }
 
+// SetEmail sets the "email" field.
+func (uc *UserCreate) SetEmail(s string) *UserCreate {
+	uc.mutation.SetEmail(s)
+	return uc
+}
+
+// SetNillableEmail sets the "email" field if the given value is not nil.
+func (uc *UserCreate) SetNillableEmail(s *string) *UserCreate {
+	if s != nil {
+		uc.SetEmail(*s)
+	}
+	return uc
+}
+
 // SetMetadata sets the "metadata" field.
 func (uc *UserCreate) SetMetadata(s string) *UserCreate {
 	uc.mutation.SetMetadata(s)
@@ -83,6 +98,12 @@ func (uc *UserCreate) SetNillableLastSignedIn(t *time.Time) *UserCreate {
 	if t != nil {
 		uc.SetLastSignedIn(*t)
 	}
+	return uc
+}
+
+// SetRoleID sets the "role_id" field.
+func (uc *UserCreate) SetRoleID(u uint64) *UserCreate {
+	uc.mutation.SetRoleID(u)
 	return uc
 }
 
@@ -128,6 +149,11 @@ func (uc *UserCreate) SetNillableGoogleID(id *uint64) *UserCreate {
 // SetGoogle sets the "google" edge to the Google entity.
 func (uc *UserCreate) SetGoogle(g *Google) *UserCreate {
 	return uc.SetGoogleID(g.ID)
+}
+
+// SetRole sets the "role" edge to the Role entity.
+func (uc *UserCreate) SetRole(r *Role) *UserCreate {
+	return uc.SetRoleID(r.ID)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -186,6 +212,12 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.TenantID(); !ok {
 		return &ValidationError{Name: "tenant_id", err: errors.New(`ent: missing required field "User.tenant_id"`)}
 	}
+	if _, ok := uc.mutation.RoleID(); !ok {
+		return &ValidationError{Name: "role_id", err: errors.New(`ent: missing required field "User.role_id"`)}
+	}
+	if len(uc.mutation.RoleIDs()) == 0 {
+		return &ValidationError{Name: "role", err: errors.New(`ent: missing required edge "User.role"`)}
+	}
 	return nil
 }
 
@@ -231,6 +263,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldTenantID, field.TypeString, value)
 		_node.TenantID = value
 	}
+	if value, ok := uc.mutation.Email(); ok {
+		_spec.SetField(user.FieldEmail, field.TypeString, value)
+		_node.Email = value
+	}
 	if value, ok := uc.mutation.Metadata(); ok {
 		_spec.SetField(user.FieldMetadata, field.TypeString, value)
 		_node.Metadata = &value
@@ -269,6 +305,23 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.RoleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.RoleTable,
+			Columns: []string{user.RoleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RoleID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -347,6 +400,24 @@ func (u *UserUpsert) UpdateTenantID() *UserUpsert {
 	return u
 }
 
+// SetEmail sets the "email" field.
+func (u *UserUpsert) SetEmail(v string) *UserUpsert {
+	u.Set(user.FieldEmail, v)
+	return u
+}
+
+// UpdateEmail sets the "email" field to the value that was provided on create.
+func (u *UserUpsert) UpdateEmail() *UserUpsert {
+	u.SetExcluded(user.FieldEmail)
+	return u
+}
+
+// ClearEmail clears the value of the "email" field.
+func (u *UserUpsert) ClearEmail() *UserUpsert {
+	u.SetNull(user.FieldEmail)
+	return u
+}
+
 // SetMetadata sets the "metadata" field.
 func (u *UserUpsert) SetMetadata(v string) *UserUpsert {
 	u.Set(user.FieldMetadata, v)
@@ -380,6 +451,18 @@ func (u *UserUpsert) UpdateLastSignedIn() *UserUpsert {
 // ClearLastSignedIn clears the value of the "last_signed_in" field.
 func (u *UserUpsert) ClearLastSignedIn() *UserUpsert {
 	u.SetNull(user.FieldLastSignedIn)
+	return u
+}
+
+// SetRoleID sets the "role_id" field.
+func (u *UserUpsert) SetRoleID(v uint64) *UserUpsert {
+	u.Set(user.FieldRoleID, v)
+	return u
+}
+
+// UpdateRoleID sets the "role_id" field to the value that was provided on create.
+func (u *UserUpsert) UpdateRoleID() *UserUpsert {
+	u.SetExcluded(user.FieldRoleID)
 	return u
 }
 
@@ -462,6 +545,27 @@ func (u *UserUpsertOne) UpdateTenantID() *UserUpsertOne {
 	})
 }
 
+// SetEmail sets the "email" field.
+func (u *UserUpsertOne) SetEmail(v string) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetEmail(v)
+	})
+}
+
+// UpdateEmail sets the "email" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateEmail() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateEmail()
+	})
+}
+
+// ClearEmail clears the value of the "email" field.
+func (u *UserUpsertOne) ClearEmail() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearEmail()
+	})
+}
+
 // SetMetadata sets the "metadata" field.
 func (u *UserUpsertOne) SetMetadata(v string) *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
@@ -501,6 +605,20 @@ func (u *UserUpsertOne) UpdateLastSignedIn() *UserUpsertOne {
 func (u *UserUpsertOne) ClearLastSignedIn() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.ClearLastSignedIn()
+	})
+}
+
+// SetRoleID sets the "role_id" field.
+func (u *UserUpsertOne) SetRoleID(v uint64) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetRoleID(v)
+	})
+}
+
+// UpdateRoleID sets the "role_id" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateRoleID() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateRoleID()
 	})
 }
 
@@ -749,6 +867,27 @@ func (u *UserUpsertBulk) UpdateTenantID() *UserUpsertBulk {
 	})
 }
 
+// SetEmail sets the "email" field.
+func (u *UserUpsertBulk) SetEmail(v string) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetEmail(v)
+	})
+}
+
+// UpdateEmail sets the "email" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateEmail() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateEmail()
+	})
+}
+
+// ClearEmail clears the value of the "email" field.
+func (u *UserUpsertBulk) ClearEmail() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearEmail()
+	})
+}
+
 // SetMetadata sets the "metadata" field.
 func (u *UserUpsertBulk) SetMetadata(v string) *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
@@ -788,6 +927,20 @@ func (u *UserUpsertBulk) UpdateLastSignedIn() *UserUpsertBulk {
 func (u *UserUpsertBulk) ClearLastSignedIn() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.ClearLastSignedIn()
+	})
+}
+
+// SetRoleID sets the "role_id" field.
+func (u *UserUpsertBulk) SetRoleID(v uint64) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetRoleID(v)
+	})
+}
+
+// UpdateRoleID sets the "role_id" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateRoleID() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateRoleID()
 	})
 }
 
