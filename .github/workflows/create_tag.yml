@@ -1,0 +1,52 @@
+name: Create or Update Tag
+
+on:
+  push:
+    branches:
+      - main  # Thay thế với nhánh bạn muốn chạy hành động này
+
+jobs:
+  create-or-update-tag:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Git
+      run: |
+        git config --global user.name "ChisTrun"
+        git config --global user.email "vochitrung.pst@gmail.com"
+
+    - name: Get latest tag
+      id: get_tag
+      run: |
+        TAG=$(git describe --tags --abbrev=0 2>/dev/null)
+        echo "Latest tag: $TAG"
+        echo "::set-output name=tag::$TAG"
+
+    - name: Increment tag or create new tag
+      id: increment_tag
+      run: |
+        TAG="${{ steps.get_tag.outputs.tag }}"
+        if [ -z "$TAG" ]; then
+          echo "No tag found, creating initial tag v1.0.0"
+          NEW_TAG="v1.0.0"
+        else
+          # Split the tag into parts (e.g., v1.0.0 -> 1, 0, 0)
+          IFS='.' read -r major minor patch <<< "${TAG//v/}"
+          
+          # Increment the patch version
+          PATCH=$((patch + 1))
+          
+          # Create new tag based on current tag
+          NEW_TAG="v$major.$minor.$PATCH"
+          echo "Incremented tag to $NEW_TAG"
+        fi
+        echo "::set-output name=new_tag::$NEW_TAG"
+
+    - name: Create and push new tag
+      run: |
+        NEW_TAG="${{ steps.increment_tag.outputs.new_tag }}"
+        git tag "$NEW_TAG"
+        git push origin "$NEW_TAG"
