@@ -4,7 +4,7 @@ package ent
 
 import (
 	"bulbasaur/package/ent/google"
-	"bulbasaur/package/ent/myid"
+	"bulbasaur/package/ent/local"
 	"bulbasaur/package/ent/role"
 	"bulbasaur/package/ent/user"
 	"context"
@@ -113,13 +113,13 @@ func (uc *UserCreate) SetID(u uint64) *UserCreate {
 	return uc
 }
 
-// SetMyIDID sets the "my_id" edge to the MyID entity by ID.
+// SetMyIDID sets the "my_id" edge to the Local entity by ID.
 func (uc *UserCreate) SetMyIDID(id uint64) *UserCreate {
 	uc.mutation.SetMyIDID(id)
 	return uc
 }
 
-// SetNillableMyIDID sets the "my_id" edge to the MyID entity by ID if the given value is not nil.
+// SetNillableMyIDID sets the "my_id" edge to the Local entity by ID if the given value is not nil.
 func (uc *UserCreate) SetNillableMyIDID(id *uint64) *UserCreate {
 	if id != nil {
 		uc = uc.SetMyIDID(*id)
@@ -127,9 +127,9 @@ func (uc *UserCreate) SetNillableMyIDID(id *uint64) *UserCreate {
 	return uc
 }
 
-// SetMyID sets the "my_id" edge to the MyID entity.
-func (uc *UserCreate) SetMyID(m *MyID) *UserCreate {
-	return uc.SetMyIDID(m.ID)
+// SetMyID sets the "my_id" edge to the Local entity.
+func (uc *UserCreate) SetMyID(l *Local) *UserCreate {
+	return uc.SetMyIDID(l.ID)
 }
 
 // SetGoogleID sets the "google" edge to the Google entity by ID.
@@ -283,7 +283,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Columns: []string{user.MyIDColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(myid.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(local.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

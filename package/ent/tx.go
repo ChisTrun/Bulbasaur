@@ -18,8 +18,8 @@ type Tx struct {
 	Action *ActionClient
 	// Google is the client for interacting with the Google builders.
 	Google *GoogleClient
-	// MyID is the client for interacting with the MyID builders.
-	MyID *MyIDClient
+	// Local is the client for interacting with the Local builders.
+	Local *LocalClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
 	// Role is the client for interacting with the Role builders.
@@ -159,7 +159,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Action = NewActionClient(tx.config)
 	tx.Google = NewGoogleClient(tx.config)
-	tx.MyID = NewMyIDClient(tx.config)
+	tx.Local = NewLocalClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
 	tx.User = NewUserClient(tx.config)

@@ -4,7 +4,7 @@ package ent
 
 import (
 	"bulbasaur/package/ent/google"
-	"bulbasaur/package/ent/myid"
+	"bulbasaur/package/ent/local"
 	"bulbasaur/package/ent/predicate"
 	"bulbasaur/package/ent/role"
 	"bulbasaur/package/ent/user"
@@ -27,7 +27,7 @@ type UserQuery struct {
 	order      []user.OrderOption
 	inters     []Interceptor
 	predicates []predicate.User
-	withMyID   *MyIDQuery
+	withMyID   *LocalQuery
 	withGoogle *GoogleQuery
 	withRole   *RoleQuery
 	modifiers  []func(*sql.Selector)
@@ -68,8 +68,8 @@ func (uq *UserQuery) Order(o ...user.OrderOption) *UserQuery {
 }
 
 // QueryMyID chains the current query on the "my_id" edge.
-func (uq *UserQuery) QueryMyID() *MyIDQuery {
-	query := (&MyIDClient{config: uq.config}).Query()
+func (uq *UserQuery) QueryMyID() *LocalQuery {
+	query := (&LocalClient{config: uq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := uq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -80,7 +80,7 @@ func (uq *UserQuery) QueryMyID() *MyIDQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(myid.Table, myid.FieldID),
+			sqlgraph.To(local.Table, local.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, user.MyIDTable, user.MyIDColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
@@ -336,8 +336,8 @@ func (uq *UserQuery) Clone() *UserQuery {
 
 // WithMyID tells the query-builder to eager-load the nodes that are connected to
 // the "my_id" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithMyID(opts ...func(*MyIDQuery)) *UserQuery {
-	query := (&MyIDClient{config: uq.config}).Query()
+func (uq *UserQuery) WithMyID(opts ...func(*LocalQuery)) *UserQuery {
+	query := (&LocalClient{config: uq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -474,7 +474,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	}
 	if query := uq.withMyID; query != nil {
 		if err := uq.loadMyID(ctx, query, nodes, nil,
-			func(n *User, e *MyID) { n.Edges.MyID = e }); err != nil {
+			func(n *User, e *Local) { n.Edges.MyID = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -493,7 +493,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	return nodes, nil
 }
 
-func (uq *UserQuery) loadMyID(ctx context.Context, query *MyIDQuery, nodes []*User, init func(*User), assign func(*User, *MyID)) error {
+func (uq *UserQuery) loadMyID(ctx context.Context, query *LocalQuery, nodes []*User, init func(*User), assign func(*User, *Local)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*User)
 	for i := range nodes {
@@ -501,9 +501,9 @@ func (uq *UserQuery) loadMyID(ctx context.Context, query *MyIDQuery, nodes []*Us
 		nodeids[nodes[i].ID] = nodes[i]
 	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(myid.FieldUserID)
+		query.ctx.AppendFieldOnce(local.FieldUserID)
 	}
-	query.Where(predicate.MyID(func(s *sql.Selector) {
+	query.Where(predicate.Local(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(user.MyIDColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)

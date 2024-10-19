@@ -4,7 +4,7 @@ package ent
 
 import (
 	"bulbasaur/package/ent/google"
-	"bulbasaur/package/ent/myid"
+	"bulbasaur/package/ent/local"
 	"bulbasaur/package/ent/predicate"
 	"bulbasaur/package/ent/role"
 	"bulbasaur/package/ent/user"
@@ -126,13 +126,13 @@ func (uu *UserUpdate) SetNillableRoleID(u *uint64) *UserUpdate {
 	return uu
 }
 
-// SetMyIDID sets the "my_id" edge to the MyID entity by ID.
+// SetMyIDID sets the "my_id" edge to the Local entity by ID.
 func (uu *UserUpdate) SetMyIDID(id uint64) *UserUpdate {
 	uu.mutation.SetMyIDID(id)
 	return uu
 }
 
-// SetNillableMyIDID sets the "my_id" edge to the MyID entity by ID if the given value is not nil.
+// SetNillableMyIDID sets the "my_id" edge to the Local entity by ID if the given value is not nil.
 func (uu *UserUpdate) SetNillableMyIDID(id *uint64) *UserUpdate {
 	if id != nil {
 		uu = uu.SetMyIDID(*id)
@@ -140,9 +140,9 @@ func (uu *UserUpdate) SetNillableMyIDID(id *uint64) *UserUpdate {
 	return uu
 }
 
-// SetMyID sets the "my_id" edge to the MyID entity.
-func (uu *UserUpdate) SetMyID(m *MyID) *UserUpdate {
-	return uu.SetMyIDID(m.ID)
+// SetMyID sets the "my_id" edge to the Local entity.
+func (uu *UserUpdate) SetMyID(l *Local) *UserUpdate {
+	return uu.SetMyIDID(l.ID)
 }
 
 // SetGoogleID sets the "google" edge to the Google entity by ID.
@@ -174,7 +174,7 @@ func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
 }
 
-// ClearMyID clears the "my_id" edge to the MyID entity.
+// ClearMyID clears the "my_id" edge to the Local entity.
 func (uu *UserUpdate) ClearMyID() *UserUpdate {
 	uu.mutation.ClearMyID()
 	return uu
@@ -286,7 +286,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{user.MyIDColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(myid.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(local.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -299,7 +299,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{user.MyIDColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(myid.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(local.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -481,13 +481,13 @@ func (uuo *UserUpdateOne) SetNillableRoleID(u *uint64) *UserUpdateOne {
 	return uuo
 }
 
-// SetMyIDID sets the "my_id" edge to the MyID entity by ID.
+// SetMyIDID sets the "my_id" edge to the Local entity by ID.
 func (uuo *UserUpdateOne) SetMyIDID(id uint64) *UserUpdateOne {
 	uuo.mutation.SetMyIDID(id)
 	return uuo
 }
 
-// SetNillableMyIDID sets the "my_id" edge to the MyID entity by ID if the given value is not nil.
+// SetNillableMyIDID sets the "my_id" edge to the Local entity by ID if the given value is not nil.
 func (uuo *UserUpdateOne) SetNillableMyIDID(id *uint64) *UserUpdateOne {
 	if id != nil {
 		uuo = uuo.SetMyIDID(*id)
@@ -495,9 +495,9 @@ func (uuo *UserUpdateOne) SetNillableMyIDID(id *uint64) *UserUpdateOne {
 	return uuo
 }
 
-// SetMyID sets the "my_id" edge to the MyID entity.
-func (uuo *UserUpdateOne) SetMyID(m *MyID) *UserUpdateOne {
-	return uuo.SetMyIDID(m.ID)
+// SetMyID sets the "my_id" edge to the Local entity.
+func (uuo *UserUpdateOne) SetMyID(l *Local) *UserUpdateOne {
+	return uuo.SetMyIDID(l.ID)
 }
 
 // SetGoogleID sets the "google" edge to the Google entity by ID.
@@ -529,7 +529,7 @@ func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
 }
 
-// ClearMyID clears the "my_id" edge to the MyID entity.
+// ClearMyID clears the "my_id" edge to the Local entity.
 func (uuo *UserUpdateOne) ClearMyID() *UserUpdateOne {
 	uuo.mutation.ClearMyID()
 	return uuo
@@ -671,7 +671,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Columns: []string{user.MyIDColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(myid.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(local.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -684,7 +684,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Columns: []string{user.MyIDColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(myid.FieldID, field.TypeUint64),
+				IDSpec: sqlgraph.NewFieldSpec(local.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

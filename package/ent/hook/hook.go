@@ -32,16 +32,16 @@ func (f GoogleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, erro
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GoogleMutation", m)
 }
 
-// The MyIDFunc type is an adapter to allow the use of ordinary
-// function as MyID mutator.
-type MyIDFunc func(context.Context, *ent.MyIDMutation) (ent.Value, error)
+// The LocalFunc type is an adapter to allow the use of ordinary
+// function as Local mutator.
+type LocalFunc func(context.Context, *ent.LocalMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f MyIDFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.MyIDMutation); ok {
+func (f LocalFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.LocalMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MyIDMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.LocalMutation", m)
 }
 
 // The PermissionFunc type is an adapter to allow the use of ordinary

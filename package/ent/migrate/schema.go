@@ -52,8 +52,8 @@ var (
 			},
 		},
 	}
-	// MyIdsColumns holds the columns for the "my_ids" table.
-	MyIdsColumns = []*schema.Column{
+	// LocalsColumns holds the columns for the "locals" table.
+	LocalsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
@@ -62,24 +62,24 @@ var (
 		{Name: "password", Type: field.TypeString, Nullable: true},
 		{Name: "user_id", Type: field.TypeUint64, Unique: true},
 	}
-	// MyIdsTable holds the schema information for the "my_ids" table.
-	MyIdsTable = &schema.Table{
-		Name:       "my_ids",
-		Columns:    MyIdsColumns,
-		PrimaryKey: []*schema.Column{MyIdsColumns[0]},
+	// LocalsTable holds the schema information for the "locals" table.
+	LocalsTable = &schema.Table{
+		Name:       "locals",
+		Columns:    LocalsColumns,
+		PrimaryKey: []*schema.Column{LocalsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "my_ids_users_my_id",
-				Columns:    []*schema.Column{MyIdsColumns[6]},
+				Symbol:     "locals_users_my_id",
+				Columns:    []*schema.Column{LocalsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "myid_tenant_id_username",
+				Name:    "local_tenant_id_username",
 				Unique:  true,
-				Columns: []*schema.Column{MyIdsColumns[3], MyIdsColumns[4]},
+				Columns: []*schema.Column{LocalsColumns[3], LocalsColumns[4]},
 			},
 		},
 	}
@@ -166,7 +166,7 @@ var (
 	Tables = []*schema.Table{
 		ActionsTable,
 		GooglesTable,
-		MyIdsTable,
+		LocalsTable,
 		PermissionsTable,
 		RolesTable,
 		UsersTable,
@@ -175,7 +175,7 @@ var (
 
 func init() {
 	GooglesTable.ForeignKeys[0].RefTable = UsersTable
-	MyIdsTable.ForeignKeys[0].RefTable = UsersTable
+	LocalsTable.ForeignKeys[0].RefTable = UsersTable
 	PermissionsTable.ForeignKeys[0].RefTable = ActionsTable
 	PermissionsTable.ForeignKeys[1].RefTable = RolesTable
 	UsersTable.ForeignKeys[0].RefTable = RolesTable

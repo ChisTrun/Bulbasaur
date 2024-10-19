@@ -20,16 +20,87 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type TokenInfo struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	UserId      int64  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	RefeshToken string `protobuf:"bytes,2,opt,name=refesh_token,json=refeshToken,proto3" json:"refesh_token,omitempty"`
+	AccessToken string `protobuf:"bytes,3,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+}
+
+func (x *TokenInfo) Reset() {
+	*x = TokenInfo{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_bulbasaur_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TokenInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TokenInfo) ProtoMessage() {}
+
+func (x *TokenInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_api_bulbasaur_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TokenInfo.ProtoReflect.Descriptor instead.
+func (*TokenInfo) Descriptor() ([]byte, []int) {
+	return file_api_bulbasaur_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *TokenInfo) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *TokenInfo) GetRefeshToken() string {
+	if x != nil {
+		return x.RefeshToken
+	}
+	return ""
+}
+
+func (x *TokenInfo) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
 type SignUpRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to Credential:
+	//
+	//	*SignUpRequest_Local_
+	//	*SignUpRequest_Goole
+	Credential isSignUpRequest_Credential `protobuf_oneof:"credential"`
+	DeviceId   *string                    `protobuf:"bytes,3,opt,name=device_id,json=deviceId,proto3,oneof" json:"device_id,omitempty"`
+	DeviceName *string                    `protobuf:"bytes,4,opt,name=device_name,json=deviceName,proto3,oneof" json:"device_name,omitempty"`
 }
 
 func (x *SignUpRequest) Reset() {
 	*x = SignUpRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_bulbasaur_proto_msgTypes[0]
+		mi := &file_api_bulbasaur_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -42,7 +113,7 @@ func (x *SignUpRequest) String() string {
 func (*SignUpRequest) ProtoMessage() {}
 
 func (x *SignUpRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_bulbasaur_proto_msgTypes[0]
+	mi := &file_api_bulbasaur_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55,19 +126,72 @@ func (x *SignUpRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SignUpRequest.ProtoReflect.Descriptor instead.
 func (*SignUpRequest) Descriptor() ([]byte, []int) {
-	return file_api_bulbasaur_proto_rawDescGZIP(), []int{0}
+	return file_api_bulbasaur_proto_rawDescGZIP(), []int{1}
 }
+
+func (m *SignUpRequest) GetCredential() isSignUpRequest_Credential {
+	if m != nil {
+		return m.Credential
+	}
+	return nil
+}
+
+func (x *SignUpRequest) GetLocal() *SignUpRequest_Local {
+	if x, ok := x.GetCredential().(*SignUpRequest_Local_); ok {
+		return x.Local
+	}
+	return nil
+}
+
+func (x *SignUpRequest) GetGoole() *SignUpRequest_Google {
+	if x, ok := x.GetCredential().(*SignUpRequest_Goole); ok {
+		return x.Goole
+	}
+	return nil
+}
+
+func (x *SignUpRequest) GetDeviceId() string {
+	if x != nil && x.DeviceId != nil {
+		return *x.DeviceId
+	}
+	return ""
+}
+
+func (x *SignUpRequest) GetDeviceName() string {
+	if x != nil && x.DeviceName != nil {
+		return *x.DeviceName
+	}
+	return ""
+}
+
+type isSignUpRequest_Credential interface {
+	isSignUpRequest_Credential()
+}
+
+type SignUpRequest_Local_ struct {
+	Local *SignUpRequest_Local `protobuf:"bytes,1,opt,name=local,proto3,oneof"`
+}
+
+type SignUpRequest_Goole struct {
+	Goole *SignUpRequest_Google `protobuf:"bytes,2,opt,name=goole,proto3,oneof"`
+}
+
+func (*SignUpRequest_Local_) isSignUpRequest_Credential() {}
+
+func (*SignUpRequest_Goole) isSignUpRequest_Credential() {}
 
 type SignUpResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	TokenInfo *TokenInfo `protobuf:"bytes,1,opt,name=token_info,json=tokenInfo,proto3" json:"token_info,omitempty"`
 }
 
 func (x *SignUpResponse) Reset() {
 	*x = SignUpResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_bulbasaur_proto_msgTypes[1]
+		mi := &file_api_bulbasaur_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -80,7 +204,7 @@ func (x *SignUpResponse) String() string {
 func (*SignUpResponse) ProtoMessage() {}
 
 func (x *SignUpResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_bulbasaur_proto_msgTypes[1]
+	mi := &file_api_bulbasaur_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -93,19 +217,34 @@ func (x *SignUpResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SignUpResponse.ProtoReflect.Descriptor instead.
 func (*SignUpResponse) Descriptor() ([]byte, []int) {
-	return file_api_bulbasaur_proto_rawDescGZIP(), []int{1}
+	return file_api_bulbasaur_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *SignUpResponse) GetTokenInfo() *TokenInfo {
+	if x != nil {
+		return x.TokenInfo
+	}
+	return nil
 }
 
 type SignInRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to Credential:
+	//
+	//	*SignInRequest_Local_
+	//	*SignInRequest_Goole
+	Credential isSignInRequest_Credential `protobuf_oneof:"credential"`
+	DeviceId   *string                    `protobuf:"bytes,3,opt,name=device_id,json=deviceId,proto3,oneof" json:"device_id,omitempty"`
+	DeviceName *string                    `protobuf:"bytes,4,opt,name=device_name,json=deviceName,proto3,oneof" json:"device_name,omitempty"`
 }
 
 func (x *SignInRequest) Reset() {
 	*x = SignInRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_bulbasaur_proto_msgTypes[2]
+		mi := &file_api_bulbasaur_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -118,7 +257,7 @@ func (x *SignInRequest) String() string {
 func (*SignInRequest) ProtoMessage() {}
 
 func (x *SignInRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_bulbasaur_proto_msgTypes[2]
+	mi := &file_api_bulbasaur_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -131,19 +270,73 @@ func (x *SignInRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SignInRequest.ProtoReflect.Descriptor instead.
 func (*SignInRequest) Descriptor() ([]byte, []int) {
-	return file_api_bulbasaur_proto_rawDescGZIP(), []int{2}
+	return file_api_bulbasaur_proto_rawDescGZIP(), []int{3}
 }
+
+func (m *SignInRequest) GetCredential() isSignInRequest_Credential {
+	if m != nil {
+		return m.Credential
+	}
+	return nil
+}
+
+func (x *SignInRequest) GetLocal() *SignInRequest_Local {
+	if x, ok := x.GetCredential().(*SignInRequest_Local_); ok {
+		return x.Local
+	}
+	return nil
+}
+
+func (x *SignInRequest) GetGoole() *SignInRequest_Google {
+	if x, ok := x.GetCredential().(*SignInRequest_Goole); ok {
+		return x.Goole
+	}
+	return nil
+}
+
+func (x *SignInRequest) GetDeviceId() string {
+	if x != nil && x.DeviceId != nil {
+		return *x.DeviceId
+	}
+	return ""
+}
+
+func (x *SignInRequest) GetDeviceName() string {
+	if x != nil && x.DeviceName != nil {
+		return *x.DeviceName
+	}
+	return ""
+}
+
+type isSignInRequest_Credential interface {
+	isSignInRequest_Credential()
+}
+
+type SignInRequest_Local_ struct {
+	// option (validate.required) = true;
+	Local *SignInRequest_Local `protobuf:"bytes,1,opt,name=local,proto3,oneof"`
+}
+
+type SignInRequest_Goole struct {
+	Goole *SignInRequest_Google `protobuf:"bytes,2,opt,name=goole,proto3,oneof"`
+}
+
+func (*SignInRequest_Local_) isSignInRequest_Credential() {}
+
+func (*SignInRequest_Goole) isSignInRequest_Credential() {}
 
 type SignInResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	TokenInfo *TokenInfo `protobuf:"bytes,1,opt,name=token_info,json=tokenInfo,proto3" json:"token_info,omitempty"`
 }
 
 func (x *SignInResponse) Reset() {
 	*x = SignInResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_bulbasaur_proto_msgTypes[3]
+		mi := &file_api_bulbasaur_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -156,7 +349,7 @@ func (x *SignInResponse) String() string {
 func (*SignInResponse) ProtoMessage() {}
 
 func (x *SignInResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_bulbasaur_proto_msgTypes[3]
+	mi := &file_api_bulbasaur_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -169,7 +362,322 @@ func (x *SignInResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SignInResponse.ProtoReflect.Descriptor instead.
 func (*SignInResponse) Descriptor() ([]byte, []int) {
-	return file_api_bulbasaur_proto_rawDescGZIP(), []int{3}
+	return file_api_bulbasaur_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *SignInResponse) GetTokenInfo() *TokenInfo {
+	if x != nil {
+		return x.TokenInfo
+	}
+	return nil
+}
+
+type RefeshTokenRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	TokenInfo *TokenInfo `protobuf:"bytes,1,opt,name=token_info,json=tokenInfo,proto3" json:"token_info,omitempty"`
+}
+
+func (x *RefeshTokenRequest) Reset() {
+	*x = RefeshTokenRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_bulbasaur_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RefeshTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RefeshTokenRequest) ProtoMessage() {}
+
+func (x *RefeshTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_bulbasaur_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RefeshTokenRequest.ProtoReflect.Descriptor instead.
+func (*RefeshTokenRequest) Descriptor() ([]byte, []int) {
+	return file_api_bulbasaur_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *RefeshTokenRequest) GetTokenInfo() *TokenInfo {
+	if x != nil {
+		return x.TokenInfo
+	}
+	return nil
+}
+
+type RefeshTokenResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	TokenInfo *TokenInfo `protobuf:"bytes,1,opt,name=token_info,json=tokenInfo,proto3" json:"token_info,omitempty"`
+}
+
+func (x *RefeshTokenResponse) Reset() {
+	*x = RefeshTokenResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_bulbasaur_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RefeshTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RefeshTokenResponse) ProtoMessage() {}
+
+func (x *RefeshTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_bulbasaur_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RefeshTokenResponse.ProtoReflect.Descriptor instead.
+func (*RefeshTokenResponse) Descriptor() ([]byte, []int) {
+	return file_api_bulbasaur_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *RefeshTokenResponse) GetTokenInfo() *TokenInfo {
+	if x != nil {
+		return x.TokenInfo
+	}
+	return nil
+}
+
+type SignUpRequest_Local struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Username        string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Password        string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	ConfirmPassword string `protobuf:"bytes,3,opt,name=confirm_password,json=confirmPassword,proto3" json:"confirm_password,omitempty"`
+}
+
+func (x *SignUpRequest_Local) Reset() {
+	*x = SignUpRequest_Local{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_bulbasaur_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SignUpRequest_Local) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SignUpRequest_Local) ProtoMessage() {}
+
+func (x *SignUpRequest_Local) ProtoReflect() protoreflect.Message {
+	mi := &file_api_bulbasaur_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SignUpRequest_Local.ProtoReflect.Descriptor instead.
+func (*SignUpRequest_Local) Descriptor() ([]byte, []int) {
+	return file_api_bulbasaur_proto_rawDescGZIP(), []int{1, 0}
+}
+
+func (x *SignUpRequest_Local) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *SignUpRequest_Local) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+func (x *SignUpRequest_Local) GetConfirmPassword() string {
+	if x != nil {
+		return x.ConfirmPassword
+	}
+	return ""
+}
+
+type SignUpRequest_Google struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// https://developers.google.com/identity/gsi/web/reference/js-reference#credential
+	Credential string `protobuf:"bytes,1,opt,name=credential,proto3" json:"credential,omitempty"`
+}
+
+func (x *SignUpRequest_Google) Reset() {
+	*x = SignUpRequest_Google{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_bulbasaur_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SignUpRequest_Google) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SignUpRequest_Google) ProtoMessage() {}
+
+func (x *SignUpRequest_Google) ProtoReflect() protoreflect.Message {
+	mi := &file_api_bulbasaur_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SignUpRequest_Google.ProtoReflect.Descriptor instead.
+func (*SignUpRequest_Google) Descriptor() ([]byte, []int) {
+	return file_api_bulbasaur_proto_rawDescGZIP(), []int{1, 1}
+}
+
+func (x *SignUpRequest_Google) GetCredential() string {
+	if x != nil {
+		return x.Credential
+	}
+	return ""
+}
+
+type SignInRequest_Local struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+}
+
+func (x *SignInRequest_Local) Reset() {
+	*x = SignInRequest_Local{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_bulbasaur_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SignInRequest_Local) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SignInRequest_Local) ProtoMessage() {}
+
+func (x *SignInRequest_Local) ProtoReflect() protoreflect.Message {
+	mi := &file_api_bulbasaur_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SignInRequest_Local.ProtoReflect.Descriptor instead.
+func (*SignInRequest_Local) Descriptor() ([]byte, []int) {
+	return file_api_bulbasaur_proto_rawDescGZIP(), []int{3, 0}
+}
+
+func (x *SignInRequest_Local) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *SignInRequest_Local) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+type SignInRequest_Google struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// https://developers.google.com/identity/gsi/web/reference/js-reference#credential
+	Credential string `protobuf:"bytes,1,opt,name=credential,proto3" json:"credential,omitempty"`
+}
+
+func (x *SignInRequest_Google) Reset() {
+	*x = SignInRequest_Google{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_bulbasaur_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SignInRequest_Google) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SignInRequest_Google) ProtoMessage() {}
+
+func (x *SignInRequest_Google) ProtoReflect() protoreflect.Message {
+	mi := &file_api_bulbasaur_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SignInRequest_Google.ProtoReflect.Descriptor instead.
+func (*SignInRequest_Google) Descriptor() ([]byte, []int) {
+	return file_api_bulbasaur_proto_rawDescGZIP(), []int{3, 1}
+}
+
+func (x *SignInRequest_Google) GetCredential() string {
+	if x != nil {
+		return x.Credential
+	}
+	return ""
 }
 
 var File_api_bulbasaur_proto protoreflect.FileDescriptor
@@ -177,22 +685,95 @@ var File_api_bulbasaur_proto protoreflect.FileDescriptor
 var file_api_bulbasaur_proto_rawDesc = []byte{
 	0x0a, 0x13, 0x61, 0x70, 0x69, 0x2f, 0x62, 0x75, 0x6c, 0x62, 0x61, 0x73, 0x61, 0x75, 0x72, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0a, 0x67, 0x6f, 0x5f, 0x70, 0x61, 0x74, 0x74, 0x65, 0x72,
-	0x6e, 0x22, 0x0f, 0x0a, 0x0d, 0x53, 0x69, 0x67, 0x6e, 0x55, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x22, 0x10, 0x0a, 0x0e, 0x53, 0x69, 0x67, 0x6e, 0x55, 0x70, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x0f, 0x0a, 0x0d, 0x53, 0x69, 0x67, 0x6e, 0x49, 0x6e, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x10, 0x0a, 0x0e, 0x53, 0x69, 0x67, 0x6e, 0x49, 0x6e, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0x8d, 0x01, 0x0a, 0x09, 0x42, 0x75, 0x6c, 0x62,
-	0x61, 0x73, 0x61, 0x75, 0x72, 0x12, 0x3f, 0x0a, 0x06, 0x53, 0x69, 0x67, 0x6e, 0x55, 0x70, 0x12,
-	0x19, 0x2e, 0x67, 0x6f, 0x5f, 0x70, 0x61, 0x74, 0x74, 0x65, 0x72, 0x6e, 0x2e, 0x53, 0x69, 0x67,
-	0x6e, 0x55, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1a, 0x2e, 0x67, 0x6f, 0x5f,
-	0x70, 0x61, 0x74, 0x74, 0x65, 0x72, 0x6e, 0x2e, 0x53, 0x69, 0x67, 0x6e, 0x55, 0x70, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3f, 0x0a, 0x06, 0x53, 0x69, 0x67, 0x6e, 0x49, 0x6e,
-	0x12, 0x19, 0x2e, 0x67, 0x6f, 0x5f, 0x70, 0x61, 0x74, 0x74, 0x65, 0x72, 0x6e, 0x2e, 0x53, 0x69,
-	0x67, 0x6e, 0x49, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1a, 0x2e, 0x67, 0x6f,
-	0x5f, 0x70, 0x61, 0x74, 0x74, 0x65, 0x72, 0x6e, 0x2e, 0x53, 0x69, 0x67, 0x6e, 0x49, 0x6e, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x1b, 0x5a, 0x19, 0x67, 0x6f, 0x5f, 0x70, 0x61,
-	0x74, 0x74, 0x65, 0x72, 0x6e, 0x2f, 0x61, 0x70, 0x69, 0x3b, 0x67, 0x6f, 0x5f, 0x70, 0x61, 0x74,
-	0x74, 0x65, 0x72, 0x6e,
+	0x6e, 0x22, 0x6a, 0x0a, 0x09, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x17,
+	0x0a, 0x07, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52,
+	0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x64, 0x12, 0x21, 0x0a, 0x0c, 0x72, 0x65, 0x66, 0x65, 0x73,
+	0x68, 0x5f, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x72,
+	0x65, 0x66, 0x65, 0x73, 0x68, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x21, 0x0a, 0x0c, 0x61, 0x63,
+	0x63, 0x65, 0x73, 0x73, 0x5f, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0b, 0x61, 0x63, 0x63, 0x65, 0x73, 0x73, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x8c, 0x03,
+	0x0a, 0x0d, 0x53, 0x69, 0x67, 0x6e, 0x55, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
+	0x37, 0x0a, 0x05, 0x6c, 0x6f, 0x63, 0x61, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1f,
+	0x2e, 0x67, 0x6f, 0x5f, 0x70, 0x61, 0x74, 0x74, 0x65, 0x72, 0x6e, 0x2e, 0x53, 0x69, 0x67, 0x6e,
+	0x55, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x4c, 0x6f, 0x63, 0x61, 0x6c, 0x48,
+	0x00, 0x52, 0x05, 0x6c, 0x6f, 0x63, 0x61, 0x6c, 0x12, 0x38, 0x0a, 0x05, 0x67, 0x6f, 0x6f, 0x6c,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x67, 0x6f, 0x5f, 0x70, 0x61, 0x74,
+	0x74, 0x65, 0x72, 0x6e, 0x2e, 0x53, 0x69, 0x67, 0x6e, 0x55, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x2e, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x48, 0x00, 0x52, 0x05, 0x67, 0x6f, 0x6f,
+	0x6c, 0x65, 0x12, 0x20, 0x0a, 0x09, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x69, 0x64, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x09, 0x48, 0x01, 0x52, 0x08, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x49,
+	0x64, 0x88, 0x01, 0x01, 0x12, 0x24, 0x0a, 0x0b, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x6e,
+	0x61, 0x6d, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x48, 0x02, 0x52, 0x0a, 0x64, 0x65, 0x76,
+	0x69, 0x63, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x88, 0x01, 0x01, 0x1a, 0x6a, 0x0a, 0x05, 0x4c, 0x6f,
+	0x63, 0x61, 0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x12,
+	0x1a, 0x0a, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x12, 0x29, 0x0a, 0x10, 0x63,
+	0x6f, 0x6e, 0x66, 0x69, 0x72, 0x6d, 0x5f, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x72, 0x6d, 0x50, 0x61,
+	0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x1a, 0x28, 0x0a, 0x06, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x12, 0x1e, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c,
+	0x42, 0x0c, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x42, 0x0c,
+	0x0a, 0x0a, 0x5f, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x69, 0x64, 0x42, 0x0e, 0x0a, 0x0c,
+	0x5f, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x46, 0x0a, 0x0e,
+	0x53, 0x69, 0x67, 0x6e, 0x55, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x34,
+	0x0a, 0x0a, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x15, 0x2e, 0x67, 0x6f, 0x5f, 0x70, 0x61, 0x74, 0x74, 0x65, 0x72, 0x6e, 0x2e,
+	0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x09, 0x74, 0x6f, 0x6b, 0x65, 0x6e,
+	0x49, 0x6e, 0x66, 0x6f, 0x22, 0xe1, 0x02, 0x0a, 0x0d, 0x53, 0x69, 0x67, 0x6e, 0x49, 0x6e, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x37, 0x0a, 0x05, 0x6c, 0x6f, 0x63, 0x61, 0x6c, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x67, 0x6f, 0x5f, 0x70, 0x61, 0x74, 0x74, 0x65,
+	0x72, 0x6e, 0x2e, 0x53, 0x69, 0x67, 0x6e, 0x49, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x2e, 0x4c, 0x6f, 0x63, 0x61, 0x6c, 0x48, 0x00, 0x52, 0x05, 0x6c, 0x6f, 0x63, 0x61, 0x6c, 0x12,
+	0x38, 0x0a, 0x05, 0x67, 0x6f, 0x6f, 0x6c, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20,
+	0x2e, 0x67, 0x6f, 0x5f, 0x70, 0x61, 0x74, 0x74, 0x65, 0x72, 0x6e, 0x2e, 0x53, 0x69, 0x67, 0x6e,
+	0x49, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x48, 0x00, 0x52, 0x05, 0x67, 0x6f, 0x6f, 0x6c, 0x65, 0x12, 0x20, 0x0a, 0x09, 0x64, 0x65, 0x76,
+	0x69, 0x63, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x48, 0x01, 0x52, 0x08,
+	0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x49, 0x64, 0x88, 0x01, 0x01, 0x12, 0x24, 0x0a, 0x0b, 0x64,
+	0x65, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09,
+	0x48, 0x02, 0x52, 0x0a, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x88, 0x01,
+	0x01, 0x1a, 0x3f, 0x0a, 0x05, 0x4c, 0x6f, 0x63, 0x61, 0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73,
+	0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73,
+	0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f,
+	0x72, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f,
+	0x72, 0x64, 0x1a, 0x28, 0x0a, 0x06, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x12, 0x1e, 0x0a, 0x0a,
+	0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0a, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x42, 0x0c, 0x0a, 0x0a,
+	0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x42, 0x0c, 0x0a, 0x0a, 0x5f, 0x64,
+	0x65, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x69, 0x64, 0x42, 0x0e, 0x0a, 0x0c, 0x5f, 0x64, 0x65, 0x76,
+	0x69, 0x63, 0x65, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x46, 0x0a, 0x0e, 0x53, 0x69, 0x67, 0x6e,
+	0x49, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x34, 0x0a, 0x0a, 0x74, 0x6f,
+	0x6b, 0x65, 0x6e, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15,
+	0x2e, 0x67, 0x6f, 0x5f, 0x70, 0x61, 0x74, 0x74, 0x65, 0x72, 0x6e, 0x2e, 0x54, 0x6f, 0x6b, 0x65,
+	0x6e, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x09, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x49, 0x6e, 0x66, 0x6f,
+	0x22, 0x4a, 0x0a, 0x12, 0x52, 0x65, 0x66, 0x65, 0x73, 0x68, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x34, 0x0a, 0x0a, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x5f,
+	0x69, 0x6e, 0x66, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x67, 0x6f, 0x5f,
+	0x70, 0x61, 0x74, 0x74, 0x65, 0x72, 0x6e, 0x2e, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x49, 0x6e, 0x66,
+	0x6f, 0x52, 0x09, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x49, 0x6e, 0x66, 0x6f, 0x22, 0x4b, 0x0a, 0x13,
+	0x52, 0x65, 0x66, 0x65, 0x73, 0x68, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x34, 0x0a, 0x0a, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x5f, 0x69, 0x6e, 0x66,
+	0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x67, 0x6f, 0x5f, 0x70, 0x61, 0x74,
+	0x74, 0x65, 0x72, 0x6e, 0x2e, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x09,
+	0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x49, 0x6e, 0x66, 0x6f, 0x32, 0xdd, 0x01, 0x0a, 0x09, 0x42, 0x75,
+	0x6c, 0x62, 0x61, 0x73, 0x61, 0x75, 0x72, 0x12, 0x3f, 0x0a, 0x06, 0x53, 0x69, 0x67, 0x6e, 0x55,
+	0x70, 0x12, 0x19, 0x2e, 0x67, 0x6f, 0x5f, 0x70, 0x61, 0x74, 0x74, 0x65, 0x72, 0x6e, 0x2e, 0x53,
+	0x69, 0x67, 0x6e, 0x55, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1a, 0x2e, 0x67,
+	0x6f, 0x5f, 0x70, 0x61, 0x74, 0x74, 0x65, 0x72, 0x6e, 0x2e, 0x53, 0x69, 0x67, 0x6e, 0x55, 0x70,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3f, 0x0a, 0x06, 0x53, 0x69, 0x67, 0x6e,
+	0x49, 0x6e, 0x12, 0x19, 0x2e, 0x67, 0x6f, 0x5f, 0x70, 0x61, 0x74, 0x74, 0x65, 0x72, 0x6e, 0x2e,
+	0x53, 0x69, 0x67, 0x6e, 0x49, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1a, 0x2e,
+	0x67, 0x6f, 0x5f, 0x70, 0x61, 0x74, 0x74, 0x65, 0x72, 0x6e, 0x2e, 0x53, 0x69, 0x67, 0x6e, 0x49,
+	0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4e, 0x0a, 0x0b, 0x52, 0x65, 0x66,
+	0x65, 0x73, 0x68, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x1e, 0x2e, 0x67, 0x6f, 0x5f, 0x70, 0x61,
+	0x74, 0x74, 0x65, 0x72, 0x6e, 0x2e, 0x52, 0x65, 0x66, 0x65, 0x73, 0x68, 0x54, 0x6f, 0x6b, 0x65,
+	0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x67, 0x6f, 0x5f, 0x70, 0x61,
+	0x74, 0x74, 0x65, 0x72, 0x6e, 0x2e, 0x52, 0x65, 0x66, 0x65, 0x73, 0x68, 0x54, 0x6f, 0x6b, 0x65,
+	0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x1b, 0x5a, 0x19, 0x67, 0x6f, 0x5f,
+	0x70, 0x61, 0x74, 0x74, 0x65, 0x72, 0x6e, 0x2f, 0x61, 0x70, 0x69, 0x3b, 0x67, 0x6f, 0x5f, 0x70,
+	0x61, 0x74, 0x74, 0x65, 0x72, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -207,23 +788,40 @@ func file_api_bulbasaur_proto_rawDescGZIP() []byte {
 	return file_api_bulbasaur_proto_rawDescData
 }
 
-var file_api_bulbasaur_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_api_bulbasaur_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_api_bulbasaur_proto_goTypes = []interface{}{
-	(*SignUpRequest)(nil),  // 0: go_pattern.SignUpRequest
-	(*SignUpResponse)(nil), // 1: go_pattern.SignUpResponse
-	(*SignInRequest)(nil),  // 2: go_pattern.SignInRequest
-	(*SignInResponse)(nil), // 3: go_pattern.SignInResponse
+	(*TokenInfo)(nil),            // 0: go_pattern.TokenInfo
+	(*SignUpRequest)(nil),        // 1: go_pattern.SignUpRequest
+	(*SignUpResponse)(nil),       // 2: go_pattern.SignUpResponse
+	(*SignInRequest)(nil),        // 3: go_pattern.SignInRequest
+	(*SignInResponse)(nil),       // 4: go_pattern.SignInResponse
+	(*RefeshTokenRequest)(nil),   // 5: go_pattern.RefeshTokenRequest
+	(*RefeshTokenResponse)(nil),  // 6: go_pattern.RefeshTokenResponse
+	(*SignUpRequest_Local)(nil),  // 7: go_pattern.SignUpRequest.Local
+	(*SignUpRequest_Google)(nil), // 8: go_pattern.SignUpRequest.Google
+	(*SignInRequest_Local)(nil),  // 9: go_pattern.SignInRequest.Local
+	(*SignInRequest_Google)(nil), // 10: go_pattern.SignInRequest.Google
 }
 var file_api_bulbasaur_proto_depIdxs = []int32{
-	0, // 0: go_pattern.Bulbasaur.SignUp:input_type -> go_pattern.SignUpRequest
-	2, // 1: go_pattern.Bulbasaur.SignIn:input_type -> go_pattern.SignInRequest
-	1, // 2: go_pattern.Bulbasaur.SignUp:output_type -> go_pattern.SignUpResponse
-	3, // 3: go_pattern.Bulbasaur.SignIn:output_type -> go_pattern.SignInResponse
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	7,  // 0: go_pattern.SignUpRequest.local:type_name -> go_pattern.SignUpRequest.Local
+	8,  // 1: go_pattern.SignUpRequest.goole:type_name -> go_pattern.SignUpRequest.Google
+	0,  // 2: go_pattern.SignUpResponse.token_info:type_name -> go_pattern.TokenInfo
+	9,  // 3: go_pattern.SignInRequest.local:type_name -> go_pattern.SignInRequest.Local
+	10, // 4: go_pattern.SignInRequest.goole:type_name -> go_pattern.SignInRequest.Google
+	0,  // 5: go_pattern.SignInResponse.token_info:type_name -> go_pattern.TokenInfo
+	0,  // 6: go_pattern.RefeshTokenRequest.token_info:type_name -> go_pattern.TokenInfo
+	0,  // 7: go_pattern.RefeshTokenResponse.token_info:type_name -> go_pattern.TokenInfo
+	1,  // 8: go_pattern.Bulbasaur.SignUp:input_type -> go_pattern.SignUpRequest
+	3,  // 9: go_pattern.Bulbasaur.SignIn:input_type -> go_pattern.SignInRequest
+	5,  // 10: go_pattern.Bulbasaur.RefeshToken:input_type -> go_pattern.RefeshTokenRequest
+	2,  // 11: go_pattern.Bulbasaur.SignUp:output_type -> go_pattern.SignUpResponse
+	4,  // 12: go_pattern.Bulbasaur.SignIn:output_type -> go_pattern.SignInResponse
+	6,  // 13: go_pattern.Bulbasaur.RefeshToken:output_type -> go_pattern.RefeshTokenResponse
+	11, // [11:14] is the sub-list for method output_type
+	8,  // [8:11] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_api_bulbasaur_proto_init() }
@@ -233,7 +831,7 @@ func file_api_bulbasaur_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_api_bulbasaur_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SignUpRequest); i {
+			switch v := v.(*TokenInfo); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -245,7 +843,7 @@ func file_api_bulbasaur_proto_init() {
 			}
 		}
 		file_api_bulbasaur_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SignUpResponse); i {
+			switch v := v.(*SignUpRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -257,7 +855,7 @@ func file_api_bulbasaur_proto_init() {
 			}
 		}
 		file_api_bulbasaur_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SignInRequest); i {
+			switch v := v.(*SignUpResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -269,6 +867,18 @@ func file_api_bulbasaur_proto_init() {
 			}
 		}
 		file_api_bulbasaur_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SignInRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_bulbasaur_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*SignInResponse); i {
 			case 0:
 				return &v.state
@@ -280,6 +890,86 @@ func file_api_bulbasaur_proto_init() {
 				return nil
 			}
 		}
+		file_api_bulbasaur_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RefeshTokenRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_bulbasaur_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RefeshTokenResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_bulbasaur_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SignUpRequest_Local); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_bulbasaur_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SignUpRequest_Google); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_bulbasaur_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SignInRequest_Local); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_bulbasaur_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SignInRequest_Google); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+	}
+	file_api_bulbasaur_proto_msgTypes[1].OneofWrappers = []interface{}{
+		(*SignUpRequest_Local_)(nil),
+		(*SignUpRequest_Goole)(nil),
+	}
+	file_api_bulbasaur_proto_msgTypes[3].OneofWrappers = []interface{}{
+		(*SignInRequest_Local_)(nil),
+		(*SignInRequest_Goole)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -287,7 +977,7 @@ func file_api_bulbasaur_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_api_bulbasaur_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

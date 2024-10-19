@@ -13,7 +13,7 @@ import (
 
 	"bulbasaur/package/ent/action"
 	"bulbasaur/package/ent/google"
-	"bulbasaur/package/ent/myid"
+	"bulbasaur/package/ent/local"
 	"bulbasaur/package/ent/permission"
 	"bulbasaur/package/ent/role"
 	"bulbasaur/package/ent/user"
@@ -35,8 +35,8 @@ type Client struct {
 	Action *ActionClient
 	// Google is the client for interacting with the Google builders.
 	Google *GoogleClient
-	// MyID is the client for interacting with the MyID builders.
-	MyID *MyIDClient
+	// Local is the client for interacting with the Local builders.
+	Local *LocalClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
 	// Role is the client for interacting with the Role builders.
@@ -56,7 +56,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Action = NewActionClient(c.config)
 	c.Google = NewGoogleClient(c.config)
-	c.MyID = NewMyIDClient(c.config)
+	c.Local = NewLocalClient(c.config)
 	c.Permission = NewPermissionClient(c.config)
 	c.Role = NewRoleClient(c.config)
 	c.User = NewUserClient(c.config)
@@ -154,7 +154,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		config:     cfg,
 		Action:     NewActionClient(cfg),
 		Google:     NewGoogleClient(cfg),
-		MyID:       NewMyIDClient(cfg),
+		Local:      NewLocalClient(cfg),
 		Permission: NewPermissionClient(cfg),
 		Role:       NewRoleClient(cfg),
 		User:       NewUserClient(cfg),
@@ -179,7 +179,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		config:     cfg,
 		Action:     NewActionClient(cfg),
 		Google:     NewGoogleClient(cfg),
-		MyID:       NewMyIDClient(cfg),
+		Local:      NewLocalClient(cfg),
 		Permission: NewPermissionClient(cfg),
 		Role:       NewRoleClient(cfg),
 		User:       NewUserClient(cfg),
@@ -212,7 +212,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Action, c.Google, c.MyID, c.Permission, c.Role, c.User,
+		c.Action, c.Google, c.Local, c.Permission, c.Role, c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -222,7 +222,7 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Action, c.Google, c.MyID, c.Permission, c.Role, c.User,
+		c.Action, c.Google, c.Local, c.Permission, c.Role, c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -235,8 +235,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Action.mutate(ctx, m)
 	case *GoogleMutation:
 		return c.Google.mutate(ctx, m)
-	case *MyIDMutation:
-		return c.MyID.mutate(ctx, m)
+	case *LocalMutation:
+		return c.Local.mutate(ctx, m)
 	case *PermissionMutation:
 		return c.Permission.mutate(ctx, m)
 	case *RoleMutation:
@@ -546,107 +546,107 @@ func (c *GoogleClient) mutate(ctx context.Context, m *GoogleMutation) (Value, er
 	}
 }
 
-// MyIDClient is a client for the MyID schema.
-type MyIDClient struct {
+// LocalClient is a client for the Local schema.
+type LocalClient struct {
 	config
 }
 
-// NewMyIDClient returns a client for the MyID from the given config.
-func NewMyIDClient(c config) *MyIDClient {
-	return &MyIDClient{config: c}
+// NewLocalClient returns a client for the Local from the given config.
+func NewLocalClient(c config) *LocalClient {
+	return &LocalClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `myid.Hooks(f(g(h())))`.
-func (c *MyIDClient) Use(hooks ...Hook) {
-	c.hooks.MyID = append(c.hooks.MyID, hooks...)
+// A call to `Use(f, g, h)` equals to `local.Hooks(f(g(h())))`.
+func (c *LocalClient) Use(hooks ...Hook) {
+	c.hooks.Local = append(c.hooks.Local, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `myid.Intercept(f(g(h())))`.
-func (c *MyIDClient) Intercept(interceptors ...Interceptor) {
-	c.inters.MyID = append(c.inters.MyID, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `local.Intercept(f(g(h())))`.
+func (c *LocalClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Local = append(c.inters.Local, interceptors...)
 }
 
-// Create returns a builder for creating a MyID entity.
-func (c *MyIDClient) Create() *MyIDCreate {
-	mutation := newMyIDMutation(c.config, OpCreate)
-	return &MyIDCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a Local entity.
+func (c *LocalClient) Create() *LocalCreate {
+	mutation := newLocalMutation(c.config, OpCreate)
+	return &LocalCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of MyID entities.
-func (c *MyIDClient) CreateBulk(builders ...*MyIDCreate) *MyIDCreateBulk {
-	return &MyIDCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of Local entities.
+func (c *LocalClient) CreateBulk(builders ...*LocalCreate) *LocalCreateBulk {
+	return &LocalCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *MyIDClient) MapCreateBulk(slice any, setFunc func(*MyIDCreate, int)) *MyIDCreateBulk {
+func (c *LocalClient) MapCreateBulk(slice any, setFunc func(*LocalCreate, int)) *LocalCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &MyIDCreateBulk{err: fmt.Errorf("calling to MyIDClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &LocalCreateBulk{err: fmt.Errorf("calling to LocalClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*MyIDCreate, rv.Len())
+	builders := make([]*LocalCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &MyIDCreateBulk{config: c.config, builders: builders}
+	return &LocalCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for MyID.
-func (c *MyIDClient) Update() *MyIDUpdate {
-	mutation := newMyIDMutation(c.config, OpUpdate)
-	return &MyIDUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for Local.
+func (c *LocalClient) Update() *LocalUpdate {
+	mutation := newLocalMutation(c.config, OpUpdate)
+	return &LocalUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *MyIDClient) UpdateOne(mi *MyID) *MyIDUpdateOne {
-	mutation := newMyIDMutation(c.config, OpUpdateOne, withMyID(mi))
-	return &MyIDUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *LocalClient) UpdateOne(l *Local) *LocalUpdateOne {
+	mutation := newLocalMutation(c.config, OpUpdateOne, withLocal(l))
+	return &LocalUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *MyIDClient) UpdateOneID(id uint64) *MyIDUpdateOne {
-	mutation := newMyIDMutation(c.config, OpUpdateOne, withMyIDID(id))
-	return &MyIDUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *LocalClient) UpdateOneID(id uint64) *LocalUpdateOne {
+	mutation := newLocalMutation(c.config, OpUpdateOne, withLocalID(id))
+	return &LocalUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for MyID.
-func (c *MyIDClient) Delete() *MyIDDelete {
-	mutation := newMyIDMutation(c.config, OpDelete)
-	return &MyIDDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for Local.
+func (c *LocalClient) Delete() *LocalDelete {
+	mutation := newLocalMutation(c.config, OpDelete)
+	return &LocalDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *MyIDClient) DeleteOne(mi *MyID) *MyIDDeleteOne {
-	return c.DeleteOneID(mi.ID)
+func (c *LocalClient) DeleteOne(l *Local) *LocalDeleteOne {
+	return c.DeleteOneID(l.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *MyIDClient) DeleteOneID(id uint64) *MyIDDeleteOne {
-	builder := c.Delete().Where(myid.ID(id))
+func (c *LocalClient) DeleteOneID(id uint64) *LocalDeleteOne {
+	builder := c.Delete().Where(local.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &MyIDDeleteOne{builder}
+	return &LocalDeleteOne{builder}
 }
 
-// Query returns a query builder for MyID.
-func (c *MyIDClient) Query() *MyIDQuery {
-	return &MyIDQuery{
+// Query returns a query builder for Local.
+func (c *LocalClient) Query() *LocalQuery {
+	return &LocalQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeMyID},
+		ctx:    &QueryContext{Type: TypeLocal},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a MyID entity by its id.
-func (c *MyIDClient) Get(ctx context.Context, id uint64) (*MyID, error) {
-	return c.Query().Where(myid.ID(id)).Only(ctx)
+// Get returns a Local entity by its id.
+func (c *LocalClient) Get(ctx context.Context, id uint64) (*Local, error) {
+	return c.Query().Where(local.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *MyIDClient) GetX(ctx context.Context, id uint64) *MyID {
+func (c *LocalClient) GetX(ctx context.Context, id uint64) *Local {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -654,44 +654,44 @@ func (c *MyIDClient) GetX(ctx context.Context, id uint64) *MyID {
 	return obj
 }
 
-// QueryUser queries the user edge of a MyID.
-func (c *MyIDClient) QueryUser(mi *MyID) *UserQuery {
+// QueryUser queries the user edge of a Local.
+func (c *LocalClient) QueryUser(l *Local) *UserQuery {
 	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := mi.ID
+		id := l.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(myid.Table, myid.FieldID, id),
+			sqlgraph.From(local.Table, local.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, myid.UserTable, myid.UserColumn),
+			sqlgraph.Edge(sqlgraph.O2O, true, local.UserTable, local.UserColumn),
 		)
-		fromV = sqlgraph.Neighbors(mi.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(l.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // Hooks returns the client hooks.
-func (c *MyIDClient) Hooks() []Hook {
-	return c.hooks.MyID
+func (c *LocalClient) Hooks() []Hook {
+	return c.hooks.Local
 }
 
 // Interceptors returns the client interceptors.
-func (c *MyIDClient) Interceptors() []Interceptor {
-	return c.inters.MyID
+func (c *LocalClient) Interceptors() []Interceptor {
+	return c.inters.Local
 }
 
-func (c *MyIDClient) mutate(ctx context.Context, m *MyIDMutation) (Value, error) {
+func (c *LocalClient) mutate(ctx context.Context, m *LocalMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&MyIDCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&LocalCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&MyIDUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&LocalUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&MyIDUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&LocalUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&MyIDDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&LocalDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown MyID mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown Local mutation op: %q", m.Op())
 	}
 }
 
@@ -1134,13 +1134,13 @@ func (c *UserClient) GetX(ctx context.Context, id uint64) *User {
 }
 
 // QueryMyID queries the my_id edge of a User.
-func (c *UserClient) QueryMyID(u *User) *MyIDQuery {
-	query := (&MyIDClient{config: c.config}).Query()
+func (c *UserClient) QueryMyID(u *User) *LocalQuery {
+	query := (&LocalClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(myid.Table, myid.FieldID),
+			sqlgraph.To(local.Table, local.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, user.MyIDTable, user.MyIDColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
@@ -1209,10 +1209,10 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Action, Google, MyID, Permission, Role, User []ent.Hook
+		Action, Google, Local, Permission, Role, User []ent.Hook
 	}
 	inters struct {
-		Action, Google, MyID, Permission, Role, User []ent.Interceptor
+		Action, Google, Local, Permission, Role, User []ent.Interceptor
 	}
 )
 

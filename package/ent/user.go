@@ -4,7 +4,7 @@ package ent
 
 import (
 	"bulbasaur/package/ent/google"
-	"bulbasaur/package/ent/myid"
+	"bulbasaur/package/ent/local"
 	"bulbasaur/package/ent/role"
 	"bulbasaur/package/ent/user"
 	"fmt"
@@ -43,7 +43,7 @@ type User struct {
 // UserEdges holds the relations/edges for other nodes in the graph.
 type UserEdges struct {
 	// MyID holds the value of the my_id edge.
-	MyID *MyID `json:"my_id,omitempty"`
+	MyID *Local `json:"my_id,omitempty"`
 	// Google holds the value of the google edge.
 	Google *Google `json:"google,omitempty"`
 	// Role holds the value of the role edge.
@@ -55,11 +55,11 @@ type UserEdges struct {
 
 // MyIDOrErr returns the MyID value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e UserEdges) MyIDOrErr() (*MyID, error) {
+func (e UserEdges) MyIDOrErr() (*Local, error) {
 	if e.MyID != nil {
 		return e.MyID, nil
 	} else if e.loadedTypes[0] {
-		return nil, &NotFoundError{label: myid.Label}
+		return nil, &NotFoundError{label: local.Label}
 	}
 	return nil, &NotLoadedError{edge: "my_id"}
 }
@@ -176,7 +176,7 @@ func (u *User) Value(name string) (ent.Value, error) {
 }
 
 // QueryMyID queries the "my_id" edge of the User entity.
-func (u *User) QueryMyID() *MyIDQuery {
+func (u *User) QueryMyID() *LocalQuery {
 	return NewUserClient(u.config).QueryMyID(u)
 }
 

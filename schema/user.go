@@ -34,7 +34,7 @@ func (User) Fields() []ent.Field {
 
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("my_id", MyID.Type).Annotations(entsql.Annotation{
+		edge.To("my_id", Local.Type).Annotations(entsql.Annotation{
 			OnDelete: entsql.Cascade,
 		}).
 			Unique(),

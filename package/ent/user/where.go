@@ -467,7 +467,7 @@ func HasMyID() predicate.User {
 }
 
 // HasMyIDWith applies the HasEdge predicate on the "my_id" edge with a given conditions (other predicates).
-func HasMyIDWith(preds ...predicate.MyID) predicate.User {
+func HasMyIDWith(preds ...predicate.Local) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := newMyIDStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {

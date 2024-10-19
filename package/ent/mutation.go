@@ -5,7 +5,7 @@ package ent
 import (
 	"bulbasaur/package/ent/action"
 	"bulbasaur/package/ent/google"
-	"bulbasaur/package/ent/myid"
+	"bulbasaur/package/ent/local"
 	"bulbasaur/package/ent/permission"
 	"bulbasaur/package/ent/predicate"
 	"bulbasaur/package/ent/role"
@@ -31,7 +31,7 @@ const (
 	// Node types.
 	TypeAction     = "Action"
 	TypeGoogle     = "Google"
-	TypeMyID       = "MyID"
+	TypeLocal      = "Local"
 	TypePermission = "Permission"
 	TypeRole       = "Role"
 	TypeUser       = "User"
@@ -1251,8 +1251,8 @@ func (m *GoogleMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Google edge %s", name)
 }
 
-// MyIDMutation represents an operation that mutates the MyID nodes in the graph.
-type MyIDMutation struct {
+// LocalMutation represents an operation that mutates the Local nodes in the graph.
+type LocalMutation struct {
 	config
 	op            Op
 	typ           string
@@ -1266,21 +1266,21 @@ type MyIDMutation struct {
 	user          *uint64
 	cleareduser   bool
 	done          bool
-	oldValue      func(context.Context) (*MyID, error)
-	predicates    []predicate.MyID
+	oldValue      func(context.Context) (*Local, error)
+	predicates    []predicate.Local
 }
 
-var _ ent.Mutation = (*MyIDMutation)(nil)
+var _ ent.Mutation = (*LocalMutation)(nil)
 
-// myidOption allows management of the mutation configuration using functional options.
-type myidOption func(*MyIDMutation)
+// localOption allows management of the mutation configuration using functional options.
+type localOption func(*LocalMutation)
 
-// newMyIDMutation creates new mutation for the MyID entity.
-func newMyIDMutation(c config, op Op, opts ...myidOption) *MyIDMutation {
-	m := &MyIDMutation{
+// newLocalMutation creates new mutation for the Local entity.
+func newLocalMutation(c config, op Op, opts ...localOption) *LocalMutation {
+	m := &LocalMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeMyID,
+		typ:           TypeLocal,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -1289,20 +1289,20 @@ func newMyIDMutation(c config, op Op, opts ...myidOption) *MyIDMutation {
 	return m
 }
 
-// withMyIDID sets the ID field of the mutation.
-func withMyIDID(id uint64) myidOption {
-	return func(m *MyIDMutation) {
+// withLocalID sets the ID field of the mutation.
+func withLocalID(id uint64) localOption {
+	return func(m *LocalMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *MyID
+			value *Local
 		)
-		m.oldValue = func(ctx context.Context) (*MyID, error) {
+		m.oldValue = func(ctx context.Context) (*Local, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().MyID.Get(ctx, id)
+					value, err = m.Client().Local.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -1311,10 +1311,10 @@ func withMyIDID(id uint64) myidOption {
 	}
 }
 
-// withMyID sets the old MyID of the mutation.
-func withMyID(node *MyID) myidOption {
-	return func(m *MyIDMutation) {
-		m.oldValue = func(context.Context) (*MyID, error) {
+// withLocal sets the old Local of the mutation.
+func withLocal(node *Local) localOption {
+	return func(m *LocalMutation) {
+		m.oldValue = func(context.Context) (*Local, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -1323,7 +1323,7 @@ func withMyID(node *MyID) myidOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m MyIDMutation) Client() *Client {
+func (m LocalMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -1331,7 +1331,7 @@ func (m MyIDMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m MyIDMutation) Tx() (*Tx, error) {
+func (m LocalMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -1341,14 +1341,14 @@ func (m MyIDMutation) Tx() (*Tx, error) {
 }
 
 // SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of MyID entities.
-func (m *MyIDMutation) SetID(id uint64) {
+// operation is only accepted on creation of Local entities.
+func (m *LocalMutation) SetID(id uint64) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *MyIDMutation) ID() (id uint64, exists bool) {
+func (m *LocalMutation) ID() (id uint64, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1359,7 +1359,7 @@ func (m *MyIDMutation) ID() (id uint64, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *MyIDMutation) IDs(ctx context.Context) ([]uint64, error) {
+func (m *LocalMutation) IDs(ctx context.Context) ([]uint64, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
@@ -1368,19 +1368,19 @@ func (m *MyIDMutation) IDs(ctx context.Context) ([]uint64, error) {
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().MyID.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().Local.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (m *MyIDMutation) SetCreatedAt(t time.Time) {
+func (m *LocalMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
 }
 
 // CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *MyIDMutation) CreatedAt() (r time.Time, exists bool) {
+func (m *LocalMutation) CreatedAt() (r time.Time, exists bool) {
 	v := m.created_at
 	if v == nil {
 		return
@@ -1388,10 +1388,10 @@ func (m *MyIDMutation) CreatedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldCreatedAt returns the old "created_at" field's value of the MyID entity.
-// If the MyID object wasn't provided to the builder, the object is fetched from the database.
+// OldCreatedAt returns the old "created_at" field's value of the Local entity.
+// If the Local object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MyIDMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *LocalMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
 	}
@@ -1406,17 +1406,17 @@ func (m *MyIDMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error
 }
 
 // ResetCreatedAt resets all changes to the "created_at" field.
-func (m *MyIDMutation) ResetCreatedAt() {
+func (m *LocalMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (m *MyIDMutation) SetUpdatedAt(t time.Time) {
+func (m *LocalMutation) SetUpdatedAt(t time.Time) {
 	m.updated_at = &t
 }
 
 // UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *MyIDMutation) UpdatedAt() (r time.Time, exists bool) {
+func (m *LocalMutation) UpdatedAt() (r time.Time, exists bool) {
 	v := m.updated_at
 	if v == nil {
 		return
@@ -1424,10 +1424,10 @@ func (m *MyIDMutation) UpdatedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldUpdatedAt returns the old "updated_at" field's value of the MyID entity.
-// If the MyID object wasn't provided to the builder, the object is fetched from the database.
+// OldUpdatedAt returns the old "updated_at" field's value of the Local entity.
+// If the Local object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MyIDMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *LocalMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
 	}
@@ -1442,17 +1442,17 @@ func (m *MyIDMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error
 }
 
 // ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *MyIDMutation) ResetUpdatedAt() {
+func (m *LocalMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (m *MyIDMutation) SetTenantID(s string) {
+func (m *LocalMutation) SetTenantID(s string) {
 	m.tenant_id = &s
 }
 
 // TenantID returns the value of the "tenant_id" field in the mutation.
-func (m *MyIDMutation) TenantID() (r string, exists bool) {
+func (m *LocalMutation) TenantID() (r string, exists bool) {
 	v := m.tenant_id
 	if v == nil {
 		return
@@ -1460,10 +1460,10 @@ func (m *MyIDMutation) TenantID() (r string, exists bool) {
 	return *v, true
 }
 
-// OldTenantID returns the old "tenant_id" field's value of the MyID entity.
-// If the MyID object wasn't provided to the builder, the object is fetched from the database.
+// OldTenantID returns the old "tenant_id" field's value of the Local entity.
+// If the Local object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MyIDMutation) OldTenantID(ctx context.Context) (v string, err error) {
+func (m *LocalMutation) OldTenantID(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
 	}
@@ -1478,17 +1478,17 @@ func (m *MyIDMutation) OldTenantID(ctx context.Context) (v string, err error) {
 }
 
 // ResetTenantID resets all changes to the "tenant_id" field.
-func (m *MyIDMutation) ResetTenantID() {
+func (m *LocalMutation) ResetTenantID() {
 	m.tenant_id = nil
 }
 
 // SetUserID sets the "user_id" field.
-func (m *MyIDMutation) SetUserID(u uint64) {
+func (m *LocalMutation) SetUserID(u uint64) {
 	m.user = &u
 }
 
 // UserID returns the value of the "user_id" field in the mutation.
-func (m *MyIDMutation) UserID() (r uint64, exists bool) {
+func (m *LocalMutation) UserID() (r uint64, exists bool) {
 	v := m.user
 	if v == nil {
 		return
@@ -1496,10 +1496,10 @@ func (m *MyIDMutation) UserID() (r uint64, exists bool) {
 	return *v, true
 }
 
-// OldUserID returns the old "user_id" field's value of the MyID entity.
-// If the MyID object wasn't provided to the builder, the object is fetched from the database.
+// OldUserID returns the old "user_id" field's value of the Local entity.
+// If the Local object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MyIDMutation) OldUserID(ctx context.Context) (v uint64, err error) {
+func (m *LocalMutation) OldUserID(ctx context.Context) (v uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
 	}
@@ -1514,17 +1514,17 @@ func (m *MyIDMutation) OldUserID(ctx context.Context) (v uint64, err error) {
 }
 
 // ResetUserID resets all changes to the "user_id" field.
-func (m *MyIDMutation) ResetUserID() {
+func (m *LocalMutation) ResetUserID() {
 	m.user = nil
 }
 
 // SetUsername sets the "username" field.
-func (m *MyIDMutation) SetUsername(s string) {
+func (m *LocalMutation) SetUsername(s string) {
 	m.username = &s
 }
 
 // Username returns the value of the "username" field in the mutation.
-func (m *MyIDMutation) Username() (r string, exists bool) {
+func (m *LocalMutation) Username() (r string, exists bool) {
 	v := m.username
 	if v == nil {
 		return
@@ -1532,10 +1532,10 @@ func (m *MyIDMutation) Username() (r string, exists bool) {
 	return *v, true
 }
 
-// OldUsername returns the old "username" field's value of the MyID entity.
-// If the MyID object wasn't provided to the builder, the object is fetched from the database.
+// OldUsername returns the old "username" field's value of the Local entity.
+// If the Local object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MyIDMutation) OldUsername(ctx context.Context) (v string, err error) {
+func (m *LocalMutation) OldUsername(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUsername is only allowed on UpdateOne operations")
 	}
@@ -1550,30 +1550,30 @@ func (m *MyIDMutation) OldUsername(ctx context.Context) (v string, err error) {
 }
 
 // ClearUsername clears the value of the "username" field.
-func (m *MyIDMutation) ClearUsername() {
+func (m *LocalMutation) ClearUsername() {
 	m.username = nil
-	m.clearedFields[myid.FieldUsername] = struct{}{}
+	m.clearedFields[local.FieldUsername] = struct{}{}
 }
 
 // UsernameCleared returns if the "username" field was cleared in this mutation.
-func (m *MyIDMutation) UsernameCleared() bool {
-	_, ok := m.clearedFields[myid.FieldUsername]
+func (m *LocalMutation) UsernameCleared() bool {
+	_, ok := m.clearedFields[local.FieldUsername]
 	return ok
 }
 
 // ResetUsername resets all changes to the "username" field.
-func (m *MyIDMutation) ResetUsername() {
+func (m *LocalMutation) ResetUsername() {
 	m.username = nil
-	delete(m.clearedFields, myid.FieldUsername)
+	delete(m.clearedFields, local.FieldUsername)
 }
 
 // SetPassword sets the "password" field.
-func (m *MyIDMutation) SetPassword(s string) {
+func (m *LocalMutation) SetPassword(s string) {
 	m.password = &s
 }
 
 // Password returns the value of the "password" field in the mutation.
-func (m *MyIDMutation) Password() (r string, exists bool) {
+func (m *LocalMutation) Password() (r string, exists bool) {
 	v := m.password
 	if v == nil {
 		return
@@ -1581,10 +1581,10 @@ func (m *MyIDMutation) Password() (r string, exists bool) {
 	return *v, true
 }
 
-// OldPassword returns the old "password" field's value of the MyID entity.
-// If the MyID object wasn't provided to the builder, the object is fetched from the database.
+// OldPassword returns the old "password" field's value of the Local entity.
+// If the Local object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MyIDMutation) OldPassword(ctx context.Context) (v string, err error) {
+func (m *LocalMutation) OldPassword(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPassword is only allowed on UpdateOne operations")
 	}
@@ -1599,38 +1599,38 @@ func (m *MyIDMutation) OldPassword(ctx context.Context) (v string, err error) {
 }
 
 // ClearPassword clears the value of the "password" field.
-func (m *MyIDMutation) ClearPassword() {
+func (m *LocalMutation) ClearPassword() {
 	m.password = nil
-	m.clearedFields[myid.FieldPassword] = struct{}{}
+	m.clearedFields[local.FieldPassword] = struct{}{}
 }
 
 // PasswordCleared returns if the "password" field was cleared in this mutation.
-func (m *MyIDMutation) PasswordCleared() bool {
-	_, ok := m.clearedFields[myid.FieldPassword]
+func (m *LocalMutation) PasswordCleared() bool {
+	_, ok := m.clearedFields[local.FieldPassword]
 	return ok
 }
 
 // ResetPassword resets all changes to the "password" field.
-func (m *MyIDMutation) ResetPassword() {
+func (m *LocalMutation) ResetPassword() {
 	m.password = nil
-	delete(m.clearedFields, myid.FieldPassword)
+	delete(m.clearedFields, local.FieldPassword)
 }
 
 // ClearUser clears the "user" edge to the User entity.
-func (m *MyIDMutation) ClearUser() {
+func (m *LocalMutation) ClearUser() {
 	m.cleareduser = true
-	m.clearedFields[myid.FieldUserID] = struct{}{}
+	m.clearedFields[local.FieldUserID] = struct{}{}
 }
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
-func (m *MyIDMutation) UserCleared() bool {
+func (m *LocalMutation) UserCleared() bool {
 	return m.cleareduser
 }
 
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *MyIDMutation) UserIDs() (ids []uint64) {
+func (m *LocalMutation) UserIDs() (ids []uint64) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -1638,20 +1638,20 @@ func (m *MyIDMutation) UserIDs() (ids []uint64) {
 }
 
 // ResetUser resets all changes to the "user" edge.
-func (m *MyIDMutation) ResetUser() {
+func (m *LocalMutation) ResetUser() {
 	m.user = nil
 	m.cleareduser = false
 }
 
-// Where appends a list predicates to the MyIDMutation builder.
-func (m *MyIDMutation) Where(ps ...predicate.MyID) {
+// Where appends a list predicates to the LocalMutation builder.
+func (m *LocalMutation) Where(ps ...predicate.Local) {
 	m.predicates = append(m.predicates, ps...)
 }
 
-// WhereP appends storage-level predicates to the MyIDMutation builder. Using this method,
+// WhereP appends storage-level predicates to the LocalMutation builder. Using this method,
 // users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *MyIDMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.MyID, len(ps))
+func (m *LocalMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Local, len(ps))
 	for i := range ps {
 		p[i] = ps[i]
 	}
@@ -1659,42 +1659,42 @@ func (m *MyIDMutation) WhereP(ps ...func(*sql.Selector)) {
 }
 
 // Op returns the operation name.
-func (m *MyIDMutation) Op() Op {
+func (m *LocalMutation) Op() Op {
 	return m.op
 }
 
 // SetOp allows setting the mutation operation.
-func (m *MyIDMutation) SetOp(op Op) {
+func (m *LocalMutation) SetOp(op Op) {
 	m.op = op
 }
 
-// Type returns the node type of this mutation (MyID).
-func (m *MyIDMutation) Type() string {
+// Type returns the node type of this mutation (Local).
+func (m *LocalMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *MyIDMutation) Fields() []string {
+func (m *LocalMutation) Fields() []string {
 	fields := make([]string, 0, 6)
 	if m.created_at != nil {
-		fields = append(fields, myid.FieldCreatedAt)
+		fields = append(fields, local.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
-		fields = append(fields, myid.FieldUpdatedAt)
+		fields = append(fields, local.FieldUpdatedAt)
 	}
 	if m.tenant_id != nil {
-		fields = append(fields, myid.FieldTenantID)
+		fields = append(fields, local.FieldTenantID)
 	}
 	if m.user != nil {
-		fields = append(fields, myid.FieldUserID)
+		fields = append(fields, local.FieldUserID)
 	}
 	if m.username != nil {
-		fields = append(fields, myid.FieldUsername)
+		fields = append(fields, local.FieldUsername)
 	}
 	if m.password != nil {
-		fields = append(fields, myid.FieldPassword)
+		fields = append(fields, local.FieldPassword)
 	}
 	return fields
 }
@@ -1702,19 +1702,19 @@ func (m *MyIDMutation) Fields() []string {
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *MyIDMutation) Field(name string) (ent.Value, bool) {
+func (m *LocalMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case myid.FieldCreatedAt:
+	case local.FieldCreatedAt:
 		return m.CreatedAt()
-	case myid.FieldUpdatedAt:
+	case local.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case myid.FieldTenantID:
+	case local.FieldTenantID:
 		return m.TenantID()
-	case myid.FieldUserID:
+	case local.FieldUserID:
 		return m.UserID()
-	case myid.FieldUsername:
+	case local.FieldUsername:
 		return m.Username()
-	case myid.FieldPassword:
+	case local.FieldPassword:
 		return m.Password()
 	}
 	return nil, false
@@ -1723,65 +1723,65 @@ func (m *MyIDMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *MyIDMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *LocalMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case myid.FieldCreatedAt:
+	case local.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
-	case myid.FieldUpdatedAt:
+	case local.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case myid.FieldTenantID:
+	case local.FieldTenantID:
 		return m.OldTenantID(ctx)
-	case myid.FieldUserID:
+	case local.FieldUserID:
 		return m.OldUserID(ctx)
-	case myid.FieldUsername:
+	case local.FieldUsername:
 		return m.OldUsername(ctx)
-	case myid.FieldPassword:
+	case local.FieldPassword:
 		return m.OldPassword(ctx)
 	}
-	return nil, fmt.Errorf("unknown MyID field %s", name)
+	return nil, fmt.Errorf("unknown Local field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *MyIDMutation) SetField(name string, value ent.Value) error {
+func (m *LocalMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case myid.FieldCreatedAt:
+	case local.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
 		return nil
-	case myid.FieldUpdatedAt:
+	case local.FieldUpdatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
 		return nil
-	case myid.FieldTenantID:
+	case local.FieldTenantID:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTenantID(v)
 		return nil
-	case myid.FieldUserID:
+	case local.FieldUserID:
 		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUserID(v)
 		return nil
-	case myid.FieldUsername:
+	case local.FieldUsername:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUsername(v)
 		return nil
-	case myid.FieldPassword:
+	case local.FieldPassword:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
@@ -1789,12 +1789,12 @@ func (m *MyIDMutation) SetField(name string, value ent.Value) error {
 		m.SetPassword(v)
 		return nil
 	}
-	return fmt.Errorf("unknown MyID field %s", name)
+	return fmt.Errorf("unknown Local field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *MyIDMutation) AddedFields() []string {
+func (m *LocalMutation) AddedFields() []string {
 	var fields []string
 	return fields
 }
@@ -1802,7 +1802,7 @@ func (m *MyIDMutation) AddedFields() []string {
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *MyIDMutation) AddedField(name string) (ent.Value, bool) {
+func (m *LocalMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	}
 	return nil, false
@@ -1811,86 +1811,86 @@ func (m *MyIDMutation) AddedField(name string) (ent.Value, bool) {
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *MyIDMutation) AddField(name string, value ent.Value) error {
+func (m *LocalMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	}
-	return fmt.Errorf("unknown MyID numeric field %s", name)
+	return fmt.Errorf("unknown Local numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *MyIDMutation) ClearedFields() []string {
+func (m *LocalMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(myid.FieldUsername) {
-		fields = append(fields, myid.FieldUsername)
+	if m.FieldCleared(local.FieldUsername) {
+		fields = append(fields, local.FieldUsername)
 	}
-	if m.FieldCleared(myid.FieldPassword) {
-		fields = append(fields, myid.FieldPassword)
+	if m.FieldCleared(local.FieldPassword) {
+		fields = append(fields, local.FieldPassword)
 	}
 	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *MyIDMutation) FieldCleared(name string) bool {
+func (m *LocalMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *MyIDMutation) ClearField(name string) error {
+func (m *LocalMutation) ClearField(name string) error {
 	switch name {
-	case myid.FieldUsername:
+	case local.FieldUsername:
 		m.ClearUsername()
 		return nil
-	case myid.FieldPassword:
+	case local.FieldPassword:
 		m.ClearPassword()
 		return nil
 	}
-	return fmt.Errorf("unknown MyID nullable field %s", name)
+	return fmt.Errorf("unknown Local nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *MyIDMutation) ResetField(name string) error {
+func (m *LocalMutation) ResetField(name string) error {
 	switch name {
-	case myid.FieldCreatedAt:
+	case local.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
-	case myid.FieldUpdatedAt:
+	case local.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
-	case myid.FieldTenantID:
+	case local.FieldTenantID:
 		m.ResetTenantID()
 		return nil
-	case myid.FieldUserID:
+	case local.FieldUserID:
 		m.ResetUserID()
 		return nil
-	case myid.FieldUsername:
+	case local.FieldUsername:
 		m.ResetUsername()
 		return nil
-	case myid.FieldPassword:
+	case local.FieldPassword:
 		m.ResetPassword()
 		return nil
 	}
-	return fmt.Errorf("unknown MyID field %s", name)
+	return fmt.Errorf("unknown Local field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *MyIDMutation) AddedEdges() []string {
+func (m *LocalMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
 	if m.user != nil {
-		edges = append(edges, myid.EdgeUser)
+		edges = append(edges, local.EdgeUser)
 	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *MyIDMutation) AddedIDs(name string) []ent.Value {
+func (m *LocalMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case myid.EdgeUser:
+	case local.EdgeUser:
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
 		}
@@ -1899,31 +1899,31 @@ func (m *MyIDMutation) AddedIDs(name string) []ent.Value {
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *MyIDMutation) RemovedEdges() []string {
+func (m *LocalMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 1)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *MyIDMutation) RemovedIDs(name string) []ent.Value {
+func (m *LocalMutation) RemovedIDs(name string) []ent.Value {
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *MyIDMutation) ClearedEdges() []string {
+func (m *LocalMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
 	if m.cleareduser {
-		edges = append(edges, myid.EdgeUser)
+		edges = append(edges, local.EdgeUser)
 	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *MyIDMutation) EdgeCleared(name string) bool {
+func (m *LocalMutation) EdgeCleared(name string) bool {
 	switch name {
-	case myid.EdgeUser:
+	case local.EdgeUser:
 		return m.cleareduser
 	}
 	return false
@@ -1931,24 +1931,24 @@ func (m *MyIDMutation) EdgeCleared(name string) bool {
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *MyIDMutation) ClearEdge(name string) error {
+func (m *LocalMutation) ClearEdge(name string) error {
 	switch name {
-	case myid.EdgeUser:
+	case local.EdgeUser:
 		m.ClearUser()
 		return nil
 	}
-	return fmt.Errorf("unknown MyID unique edge %s", name)
+	return fmt.Errorf("unknown Local unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *MyIDMutation) ResetEdge(name string) error {
+func (m *LocalMutation) ResetEdge(name string) error {
 	switch name {
-	case myid.EdgeUser:
+	case local.EdgeUser:
 		m.ResetUser()
 		return nil
 	}
-	return fmt.Errorf("unknown MyID edge %s", name)
+	return fmt.Errorf("unknown Local edge %s", name)
 }
 
 // PermissionMutation represents an operation that mutates the Permission nodes in the graph.
@@ -3545,17 +3545,17 @@ func (m *UserMutation) ResetRoleID() {
 	m.role = nil
 }
 
-// SetMyIDID sets the "my_id" edge to the MyID entity by id.
+// SetMyIDID sets the "my_id" edge to the Local entity by id.
 func (m *UserMutation) SetMyIDID(id uint64) {
 	m.my_id = &id
 }
 
-// ClearMyID clears the "my_id" edge to the MyID entity.
+// ClearMyID clears the "my_id" edge to the Local entity.
 func (m *UserMutation) ClearMyID() {
 	m.clearedmy_id = true
 }
 
-// MyIDCleared reports if the "my_id" edge to the MyID entity was cleared.
+// MyIDCleared reports if the "my_id" edge to the Local entity was cleared.
 func (m *UserMutation) MyIDCleared() bool {
 	return m.clearedmy_id
 }

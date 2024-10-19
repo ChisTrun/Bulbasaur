@@ -12,8 +12,8 @@ type Action func(*sql.Selector)
 // Google is the predicate function for google builders.
 type Google func(*sql.Selector)
 
-// MyID is the predicate function for myid builders.
-type MyID func(*sql.Selector)
+// Local is the predicate function for local builders.
+type Local func(*sql.Selector)
 
 // Permission is the predicate function for permission builders.
 type Permission func(*sql.Selector)

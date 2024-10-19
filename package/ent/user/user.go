@@ -37,10 +37,10 @@ const (
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// MyIDTable is the table that holds the my_id relation/edge.
-	MyIDTable = "my_ids"
-	// MyIDInverseTable is the table name for the MyID entity.
-	// It exists in this package in order to avoid circular dependency with the "myid" package.
-	MyIDInverseTable = "my_ids"
+	MyIDTable = "locals"
+	// MyIDInverseTable is the table name for the Local entity.
+	// It exists in this package in order to avoid circular dependency with the "local" package.
+	MyIDInverseTable = "locals"
 	// MyIDColumn is the table column denoting the my_id relation/edge.
 	MyIDColumn = "user_id"
 	// GoogleTable is the table that holds the google relation/edge.

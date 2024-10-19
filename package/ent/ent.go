@@ -5,7 +5,7 @@ package ent
 import (
 	"bulbasaur/package/ent/action"
 	"bulbasaur/package/ent/google"
-	"bulbasaur/package/ent/myid"
+	"bulbasaur/package/ent/local"
 	"bulbasaur/package/ent/permission"
 	"bulbasaur/package/ent/role"
 	"bulbasaur/package/ent/user"
@@ -80,7 +80,7 @@ func checkColumn(table, column string) error {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			action.Table:     action.ValidColumn,
 			google.Table:     google.ValidColumn,
-			myid.Table:       myid.ValidColumn,
+			local.Table:      local.ValidColumn,
 			permission.Table: permission.ValidColumn,
 			role.Table:       role.ValidColumn,
 			user.Table:       user.ValidColumn,

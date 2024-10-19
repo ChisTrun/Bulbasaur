@@ -3,7 +3,7 @@
 package ent
 
 import (
-	"bulbasaur/package/ent/myid"
+	"bulbasaur/package/ent/local"
 	"bulbasaur/package/ent/user"
 	"fmt"
 	"strings"
@@ -13,8 +13,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// MyID is the model entity for the MyID schema.
-type MyID struct {
+// Local is the model entity for the Local schema.
+type Local struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uint64 `json:"id,omitempty"`
@@ -31,13 +31,13 @@ type MyID struct {
 	// Password holds the value of the "password" field.
 	Password string `json:"password,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the MyIDQuery when eager-loading is set.
-	Edges        MyIDEdges `json:"edges"`
+	// The values are being populated by the LocalQuery when eager-loading is set.
+	Edges        LocalEdges `json:"edges"`
 	selectValues sql.SelectValues
 }
 
-// MyIDEdges holds the relations/edges for other nodes in the graph.
-type MyIDEdges struct {
+// LocalEdges holds the relations/edges for other nodes in the graph.
+type LocalEdges struct {
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -47,7 +47,7 @@ type MyIDEdges struct {
 
 // UserOrErr returns the User value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e MyIDEdges) UserOrErr() (*User, error) {
+func (e LocalEdges) UserOrErr() (*User, error) {
 	if e.User != nil {
 		return e.User, nil
 	} else if e.loadedTypes[0] {
@@ -57,15 +57,15 @@ func (e MyIDEdges) UserOrErr() (*User, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*MyID) scanValues(columns []string) ([]any, error) {
+func (*Local) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case myid.FieldID, myid.FieldUserID:
+		case local.FieldID, local.FieldUserID:
 			values[i] = new(sql.NullInt64)
-		case myid.FieldTenantID, myid.FieldUsername, myid.FieldPassword:
+		case local.FieldTenantID, local.FieldUsername, local.FieldPassword:
 			values[i] = new(sql.NullString)
-		case myid.FieldCreatedAt, myid.FieldUpdatedAt:
+		case local.FieldCreatedAt, local.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -75,116 +75,116 @@ func (*MyID) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the MyID fields.
-func (mi *MyID) assignValues(columns []string, values []any) error {
+// to the Local fields.
+func (l *Local) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case myid.FieldID:
+		case local.FieldID:
 			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			mi.ID = uint64(value.Int64)
-		case myid.FieldCreatedAt:
+			l.ID = uint64(value.Int64)
+		case local.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				mi.CreatedAt = value.Time
+				l.CreatedAt = value.Time
 			}
-		case myid.FieldUpdatedAt:
+		case local.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				mi.UpdatedAt = value.Time
+				l.UpdatedAt = value.Time
 			}
-		case myid.FieldTenantID:
+		case local.FieldTenantID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
 			} else if value.Valid {
-				mi.TenantID = value.String
+				l.TenantID = value.String
 			}
-		case myid.FieldUserID:
+		case local.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				mi.UserID = uint64(value.Int64)
+				l.UserID = uint64(value.Int64)
 			}
-		case myid.FieldUsername:
+		case local.FieldUsername:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field username", values[i])
 			} else if value.Valid {
-				mi.Username = value.String
+				l.Username = value.String
 			}
-		case myid.FieldPassword:
+		case local.FieldPassword:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field password", values[i])
 			} else if value.Valid {
-				mi.Password = value.String
+				l.Password = value.String
 			}
 		default:
-			mi.selectValues.Set(columns[i], values[i])
+			l.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the MyID.
+// Value returns the ent.Value that was dynamically selected and assigned to the Local.
 // This includes values selected through modifiers, order, etc.
-func (mi *MyID) Value(name string) (ent.Value, error) {
-	return mi.selectValues.Get(name)
+func (l *Local) Value(name string) (ent.Value, error) {
+	return l.selectValues.Get(name)
 }
 
-// QueryUser queries the "user" edge of the MyID entity.
-func (mi *MyID) QueryUser() *UserQuery {
-	return NewMyIDClient(mi.config).QueryUser(mi)
+// QueryUser queries the "user" edge of the Local entity.
+func (l *Local) QueryUser() *UserQuery {
+	return NewLocalClient(l.config).QueryUser(l)
 }
 
-// Update returns a builder for updating this MyID.
-// Note that you need to call MyID.Unwrap() before calling this method if this MyID
+// Update returns a builder for updating this Local.
+// Note that you need to call Local.Unwrap() before calling this method if this Local
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (mi *MyID) Update() *MyIDUpdateOne {
-	return NewMyIDClient(mi.config).UpdateOne(mi)
+func (l *Local) Update() *LocalUpdateOne {
+	return NewLocalClient(l.config).UpdateOne(l)
 }
 
-// Unwrap unwraps the MyID entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the Local entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (mi *MyID) Unwrap() *MyID {
-	_tx, ok := mi.config.driver.(*txDriver)
+func (l *Local) Unwrap() *Local {
+	_tx, ok := l.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: MyID is not a transactional entity")
+		panic("ent: Local is not a transactional entity")
 	}
-	mi.config.driver = _tx.drv
-	return mi
+	l.config.driver = _tx.drv
+	return l
 }
 
 // String implements the fmt.Stringer.
-func (mi *MyID) String() string {
+func (l *Local) String() string {
 	var builder strings.Builder
-	builder.WriteString("MyID(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", mi.ID))
+	builder.WriteString("Local(")
+	builder.WriteString(fmt.Sprintf("id=%v, ", l.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(mi.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(l.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(mi.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(l.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("tenant_id=")
-	builder.WriteString(mi.TenantID)
+	builder.WriteString(l.TenantID)
 	builder.WriteString(", ")
 	builder.WriteString("user_id=")
-	builder.WriteString(fmt.Sprintf("%v", mi.UserID))
+	builder.WriteString(fmt.Sprintf("%v", l.UserID))
 	builder.WriteString(", ")
 	builder.WriteString("username=")
-	builder.WriteString(mi.Username)
+	builder.WriteString(l.Username)
 	builder.WriteString(", ")
 	builder.WriteString("password=")
-	builder.WriteString(mi.Password)
+	builder.WriteString(l.Password)
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// MyIDs is a parsable slice of MyID.
-type MyIDs []*MyID
+// Locals is a parsable slice of Local.
+type Locals []*Local
