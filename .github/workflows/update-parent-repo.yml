@@ -1,10 +1,9 @@
 name: Update Submodule in Parent Repo
 
 on:
-  workflow_run:
-    workflows: ["Create or Update Tag"]
-    types:
-      - completed
+  push:
+    tags:
+      - '*'  # Chạy khi có bất kỳ tag mới nào được push
 
 jobs:
   update_submodule:
@@ -15,19 +14,17 @@ jobs:
         run: |
           git config --global user.name "ChisTrun"
           git config --global user.email "vochitrung.pst@gmail.com"
-
-      - name: Get latest tag
-        id: get_tag
-        run: |
-          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          echo "Latest tag: $TAG"
-          echo "::set-output name=tag::$TAG"
-
           
       - name: Checkout submodule
         uses: actions/checkout@v2
         with:
           submodules: 'recursive'
+
+      - name: Get the tag name
+        run: |
+          echo "New tag detected: ${{ github.ref }}"
+          TAG_NAME=${{ github.ref }}
+          echo "Tag name is $TAG_NAME"
 
       - name: Clone parent repo
         run: git clone --recursive https://github.com/ChisTrun/SkillSharp
@@ -36,8 +33,7 @@ jobs:
         run: |
           cd SkillSharp
           TIMESTAMP=$(date +%s)
-          TAG =  "${{ steps.get_tag.outputs.tag }}"
-          BRANCH_NAME="bulbasour_update_${TAG}"
+          BRANCH_NAME="bulbasour_update_${TAG_NAME}"
           git checkout -b $BRANCH_NAME
           git submodule update --remote backend/Bulbasaur
           git add backend/Bulbasaur
@@ -47,8 +43,7 @@ jobs:
       - name: Create Pull Request
         run: |
           TIMESTAMP=$(date +%s)
-          TAG =  "${{ steps.get_tag.outputs.tag }}"
-          BRANCH_NAME="bulbasour_update_${TAG}"
+          BRANCH_NAME="bulbasour_update_${TAG_NAME}"
           curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -d "{\"title\":\"Update module\",\"head\":\"${BRANCH_NAME}\",\"base\":\"main\"}" \
           https://api.github.com/repos/yourorg/parentrepo/pulls
