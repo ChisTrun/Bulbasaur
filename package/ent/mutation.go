@@ -3135,12 +3135,13 @@ type UserMutation struct {
 	created_at     *time.Time
 	updated_at     *time.Time
 	tenant_id      *string
+	safe_id        *string
 	email          *string
 	metadata       *string
 	last_signed_in *time.Time
 	clearedFields  map[string]struct{}
-	my_id          *uint64
-	clearedmy_id   bool
+	local          *uint64
+	clearedlocal   bool
 	google         *uint64
 	clearedgoogle  bool
 	role           *uint64
@@ -3362,6 +3363,42 @@ func (m *UserMutation) ResetTenantID() {
 	m.tenant_id = nil
 }
 
+// SetSafeID sets the "safe_id" field.
+func (m *UserMutation) SetSafeID(s string) {
+	m.safe_id = &s
+}
+
+// SafeID returns the value of the "safe_id" field in the mutation.
+func (m *UserMutation) SafeID() (r string, exists bool) {
+	v := m.safe_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSafeID returns the old "safe_id" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldSafeID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSafeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSafeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSafeID: %w", err)
+	}
+	return oldValue.SafeID, nil
+}
+
+// ResetSafeID resets all changes to the "safe_id" field.
+func (m *UserMutation) ResetSafeID() {
+	m.safe_id = nil
+}
+
 // SetEmail sets the "email" field.
 func (m *UserMutation) SetEmail(s string) {
 	m.email = &s
@@ -3545,43 +3582,43 @@ func (m *UserMutation) ResetRoleID() {
 	m.role = nil
 }
 
-// SetMyIDID sets the "my_id" edge to the Local entity by id.
-func (m *UserMutation) SetMyIDID(id uint64) {
-	m.my_id = &id
+// SetLocalID sets the "local" edge to the Local entity by id.
+func (m *UserMutation) SetLocalID(id uint64) {
+	m.local = &id
 }
 
-// ClearMyID clears the "my_id" edge to the Local entity.
-func (m *UserMutation) ClearMyID() {
-	m.clearedmy_id = true
+// ClearLocal clears the "local" edge to the Local entity.
+func (m *UserMutation) ClearLocal() {
+	m.clearedlocal = true
 }
 
-// MyIDCleared reports if the "my_id" edge to the Local entity was cleared.
-func (m *UserMutation) MyIDCleared() bool {
-	return m.clearedmy_id
+// LocalCleared reports if the "local" edge to the Local entity was cleared.
+func (m *UserMutation) LocalCleared() bool {
+	return m.clearedlocal
 }
 
-// MyIDID returns the "my_id" edge ID in the mutation.
-func (m *UserMutation) MyIDID() (id uint64, exists bool) {
-	if m.my_id != nil {
-		return *m.my_id, true
+// LocalID returns the "local" edge ID in the mutation.
+func (m *UserMutation) LocalID() (id uint64, exists bool) {
+	if m.local != nil {
+		return *m.local, true
 	}
 	return
 }
 
-// MyIDIDs returns the "my_id" edge IDs in the mutation.
+// LocalIDs returns the "local" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// MyIDID instead. It exists only for internal usage by the builders.
-func (m *UserMutation) MyIDIDs() (ids []uint64) {
-	if id := m.my_id; id != nil {
+// LocalID instead. It exists only for internal usage by the builders.
+func (m *UserMutation) LocalIDs() (ids []uint64) {
+	if id := m.local; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetMyID resets all changes to the "my_id" edge.
-func (m *UserMutation) ResetMyID() {
-	m.my_id = nil
-	m.clearedmy_id = false
+// ResetLocal resets all changes to the "local" edge.
+func (m *UserMutation) ResetLocal() {
+	m.local = nil
+	m.clearedlocal = false
 }
 
 // SetGoogleID sets the "google" edge to the Google entity by id.
@@ -3684,7 +3721,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
 	}
@@ -3693,6 +3730,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.tenant_id != nil {
 		fields = append(fields, user.FieldTenantID)
+	}
+	if m.safe_id != nil {
+		fields = append(fields, user.FieldSafeID)
 	}
 	if m.email != nil {
 		fields = append(fields, user.FieldEmail)
@@ -3720,6 +3760,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case user.FieldTenantID:
 		return m.TenantID()
+	case user.FieldSafeID:
+		return m.SafeID()
 	case user.FieldEmail:
 		return m.Email()
 	case user.FieldMetadata:
@@ -3743,6 +3785,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldUpdatedAt(ctx)
 	case user.FieldTenantID:
 		return m.OldTenantID(ctx)
+	case user.FieldSafeID:
+		return m.OldSafeID(ctx)
 	case user.FieldEmail:
 		return m.OldEmail(ctx)
 	case user.FieldMetadata:
@@ -3780,6 +3824,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTenantID(v)
+		return nil
+	case user.FieldSafeID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSafeID(v)
 		return nil
 	case user.FieldEmail:
 		v, ok := value.(string)
@@ -3891,6 +3942,9 @@ func (m *UserMutation) ResetField(name string) error {
 	case user.FieldTenantID:
 		m.ResetTenantID()
 		return nil
+	case user.FieldSafeID:
+		m.ResetSafeID()
+		return nil
 	case user.FieldEmail:
 		m.ResetEmail()
 		return nil
@@ -3910,8 +3964,8 @@ func (m *UserMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
 	edges := make([]string, 0, 3)
-	if m.my_id != nil {
-		edges = append(edges, user.EdgeMyID)
+	if m.local != nil {
+		edges = append(edges, user.EdgeLocal)
 	}
 	if m.google != nil {
 		edges = append(edges, user.EdgeGoogle)
@@ -3926,8 +3980,8 @@ func (m *UserMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *UserMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case user.EdgeMyID:
-		if id := m.my_id; id != nil {
+	case user.EdgeLocal:
+		if id := m.local; id != nil {
 			return []ent.Value{*id}
 		}
 	case user.EdgeGoogle:
@@ -3957,8 +4011,8 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 3)
-	if m.clearedmy_id {
-		edges = append(edges, user.EdgeMyID)
+	if m.clearedlocal {
+		edges = append(edges, user.EdgeLocal)
 	}
 	if m.clearedgoogle {
 		edges = append(edges, user.EdgeGoogle)
@@ -3973,8 +4027,8 @@ func (m *UserMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *UserMutation) EdgeCleared(name string) bool {
 	switch name {
-	case user.EdgeMyID:
-		return m.clearedmy_id
+	case user.EdgeLocal:
+		return m.clearedlocal
 	case user.EdgeGoogle:
 		return m.clearedgoogle
 	case user.EdgeRole:
@@ -3987,8 +4041,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *UserMutation) ClearEdge(name string) error {
 	switch name {
-	case user.EdgeMyID:
-		m.ClearMyID()
+	case user.EdgeLocal:
+		m.ClearLocal()
 		return nil
 	case user.EdgeGoogle:
 		m.ClearGoogle()
@@ -4004,8 +4058,8 @@ func (m *UserMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *UserMutation) ResetEdge(name string) error {
 	switch name {
-	case user.EdgeMyID:
-		m.ResetMyID()
+	case user.EdgeLocal:
+		m.ResetLocal()
 		return nil
 	case user.EdgeGoogle:
 		m.ResetGoogle()

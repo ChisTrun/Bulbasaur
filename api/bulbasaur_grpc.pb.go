@@ -4,7 +4,7 @@
 // - protoc             v5.27.1
 // source: api/bulbasaur.proto
 
-package go_pattern
+package bulbasaur
 
 import (
 	context "context"
@@ -19,9 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	Bulbasaur_SignUp_FullMethodName      = "/go_pattern.Bulbasaur/SignUp"
-	Bulbasaur_SignIn_FullMethodName      = "/go_pattern.Bulbasaur/SignIn"
-	Bulbasaur_RefeshToken_FullMethodName = "/go_pattern.Bulbasaur/RefeshToken"
+	Bulbasaur_SignUp_FullMethodName         = "/bulbasaur.Bulbasaur/SignUp"
+	Bulbasaur_SignIn_FullMethodName         = "/bulbasaur.Bulbasaur/SignIn"
+	Bulbasaur_UpdateMetadata_FullMethodName = "/bulbasaur.Bulbasaur/UpdateMetadata"
+	Bulbasaur_RefeshToken_FullMethodName    = "/bulbasaur.Bulbasaur/RefeshToken"
 )
 
 // BulbasaurClient is the client API for Bulbasaur service.
@@ -30,6 +31,7 @@ const (
 type BulbasaurClient interface {
 	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*SignUpResponse, error)
 	SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error)
+	UpdateMetadata(ctx context.Context, in *UpdateMetadataRequest, opts ...grpc.CallOption) (*UpdateMetadataResponse, error)
 	RefeshToken(ctx context.Context, in *RefeshTokenRequest, opts ...grpc.CallOption) (*RefeshTokenResponse, error)
 }
 
@@ -61,6 +63,16 @@ func (c *bulbasaurClient) SignIn(ctx context.Context, in *SignInRequest, opts ..
 	return out, nil
 }
 
+func (c *bulbasaurClient) UpdateMetadata(ctx context.Context, in *UpdateMetadataRequest, opts ...grpc.CallOption) (*UpdateMetadataResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateMetadataResponse)
+	err := c.cc.Invoke(ctx, Bulbasaur_UpdateMetadata_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *bulbasaurClient) RefeshToken(ctx context.Context, in *RefeshTokenRequest, opts ...grpc.CallOption) (*RefeshTokenResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(RefeshTokenResponse)
@@ -77,6 +89,7 @@ func (c *bulbasaurClient) RefeshToken(ctx context.Context, in *RefeshTokenReques
 type BulbasaurServer interface {
 	SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error)
 	SignIn(context.Context, *SignInRequest) (*SignInResponse, error)
+	UpdateMetadata(context.Context, *UpdateMetadataRequest) (*UpdateMetadataResponse, error)
 	RefeshToken(context.Context, *RefeshTokenRequest) (*RefeshTokenResponse, error)
 	mustEmbedUnimplementedBulbasaurServer()
 }
@@ -90,6 +103,9 @@ func (UnimplementedBulbasaurServer) SignUp(context.Context, *SignUpRequest) (*Si
 }
 func (UnimplementedBulbasaurServer) SignIn(context.Context, *SignInRequest) (*SignInResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignIn not implemented")
+}
+func (UnimplementedBulbasaurServer) UpdateMetadata(context.Context, *UpdateMetadataRequest) (*UpdateMetadataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMetadata not implemented")
 }
 func (UnimplementedBulbasaurServer) RefeshToken(context.Context, *RefeshTokenRequest) (*RefeshTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefeshToken not implemented")
@@ -143,6 +159,24 @@ func _Bulbasaur_SignIn_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Bulbasaur_UpdateMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BulbasaurServer).UpdateMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Bulbasaur_UpdateMetadata_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BulbasaurServer).UpdateMetadata(ctx, req.(*UpdateMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Bulbasaur_RefeshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RefeshTokenRequest)
 	if err := dec(in); err != nil {
@@ -165,7 +199,7 @@ func _Bulbasaur_RefeshToken_Handler(srv interface{}, ctx context.Context, dec fu
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Bulbasaur_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "go_pattern.Bulbasaur",
+	ServiceName: "bulbasaur.Bulbasaur",
 	HandlerType: (*BulbasaurServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -175,6 +209,10 @@ var Bulbasaur_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SignIn",
 			Handler:    _Bulbasaur_SignIn_Handler,
+		},
+		{
+			MethodName: "UpdateMetadata",
+			Handler:    _Bulbasaur_UpdateMetadata_Handler,
 		},
 		{
 			MethodName: "RefeshToken",

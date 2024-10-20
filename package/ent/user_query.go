@@ -27,7 +27,7 @@ type UserQuery struct {
 	order      []user.OrderOption
 	inters     []Interceptor
 	predicates []predicate.User
-	withMyID   *LocalQuery
+	withLocal  *LocalQuery
 	withGoogle *GoogleQuery
 	withRole   *RoleQuery
 	modifiers  []func(*sql.Selector)
@@ -67,8 +67,8 @@ func (uq *UserQuery) Order(o ...user.OrderOption) *UserQuery {
 	return uq
 }
 
-// QueryMyID chains the current query on the "my_id" edge.
-func (uq *UserQuery) QueryMyID() *LocalQuery {
+// QueryLocal chains the current query on the "local" edge.
+func (uq *UserQuery) QueryLocal() *LocalQuery {
 	query := (&LocalClient{config: uq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := uq.prepareQuery(ctx); err != nil {
@@ -81,7 +81,7 @@ func (uq *UserQuery) QueryMyID() *LocalQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(local.Table, local.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, user.MyIDTable, user.MyIDColumn),
+			sqlgraph.Edge(sqlgraph.O2O, false, user.LocalTable, user.LocalColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -325,7 +325,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 		order:      append([]user.OrderOption{}, uq.order...),
 		inters:     append([]Interceptor{}, uq.inters...),
 		predicates: append([]predicate.User{}, uq.predicates...),
-		withMyID:   uq.withMyID.Clone(),
+		withLocal:  uq.withLocal.Clone(),
 		withGoogle: uq.withGoogle.Clone(),
 		withRole:   uq.withRole.Clone(),
 		// clone intermediate query.
@@ -334,14 +334,14 @@ func (uq *UserQuery) Clone() *UserQuery {
 	}
 }
 
-// WithMyID tells the query-builder to eager-load the nodes that are connected to
-// the "my_id" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithMyID(opts ...func(*LocalQuery)) *UserQuery {
+// WithLocal tells the query-builder to eager-load the nodes that are connected to
+// the "local" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithLocal(opts ...func(*LocalQuery)) *UserQuery {
 	query := (&LocalClient{config: uq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	uq.withMyID = query
+	uq.withLocal = query
 	return uq
 }
 
@@ -446,7 +446,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
 		loadedTypes = [3]bool{
-			uq.withMyID != nil,
+			uq.withLocal != nil,
 			uq.withGoogle != nil,
 			uq.withRole != nil,
 		}
@@ -472,9 +472,9 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := uq.withMyID; query != nil {
-		if err := uq.loadMyID(ctx, query, nodes, nil,
-			func(n *User, e *Local) { n.Edges.MyID = e }); err != nil {
+	if query := uq.withLocal; query != nil {
+		if err := uq.loadLocal(ctx, query, nodes, nil,
+			func(n *User, e *Local) { n.Edges.Local = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -493,7 +493,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	return nodes, nil
 }
 
-func (uq *UserQuery) loadMyID(ctx context.Context, query *LocalQuery, nodes []*User, init func(*User), assign func(*User, *Local)) error {
+func (uq *UserQuery) loadLocal(ctx context.Context, query *LocalQuery, nodes []*User, init func(*User), assign func(*User, *Local)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*User)
 	for i := range nodes {
@@ -504,7 +504,7 @@ func (uq *UserQuery) loadMyID(ctx context.Context, query *LocalQuery, nodes []*U
 		query.ctx.AppendFieldOnce(local.FieldUserID)
 	}
 	query.Where(predicate.Local(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(user.MyIDColumn), fks...))
+		s.Where(sql.InValues(s.C(user.LocalColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

@@ -29,7 +29,7 @@ func (Local) Mixin() []ent.Mixin {
 func (Local) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).
-			Ref("my_id").
+			Ref("local").
 			Field("user_id").
 			Unique().
 			Required(),

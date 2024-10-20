@@ -52,6 +52,20 @@ func (uu *UserUpdate) SetNillableTenantID(s *string) *UserUpdate {
 	return uu
 }
 
+// SetSafeID sets the "safe_id" field.
+func (uu *UserUpdate) SetSafeID(s string) *UserUpdate {
+	uu.mutation.SetSafeID(s)
+	return uu
+}
+
+// SetNillableSafeID sets the "safe_id" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableSafeID(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetSafeID(*s)
+	}
+	return uu
+}
+
 // SetEmail sets the "email" field.
 func (uu *UserUpdate) SetEmail(s string) *UserUpdate {
 	uu.mutation.SetEmail(s)
@@ -126,23 +140,23 @@ func (uu *UserUpdate) SetNillableRoleID(u *uint64) *UserUpdate {
 	return uu
 }
 
-// SetMyIDID sets the "my_id" edge to the Local entity by ID.
-func (uu *UserUpdate) SetMyIDID(id uint64) *UserUpdate {
-	uu.mutation.SetMyIDID(id)
+// SetLocalID sets the "local" edge to the Local entity by ID.
+func (uu *UserUpdate) SetLocalID(id uint64) *UserUpdate {
+	uu.mutation.SetLocalID(id)
 	return uu
 }
 
-// SetNillableMyIDID sets the "my_id" edge to the Local entity by ID if the given value is not nil.
-func (uu *UserUpdate) SetNillableMyIDID(id *uint64) *UserUpdate {
+// SetNillableLocalID sets the "local" edge to the Local entity by ID if the given value is not nil.
+func (uu *UserUpdate) SetNillableLocalID(id *uint64) *UserUpdate {
 	if id != nil {
-		uu = uu.SetMyIDID(*id)
+		uu = uu.SetLocalID(*id)
 	}
 	return uu
 }
 
-// SetMyID sets the "my_id" edge to the Local entity.
-func (uu *UserUpdate) SetMyID(l *Local) *UserUpdate {
-	return uu.SetMyIDID(l.ID)
+// SetLocal sets the "local" edge to the Local entity.
+func (uu *UserUpdate) SetLocal(l *Local) *UserUpdate {
+	return uu.SetLocalID(l.ID)
 }
 
 // SetGoogleID sets the "google" edge to the Google entity by ID.
@@ -174,9 +188,9 @@ func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
 }
 
-// ClearMyID clears the "my_id" edge to the Local entity.
-func (uu *UserUpdate) ClearMyID() *UserUpdate {
-	uu.mutation.ClearMyID()
+// ClearLocal clears the "local" edge to the Local entity.
+func (uu *UserUpdate) ClearLocal() *UserUpdate {
+	uu.mutation.ClearLocal()
 	return uu
 }
 
@@ -260,6 +274,9 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.TenantID(); ok {
 		_spec.SetField(user.FieldTenantID, field.TypeString, value)
 	}
+	if value, ok := uu.mutation.SafeID(); ok {
+		_spec.SetField(user.FieldSafeID, field.TypeString, value)
+	}
 	if value, ok := uu.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 	}
@@ -278,12 +295,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if uu.mutation.LastSignedInCleared() {
 		_spec.ClearField(user.FieldLastSignedIn, field.TypeTime)
 	}
-	if uu.mutation.MyIDCleared() {
+	if uu.mutation.LocalCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   user.MyIDTable,
-			Columns: []string{user.MyIDColumn},
+			Table:   user.LocalTable,
+			Columns: []string{user.LocalColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(local.FieldID, field.TypeUint64),
@@ -291,12 +308,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uu.mutation.MyIDIDs(); len(nodes) > 0 {
+	if nodes := uu.mutation.LocalIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   user.MyIDTable,
-			Columns: []string{user.MyIDColumn},
+			Table:   user.LocalTable,
+			Columns: []string{user.LocalColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(local.FieldID, field.TypeUint64),
@@ -407,6 +424,20 @@ func (uuo *UserUpdateOne) SetNillableTenantID(s *string) *UserUpdateOne {
 	return uuo
 }
 
+// SetSafeID sets the "safe_id" field.
+func (uuo *UserUpdateOne) SetSafeID(s string) *UserUpdateOne {
+	uuo.mutation.SetSafeID(s)
+	return uuo
+}
+
+// SetNillableSafeID sets the "safe_id" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableSafeID(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetSafeID(*s)
+	}
+	return uuo
+}
+
 // SetEmail sets the "email" field.
 func (uuo *UserUpdateOne) SetEmail(s string) *UserUpdateOne {
 	uuo.mutation.SetEmail(s)
@@ -481,23 +512,23 @@ func (uuo *UserUpdateOne) SetNillableRoleID(u *uint64) *UserUpdateOne {
 	return uuo
 }
 
-// SetMyIDID sets the "my_id" edge to the Local entity by ID.
-func (uuo *UserUpdateOne) SetMyIDID(id uint64) *UserUpdateOne {
-	uuo.mutation.SetMyIDID(id)
+// SetLocalID sets the "local" edge to the Local entity by ID.
+func (uuo *UserUpdateOne) SetLocalID(id uint64) *UserUpdateOne {
+	uuo.mutation.SetLocalID(id)
 	return uuo
 }
 
-// SetNillableMyIDID sets the "my_id" edge to the Local entity by ID if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableMyIDID(id *uint64) *UserUpdateOne {
+// SetNillableLocalID sets the "local" edge to the Local entity by ID if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLocalID(id *uint64) *UserUpdateOne {
 	if id != nil {
-		uuo = uuo.SetMyIDID(*id)
+		uuo = uuo.SetLocalID(*id)
 	}
 	return uuo
 }
 
-// SetMyID sets the "my_id" edge to the Local entity.
-func (uuo *UserUpdateOne) SetMyID(l *Local) *UserUpdateOne {
-	return uuo.SetMyIDID(l.ID)
+// SetLocal sets the "local" edge to the Local entity.
+func (uuo *UserUpdateOne) SetLocal(l *Local) *UserUpdateOne {
+	return uuo.SetLocalID(l.ID)
 }
 
 // SetGoogleID sets the "google" edge to the Google entity by ID.
@@ -529,9 +560,9 @@ func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
 }
 
-// ClearMyID clears the "my_id" edge to the Local entity.
-func (uuo *UserUpdateOne) ClearMyID() *UserUpdateOne {
-	uuo.mutation.ClearMyID()
+// ClearLocal clears the "local" edge to the Local entity.
+func (uuo *UserUpdateOne) ClearLocal() *UserUpdateOne {
+	uuo.mutation.ClearLocal()
 	return uuo
 }
 
@@ -645,6 +676,9 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.TenantID(); ok {
 		_spec.SetField(user.FieldTenantID, field.TypeString, value)
 	}
+	if value, ok := uuo.mutation.SafeID(); ok {
+		_spec.SetField(user.FieldSafeID, field.TypeString, value)
+	}
 	if value, ok := uuo.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 	}
@@ -663,12 +697,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if uuo.mutation.LastSignedInCleared() {
 		_spec.ClearField(user.FieldLastSignedIn, field.TypeTime)
 	}
-	if uuo.mutation.MyIDCleared() {
+	if uuo.mutation.LocalCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   user.MyIDTable,
-			Columns: []string{user.MyIDColumn},
+			Table:   user.LocalTable,
+			Columns: []string{user.LocalColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(local.FieldID, field.TypeUint64),
@@ -676,12 +710,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uuo.mutation.MyIDIDs(); len(nodes) > 0 {
+	if nodes := uuo.mutation.LocalIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   user.MyIDTable,
-			Columns: []string{user.MyIDColumn},
+			Table:   user.LocalTable,
+			Columns: []string{user.LocalColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(local.FieldID, field.TypeUint64),

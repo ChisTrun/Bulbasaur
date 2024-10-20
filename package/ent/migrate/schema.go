@@ -69,7 +69,7 @@ var (
 		PrimaryKey: []*schema.Column{LocalsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "locals_users_my_id",
+				Symbol:     "locals_users_local",
 				Columns:    []*schema.Column{LocalsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
@@ -136,6 +136,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "tenant_id", Type: field.TypeString},
+		{Name: "safe_id", Type: field.TypeString, Default: "0c48a583-4982-4881-a8bb-295197e8775a"},
 		{Name: "email", Type: field.TypeString, Nullable: true},
 		{Name: "metadata", Type: field.TypeString, Nullable: true, Size: 2147483647},
 		{Name: "last_signed_in", Type: field.TypeTime, Nullable: true},
@@ -149,7 +150,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "users_roles_user",
-				Columns:    []*schema.Column{UsersColumns[7]},
+				Columns:    []*schema.Column{UsersColumns[8]},
 				RefColumns: []*schema.Column{RolesColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -159,6 +160,11 @@ var (
 				Name:    "user_tenant_id_id",
 				Unique:  true,
 				Columns: []*schema.Column{UsersColumns[3], UsersColumns[0]},
+			},
+			{
+				Name:    "user_safe_id",
+				Unique:  true,
+				Columns: []*schema.Column{UsersColumns[4]},
 			},
 		},
 	}

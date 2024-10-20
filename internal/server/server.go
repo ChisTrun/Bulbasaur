@@ -1,6 +1,10 @@
 package server
 
 import (
+	pb0 "bulbasaur/api"
+	"bulbasaur/internal/repositories"
+	"bulbasaur/internal/server/bulbasaur"
+	"bulbasaur/internal/services/signer"
 	"bulbasaur/package/config"
 	"bulbasaur/package/ent"
 	"context"
@@ -29,6 +33,12 @@ func Serve(cfg *config.Config) {
 	}
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
+
+	repo := repositories.NewRepository(client)
+	signer := signer.NewSigner(cfg)
+
+	pb0.RegisterBulbasaurServer(grpcServer, bulbasaur.NewServer(repo, signer))
+
 	log.Printf("server is runing on: %v:%v", cfg.Server.Host, cfg.Server.Port)
 	grpcServer.Serve(lis)
 }

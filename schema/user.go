@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+	"github.com/google/uuid"
 )
 
 type User struct {
@@ -21,6 +22,7 @@ func (User) Mixin() []ent.Mixin {
 func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("tenant_id"),
+		field.String("safe_id").Default(uuid.NewString()),
 		field.String("email").Optional(),
 		field.Text("metadata").
 			Optional().
@@ -34,7 +36,7 @@ func (User) Fields() []ent.Field {
 
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("my_id", Local.Type).Annotations(entsql.Annotation{
+		edge.To("local", Local.Type).Annotations(entsql.Annotation{
 			OnDelete: entsql.Cascade,
 		}).
 			Unique(),
@@ -49,5 +51,6 @@ func (User) Edges() []ent.Edge {
 func (User) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("tenant_id", "id").Unique(),
+		index.Fields("safe_id").Unique(),
 	}
 }

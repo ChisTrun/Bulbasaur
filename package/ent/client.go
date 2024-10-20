@@ -1133,15 +1133,15 @@ func (c *UserClient) GetX(ctx context.Context, id uint64) *User {
 	return obj
 }
 
-// QueryMyID queries the my_id edge of a User.
-func (c *UserClient) QueryMyID(u *User) *LocalQuery {
+// QueryLocal queries the local edge of a User.
+func (c *UserClient) QueryLocal(u *User) *LocalQuery {
 	query := (&LocalClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(local.Table, local.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, user.MyIDTable, user.MyIDColumn),
+			sqlgraph.Edge(sqlgraph.O2O, false, user.LocalTable, user.LocalColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

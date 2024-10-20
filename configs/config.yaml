@@ -8,3 +8,9 @@ database:
   name: ${DATABASE_NAME}
   username: ${DATABASE_USERNAME}
   password: ${DATABASE_PASSWORD}
+
+
+auth: 
+  access_key: ${AUTH_ACCESS_KEY}
+  refesh_key: ${AUTH_REFESH_KEY}
+

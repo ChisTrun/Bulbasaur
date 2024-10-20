@@ -59,6 +59,20 @@ func (uc *UserCreate) SetTenantID(s string) *UserCreate {
 	return uc
 }
 
+// SetSafeID sets the "safe_id" field.
+func (uc *UserCreate) SetSafeID(s string) *UserCreate {
+	uc.mutation.SetSafeID(s)
+	return uc
+}
+
+// SetNillableSafeID sets the "safe_id" field if the given value is not nil.
+func (uc *UserCreate) SetNillableSafeID(s *string) *UserCreate {
+	if s != nil {
+		uc.SetSafeID(*s)
+	}
+	return uc
+}
+
 // SetEmail sets the "email" field.
 func (uc *UserCreate) SetEmail(s string) *UserCreate {
 	uc.mutation.SetEmail(s)
@@ -113,23 +127,23 @@ func (uc *UserCreate) SetID(u uint64) *UserCreate {
 	return uc
 }
 
-// SetMyIDID sets the "my_id" edge to the Local entity by ID.
-func (uc *UserCreate) SetMyIDID(id uint64) *UserCreate {
-	uc.mutation.SetMyIDID(id)
+// SetLocalID sets the "local" edge to the Local entity by ID.
+func (uc *UserCreate) SetLocalID(id uint64) *UserCreate {
+	uc.mutation.SetLocalID(id)
 	return uc
 }
 
-// SetNillableMyIDID sets the "my_id" edge to the Local entity by ID if the given value is not nil.
-func (uc *UserCreate) SetNillableMyIDID(id *uint64) *UserCreate {
+// SetNillableLocalID sets the "local" edge to the Local entity by ID if the given value is not nil.
+func (uc *UserCreate) SetNillableLocalID(id *uint64) *UserCreate {
 	if id != nil {
-		uc = uc.SetMyIDID(*id)
+		uc = uc.SetLocalID(*id)
 	}
 	return uc
 }
 
-// SetMyID sets the "my_id" edge to the Local entity.
-func (uc *UserCreate) SetMyID(l *Local) *UserCreate {
-	return uc.SetMyIDID(l.ID)
+// SetLocal sets the "local" edge to the Local entity.
+func (uc *UserCreate) SetLocal(l *Local) *UserCreate {
+	return uc.SetLocalID(l.ID)
 }
 
 // SetGoogleID sets the "google" edge to the Google entity by ID.
@@ -199,6 +213,10 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultUpdatedAt()
 		uc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := uc.mutation.SafeID(); !ok {
+		v := user.DefaultSafeID
+		uc.mutation.SetSafeID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -211,6 +229,9 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.TenantID(); !ok {
 		return &ValidationError{Name: "tenant_id", err: errors.New(`ent: missing required field "User.tenant_id"`)}
+	}
+	if _, ok := uc.mutation.SafeID(); !ok {
+		return &ValidationError{Name: "safe_id", err: errors.New(`ent: missing required field "User.safe_id"`)}
 	}
 	if _, ok := uc.mutation.RoleID(); !ok {
 		return &ValidationError{Name: "role_id", err: errors.New(`ent: missing required field "User.role_id"`)}
@@ -263,6 +284,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldTenantID, field.TypeString, value)
 		_node.TenantID = value
 	}
+	if value, ok := uc.mutation.SafeID(); ok {
+		_spec.SetField(user.FieldSafeID, field.TypeString, value)
+		_node.SafeID = value
+	}
 	if value, ok := uc.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 		_node.Email = value
@@ -275,12 +300,12 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldLastSignedIn, field.TypeTime, value)
 		_node.LastSignedIn = &value
 	}
-	if nodes := uc.mutation.MyIDIDs(); len(nodes) > 0 {
+	if nodes := uc.mutation.LocalIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   user.MyIDTable,
-			Columns: []string{user.MyIDColumn},
+			Table:   user.LocalTable,
+			Columns: []string{user.LocalColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(local.FieldID, field.TypeUint64),
@@ -397,6 +422,18 @@ func (u *UserUpsert) SetTenantID(v string) *UserUpsert {
 // UpdateTenantID sets the "tenant_id" field to the value that was provided on create.
 func (u *UserUpsert) UpdateTenantID() *UserUpsert {
 	u.SetExcluded(user.FieldTenantID)
+	return u
+}
+
+// SetSafeID sets the "safe_id" field.
+func (u *UserUpsert) SetSafeID(v string) *UserUpsert {
+	u.Set(user.FieldSafeID, v)
+	return u
+}
+
+// UpdateSafeID sets the "safe_id" field to the value that was provided on create.
+func (u *UserUpsert) UpdateSafeID() *UserUpsert {
+	u.SetExcluded(user.FieldSafeID)
 	return u
 }
 
@@ -542,6 +579,20 @@ func (u *UserUpsertOne) SetTenantID(v string) *UserUpsertOne {
 func (u *UserUpsertOne) UpdateTenantID() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateTenantID()
+	})
+}
+
+// SetSafeID sets the "safe_id" field.
+func (u *UserUpsertOne) SetSafeID(v string) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetSafeID(v)
+	})
+}
+
+// UpdateSafeID sets the "safe_id" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateSafeID() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateSafeID()
 	})
 }
 
@@ -864,6 +915,20 @@ func (u *UserUpsertBulk) SetTenantID(v string) *UserUpsertBulk {
 func (u *UserUpsertBulk) UpdateTenantID() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateTenantID()
+	})
+}
+
+// SetSafeID sets the "safe_id" field.
+func (u *UserUpsertBulk) SetSafeID(v string) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetSafeID(v)
+	})
+}
+
+// UpdateSafeID sets the "safe_id" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateSafeID() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateSafeID()
 	})
 }
 

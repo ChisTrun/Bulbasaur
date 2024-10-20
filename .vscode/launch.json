@@ -19,7 +19,10 @@
           "DATABASE_USERNAME": "root",
           "DATABASE_PASSWORD": "trung113",
           "DATABASE_AWS_REGION": "a",
-          "HOSE_HOSE": ""
+          "HOSE_HOSE": "",
+
+          "AUTH_ACCESS_KEY": "test_access_key",
+          "AUTH_REFESH_KEY": "test_refesh_key"
         }
       }
     ]

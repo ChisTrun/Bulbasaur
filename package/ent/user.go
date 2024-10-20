@@ -26,6 +26,8 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// TenantID holds the value of the "tenant_id" field.
 	TenantID string `json:"tenant_id,omitempty"`
+	// SafeID holds the value of the "safe_id" field.
+	SafeID string `json:"safe_id,omitempty"`
 	// Email holds the value of the "email" field.
 	Email string `json:"email,omitempty"`
 	// Metadata holds the value of the "metadata" field.
@@ -42,8 +44,8 @@ type User struct {
 
 // UserEdges holds the relations/edges for other nodes in the graph.
 type UserEdges struct {
-	// MyID holds the value of the my_id edge.
-	MyID *Local `json:"my_id,omitempty"`
+	// Local holds the value of the local edge.
+	Local *Local `json:"local,omitempty"`
 	// Google holds the value of the google edge.
 	Google *Google `json:"google,omitempty"`
 	// Role holds the value of the role edge.
@@ -53,15 +55,15 @@ type UserEdges struct {
 	loadedTypes [3]bool
 }
 
-// MyIDOrErr returns the MyID value or an error if the edge
+// LocalOrErr returns the Local value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e UserEdges) MyIDOrErr() (*Local, error) {
-	if e.MyID != nil {
-		return e.MyID, nil
+func (e UserEdges) LocalOrErr() (*Local, error) {
+	if e.Local != nil {
+		return e.Local, nil
 	} else if e.loadedTypes[0] {
 		return nil, &NotFoundError{label: local.Label}
 	}
-	return nil, &NotLoadedError{edge: "my_id"}
+	return nil, &NotLoadedError{edge: "local"}
 }
 
 // GoogleOrErr returns the Google value or an error if the edge
@@ -93,7 +95,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldID, user.FieldRoleID:
 			values[i] = new(sql.NullInt64)
-		case user.FieldTenantID, user.FieldEmail, user.FieldMetadata:
+		case user.FieldTenantID, user.FieldSafeID, user.FieldEmail, user.FieldMetadata:
 			values[i] = new(sql.NullString)
 		case user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldLastSignedIn:
 			values[i] = new(sql.NullTime)
@@ -136,6 +138,12 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.TenantID = value.String
 			}
+		case user.FieldSafeID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field safe_id", values[i])
+			} else if value.Valid {
+				u.SafeID = value.String
+			}
 		case user.FieldEmail:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field email", values[i])
@@ -175,9 +183,9 @@ func (u *User) Value(name string) (ent.Value, error) {
 	return u.selectValues.Get(name)
 }
 
-// QueryMyID queries the "my_id" edge of the User entity.
-func (u *User) QueryMyID() *LocalQuery {
-	return NewUserClient(u.config).QueryMyID(u)
+// QueryLocal queries the "local" edge of the User entity.
+func (u *User) QueryLocal() *LocalQuery {
+	return NewUserClient(u.config).QueryLocal(u)
 }
 
 // QueryGoogle queries the "google" edge of the User entity.
@@ -221,6 +229,9 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("tenant_id=")
 	builder.WriteString(u.TenantID)
+	builder.WriteString(", ")
+	builder.WriteString("safe_id=")
+	builder.WriteString(u.SafeID)
 	builder.WriteString(", ")
 	builder.WriteString("email=")
 	builder.WriteString(u.Email)

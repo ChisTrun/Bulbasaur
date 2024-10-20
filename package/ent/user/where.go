@@ -70,6 +70,11 @@ func TenantID(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldTenantID, v))
 }
 
+// SafeID applies equality check predicate on the "safe_id" field. It's identical to SafeIDEQ.
+func SafeID(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldSafeID, v))
+}
+
 // Email applies equality check predicate on the "email" field. It's identical to EmailEQ.
 func Email(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldEmail, v))
@@ -233,6 +238,71 @@ func TenantIDEqualFold(v string) predicate.User {
 // TenantIDContainsFold applies the ContainsFold predicate on the "tenant_id" field.
 func TenantIDContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldTenantID, v))
+}
+
+// SafeIDEQ applies the EQ predicate on the "safe_id" field.
+func SafeIDEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldSafeID, v))
+}
+
+// SafeIDNEQ applies the NEQ predicate on the "safe_id" field.
+func SafeIDNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldSafeID, v))
+}
+
+// SafeIDIn applies the In predicate on the "safe_id" field.
+func SafeIDIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldSafeID, vs...))
+}
+
+// SafeIDNotIn applies the NotIn predicate on the "safe_id" field.
+func SafeIDNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldSafeID, vs...))
+}
+
+// SafeIDGT applies the GT predicate on the "safe_id" field.
+func SafeIDGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldSafeID, v))
+}
+
+// SafeIDGTE applies the GTE predicate on the "safe_id" field.
+func SafeIDGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldSafeID, v))
+}
+
+// SafeIDLT applies the LT predicate on the "safe_id" field.
+func SafeIDLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldSafeID, v))
+}
+
+// SafeIDLTE applies the LTE predicate on the "safe_id" field.
+func SafeIDLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldSafeID, v))
+}
+
+// SafeIDContains applies the Contains predicate on the "safe_id" field.
+func SafeIDContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldSafeID, v))
+}
+
+// SafeIDHasPrefix applies the HasPrefix predicate on the "safe_id" field.
+func SafeIDHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldSafeID, v))
+}
+
+// SafeIDHasSuffix applies the HasSuffix predicate on the "safe_id" field.
+func SafeIDHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldSafeID, v))
+}
+
+// SafeIDEqualFold applies the EqualFold predicate on the "safe_id" field.
+func SafeIDEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldSafeID, v))
+}
+
+// SafeIDContainsFold applies the ContainsFold predicate on the "safe_id" field.
+func SafeIDContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldSafeID, v))
 }
 
 // EmailEQ applies the EQ predicate on the "email" field.
@@ -455,21 +525,21 @@ func RoleIDNotIn(vs ...uint64) predicate.User {
 	return predicate.User(sql.FieldNotIn(FieldRoleID, vs...))
 }
 
-// HasMyID applies the HasEdge predicate on the "my_id" edge.
-func HasMyID() predicate.User {
+// HasLocal applies the HasEdge predicate on the "local" edge.
+func HasLocal() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, MyIDTable, MyIDColumn),
+			sqlgraph.Edge(sqlgraph.O2O, false, LocalTable, LocalColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasMyIDWith applies the HasEdge predicate on the "my_id" edge with a given conditions (other predicates).
-func HasMyIDWith(preds ...predicate.Local) predicate.User {
+// HasLocalWith applies the HasEdge predicate on the "local" edge with a given conditions (other predicates).
+func HasLocalWith(preds ...predicate.Local) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := newMyIDStep()
+		step := newLocalStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

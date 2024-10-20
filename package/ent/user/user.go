@@ -20,6 +20,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldTenantID holds the string denoting the tenant_id field in the database.
 	FieldTenantID = "tenant_id"
+	// FieldSafeID holds the string denoting the safe_id field in the database.
+	FieldSafeID = "safe_id"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
 	// FieldMetadata holds the string denoting the metadata field in the database.
@@ -28,21 +30,21 @@ const (
 	FieldLastSignedIn = "last_signed_in"
 	// FieldRoleID holds the string denoting the role_id field in the database.
 	FieldRoleID = "role_id"
-	// EdgeMyID holds the string denoting the my_id edge name in mutations.
-	EdgeMyID = "my_id"
+	// EdgeLocal holds the string denoting the local edge name in mutations.
+	EdgeLocal = "local"
 	// EdgeGoogle holds the string denoting the google edge name in mutations.
 	EdgeGoogle = "google"
 	// EdgeRole holds the string denoting the role edge name in mutations.
 	EdgeRole = "role"
 	// Table holds the table name of the user in the database.
 	Table = "users"
-	// MyIDTable is the table that holds the my_id relation/edge.
-	MyIDTable = "locals"
-	// MyIDInverseTable is the table name for the Local entity.
+	// LocalTable is the table that holds the local relation/edge.
+	LocalTable = "locals"
+	// LocalInverseTable is the table name for the Local entity.
 	// It exists in this package in order to avoid circular dependency with the "local" package.
-	MyIDInverseTable = "locals"
-	// MyIDColumn is the table column denoting the my_id relation/edge.
-	MyIDColumn = "user_id"
+	LocalInverseTable = "locals"
+	// LocalColumn is the table column denoting the local relation/edge.
+	LocalColumn = "user_id"
 	// GoogleTable is the table that holds the google relation/edge.
 	GoogleTable = "googles"
 	// GoogleInverseTable is the table name for the Google entity.
@@ -65,6 +67,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldTenantID,
+	FieldSafeID,
 	FieldEmail,
 	FieldMetadata,
 	FieldLastSignedIn,
@@ -88,6 +91,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultSafeID holds the default value on creation for the "safe_id" field.
+	DefaultSafeID string
 )
 
 // OrderOption defines the ordering options for the User queries.
@@ -113,6 +118,11 @@ func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTenantID, opts...).ToFunc()
 }
 
+// BySafeID orders the results by the safe_id field.
+func BySafeID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSafeID, opts...).ToFunc()
+}
+
 // ByEmail orders the results by the email field.
 func ByEmail(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEmail, opts...).ToFunc()
@@ -133,10 +143,10 @@ func ByRoleID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRoleID, opts...).ToFunc()
 }
 
-// ByMyIDField orders the results by my_id field.
-func ByMyIDField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByLocalField orders the results by local field.
+func ByLocalField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newMyIDStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newLocalStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -153,11 +163,11 @@ func ByRoleField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newRoleStep(), sql.OrderByField(field, opts...))
 	}
 }
-func newMyIDStep() *sqlgraph.Step {
+func newLocalStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(MyIDInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2O, false, MyIDTable, MyIDColumn),
+		sqlgraph.To(LocalInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2O, false, LocalTable, LocalColumn),
 	)
 }
 func newGoogleStep() *sqlgraph.Step {

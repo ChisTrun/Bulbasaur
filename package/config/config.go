@@ -17,6 +17,10 @@ type Config struct {
 		Port     string `mapstructure:"port"`
 		Password string `mapstructure:"password"`
 	} `mapstructure:"database"`
+	Auth struct {
+		AccessKey string `mapstructure:"access_key"`
+		RefeshKey string `mapstructure:"refesh_key"`
+	} `mapstructure:"auth"`
 }
 
 func ReadConfig(path string) (Config, error) {
@@ -35,6 +39,9 @@ func ReadConfig(path string) (Config, error) {
 	viper.BindEnv("database.name", "DATABASE_NAME")
 	viper.BindEnv("database.username", "DATABASE_USERNAME")
 	viper.BindEnv("database.password", "DATABASE_PASSWORD")
+
+	viper.BindEnv("auth.access_key", "AUTH_ACCESS_KEY")
+	viper.BindEnv("auth.refesh_key", "AUTH_REFESH_KEY")
 
 	// Thực hiện unmarshal từ cấu hình
 	if err := viper.Unmarshal(&cfg); err != nil {
