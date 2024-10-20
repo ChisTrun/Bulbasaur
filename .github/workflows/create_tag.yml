@@ -34,7 +34,10 @@ jobs:
           NEW_TAG="v1.0.0"
         else
           # Split the tag into parts (e.g., v1.0.0 -> 1, 0, 0)
-          IFS='.' read -r major minor patch <<< "${TAG//v/}"
+          TAG_WITHOUT_V="${TAG#v}"  # Loại bỏ ký tự 'v' ở đầu tag
+          major=$(echo "$TAG_WITHOUT_V" | cut -d '.' -f1)
+          minor=$(echo "$TAG_WITHOUT_V" | cut -d '.' -f2)
+          patch=$(echo "$TAG_WITHOUT_V" | cut -d '.' -f3)
           
           # Increment the patch version
           PATCH=$((patch + 1))
