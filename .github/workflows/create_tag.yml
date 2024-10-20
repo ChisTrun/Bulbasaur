@@ -1,4 +1,4 @@
-name: Create or Update Tag
+name: create tag
 
 on:
   push:

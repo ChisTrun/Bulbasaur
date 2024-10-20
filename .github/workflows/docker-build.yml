@@ -2,7 +2,7 @@ name: Build and Push Docker Image with Commit Timestamp
 
 on:
   workflow_run:
-    workflows: ["Create or Update Tag"]
+    workflows: ["create tag"]
     types:
       - completed
 
