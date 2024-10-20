@@ -1,4 +1,4 @@
-name: Build and Push Docker Image with Commit Timestamp
+name: Build and Push Docker Image
 
 on:
   workflow_run:

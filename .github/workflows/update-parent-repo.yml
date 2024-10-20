@@ -35,7 +35,7 @@ jobs:
       - name: Update submodule in parent repo
         run: |
           cd SkillSharp
-          TAG="${{ steps.get_tag.outputs.tag }}"
+          TAG="${{ steps.get_tag.outputs.tag}}"
           BRANCH_NAME="bulbasour_update_${TAG}"
           git checkout -b $BRANCH_NAME
           git submodule update --remote backend/Bulbasaur
@@ -45,7 +45,7 @@ jobs:
 
       - name: Create Pull Request
         run: |
-          TAG= "${{ steps.get_tag.outputs.tag}}"
+          TAG="${{ steps.get_tag.outputs.tag}}"
           BRANCH_NAME="bulbasour_update_${TAG}"
           curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -d "{\"title\":\"Update module\",\"head\":\"${BRANCH_NAME}\",\"base\":\"main\"}" \
