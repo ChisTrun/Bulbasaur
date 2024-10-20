@@ -12,13 +12,15 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
     - name: Set up Git
       run: |
         git config --global user.name "ChisTrun"
         git config --global user.email "vochitrung.pst@gmail.com"
 
-        
+
     - name: Get latest tag
       id: get_tag
       run: |
