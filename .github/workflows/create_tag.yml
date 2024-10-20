@@ -48,7 +48,6 @@ jobs:
         fi
         echo "::set-output name=new_tag::$NEW_TAG"
 
-
     - name: Create and push new tag
       run: |
         NEW_TAG="${{ steps.increment_tag.outputs.new_tag }}"
