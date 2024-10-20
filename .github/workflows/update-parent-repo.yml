@@ -34,7 +34,6 @@ jobs:
       - name: Update submodule in parent repo
         run: |
           cd SkillSharp
-          TIMESTAMP=$(date +%s)
           TAG="${{ steps.get_tag.outputs.tag }}"
           BRANCH_NAME="bulbasour_update_${TAG}"
           git checkout -b $BRANCH_NAME
@@ -45,7 +44,6 @@ jobs:
 
       - name: Create Pull Request
         run: |
-          TIMESTAMP=$(date +%s)
           TAG= "${{ steps.get_tag.outputs.tag}}"
           BRANCH_NAME="bulbasour_update_${TAG}"
           curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
