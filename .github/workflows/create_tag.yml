@@ -40,8 +40,8 @@ jobs:
           TAG_WITHOUT_V="${TAG#v}"  # Loại bỏ ký tự 'v' ở đầu tag
           major=$(echo "$TAG_WITHOUT_V" | cut -d '.' -f1)
           minor=$(echo "$TAG_WITHOUT_V" | cut -d '.' -f2)
-          patch=$(echo "$TAG_WITHOUT_V" |   -d '.' -f3)
-          
+          patch=$(echo "$TAG_WITHOUT_V" | cut -d '.' -f3)
+
           # Increment the patch version
           PATCH=$((patch + 1))
           
