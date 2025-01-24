@@ -9,7 +9,7 @@ service Bulbasaur {
     rpc SignUp (SignUpRequest) returns (SignUpResponse);
     rpc SignIn (SignInRequest) returns (SignInResponse);
     rpc UpdateMetadata (UpdateMetadataRequest) returns (UpdateMetadataResponse);
-    rpc RefeshToken (RefeshTokenRequest) returns (RefeshTokenResponse);
+    rpc RefeshToken (RefreshTokenRequest) returns (RefreshTokenResponse);
 }
 
 //======================================== ENUM =======================================
@@ -20,6 +20,12 @@ enum TokenType {
     TOKEN_TYPE_REFESH_TOKEN = 2;
 }
 
+enum Role {
+    ROLE_UNKNOWN = 0;
+    ROLE_CANDIDATE = 1;
+    ROLE_BUSINESS_MANAGER = 2; 
+}
+
 //======================================== DATA ========================================
 
 
@@ -27,7 +33,7 @@ enum TokenType {
 
 message TokenInfo {
     uint64 user_id = 1;
-    string refesh_token = 2;
+    string refresh_token = 2;
     string access_token = 3;
 }
   
@@ -35,7 +41,7 @@ message TokenInfo {
 message SignUpRequest {
     oneof credential {
         Local local = 1;
-        Google goole = 2;
+        Google google = 2;
     }
     optional string device_id = 3;
     optional string device_name = 4;
@@ -58,7 +64,7 @@ message SignUpResponse {
 message SignInRequest {
     oneof credential {
         Local local = 1;
-        Google goole = 2;
+        Google google = 2;
     }
     optional string device_id = 3;
     optional string device_name = 4;
@@ -78,11 +84,11 @@ message SignInResponse {
     TokenInfo token_info = 1;
 }
 
-message RefeshTokenRequest {
+message RefreshTokenRequest {
     TokenInfo token_info = 1;
 }
 
-message RefeshTokenResponse {
+message RefreshTokenResponse {
     TokenInfo token_info = 1;
 }
 

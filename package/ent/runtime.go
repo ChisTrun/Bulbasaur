@@ -3,10 +3,8 @@
 package ent
 
 import (
-	"bulbasaur/package/ent/action"
 	"bulbasaur/package/ent/google"
 	"bulbasaur/package/ent/local"
-	"bulbasaur/package/ent/role"
 	"bulbasaur/package/ent/user"
 	"bulbasaur/schema"
 	"time"
@@ -16,25 +14,6 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
-	actionMixin := schema.Action{}.Mixin()
-	actionMixinFields0 := actionMixin[0].Fields()
-	_ = actionMixinFields0
-	actionFields := schema.Action{}.Fields()
-	_ = actionFields
-	// actionDescCreatedAt is the schema descriptor for created_at field.
-	actionDescCreatedAt := actionMixinFields0[1].Descriptor()
-	// action.DefaultCreatedAt holds the default value on creation for the created_at field.
-	action.DefaultCreatedAt = actionDescCreatedAt.Default.(func() time.Time)
-	// actionDescUpdatedAt is the schema descriptor for updated_at field.
-	actionDescUpdatedAt := actionMixinFields0[2].Descriptor()
-	// action.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	action.DefaultUpdatedAt = actionDescUpdatedAt.Default.(func() time.Time)
-	// action.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	action.UpdateDefaultUpdatedAt = actionDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// actionDescName is the schema descriptor for name field.
-	actionDescName := actionFields[0].Descriptor()
-	// action.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	action.NameValidator = actionDescName.Validators[0].(func(string) error)
 	googleMixin := schema.Google{}.Mixin()
 	googleMixinFields0 := googleMixin[0].Fields()
 	_ = googleMixinFields0
@@ -69,25 +48,6 @@ func init() {
 	local.DefaultUpdatedAt = localDescUpdatedAt.Default.(func() time.Time)
 	// local.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	local.UpdateDefaultUpdatedAt = localDescUpdatedAt.UpdateDefault.(func() time.Time)
-	roleMixin := schema.Role{}.Mixin()
-	roleMixinFields0 := roleMixin[0].Fields()
-	_ = roleMixinFields0
-	roleFields := schema.Role{}.Fields()
-	_ = roleFields
-	// roleDescCreatedAt is the schema descriptor for created_at field.
-	roleDescCreatedAt := roleMixinFields0[1].Descriptor()
-	// role.DefaultCreatedAt holds the default value on creation for the created_at field.
-	role.DefaultCreatedAt = roleDescCreatedAt.Default.(func() time.Time)
-	// roleDescUpdatedAt is the schema descriptor for updated_at field.
-	roleDescUpdatedAt := roleMixinFields0[2].Descriptor()
-	// role.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	role.DefaultUpdatedAt = roleDescUpdatedAt.Default.(func() time.Time)
-	// role.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	role.UpdateDefaultUpdatedAt = roleDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// roleDescName is the schema descriptor for name field.
-	roleDescName := roleFields[0].Descriptor()
-	// role.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	role.NameValidator = roleDescName.Validators[0].(func(string) error)
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0

@@ -3,6 +3,7 @@
 package user
 
 import (
+	bulbasaur "bulbasaur/api"
 	"bulbasaur/package/ent/predicate"
 	"time"
 
@@ -90,9 +91,10 @@ func LastSignedIn(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldLastSignedIn, v))
 }
 
-// RoleID applies equality check predicate on the "role_id" field. It's identical to RoleIDEQ.
-func RoleID(v uint64) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldRoleID, v))
+// Role applies equality check predicate on the "role" field. It's identical to RoleEQ.
+func Role(v bulbasaur.Role) predicate.User {
+	vc := int32(v)
+	return predicate.User(sql.FieldEQ(FieldRole, vc))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -505,24 +507,58 @@ func LastSignedInNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldLastSignedIn))
 }
 
-// RoleIDEQ applies the EQ predicate on the "role_id" field.
-func RoleIDEQ(v uint64) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldRoleID, v))
+// RoleEQ applies the EQ predicate on the "role" field.
+func RoleEQ(v bulbasaur.Role) predicate.User {
+	vc := int32(v)
+	return predicate.User(sql.FieldEQ(FieldRole, vc))
 }
 
-// RoleIDNEQ applies the NEQ predicate on the "role_id" field.
-func RoleIDNEQ(v uint64) predicate.User {
-	return predicate.User(sql.FieldNEQ(FieldRoleID, v))
+// RoleNEQ applies the NEQ predicate on the "role" field.
+func RoleNEQ(v bulbasaur.Role) predicate.User {
+	vc := int32(v)
+	return predicate.User(sql.FieldNEQ(FieldRole, vc))
 }
 
-// RoleIDIn applies the In predicate on the "role_id" field.
-func RoleIDIn(vs ...uint64) predicate.User {
-	return predicate.User(sql.FieldIn(FieldRoleID, vs...))
+// RoleIn applies the In predicate on the "role" field.
+func RoleIn(vs ...bulbasaur.Role) predicate.User {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = int32(vs[i])
+	}
+	return predicate.User(sql.FieldIn(FieldRole, v...))
 }
 
-// RoleIDNotIn applies the NotIn predicate on the "role_id" field.
-func RoleIDNotIn(vs ...uint64) predicate.User {
-	return predicate.User(sql.FieldNotIn(FieldRoleID, vs...))
+// RoleNotIn applies the NotIn predicate on the "role" field.
+func RoleNotIn(vs ...bulbasaur.Role) predicate.User {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = int32(vs[i])
+	}
+	return predicate.User(sql.FieldNotIn(FieldRole, v...))
+}
+
+// RoleGT applies the GT predicate on the "role" field.
+func RoleGT(v bulbasaur.Role) predicate.User {
+	vc := int32(v)
+	return predicate.User(sql.FieldGT(FieldRole, vc))
+}
+
+// RoleGTE applies the GTE predicate on the "role" field.
+func RoleGTE(v bulbasaur.Role) predicate.User {
+	vc := int32(v)
+	return predicate.User(sql.FieldGTE(FieldRole, vc))
+}
+
+// RoleLT applies the LT predicate on the "role" field.
+func RoleLT(v bulbasaur.Role) predicate.User {
+	vc := int32(v)
+	return predicate.User(sql.FieldLT(FieldRole, vc))
+}
+
+// RoleLTE applies the LTE predicate on the "role" field.
+func RoleLTE(v bulbasaur.Role) predicate.User {
+	vc := int32(v)
+	return predicate.User(sql.FieldLTE(FieldRole, vc))
 }
 
 // HasLocal applies the HasEdge predicate on the "local" edge.
@@ -563,29 +599,6 @@ func HasGoogle() predicate.User {
 func HasGoogleWith(preds ...predicate.Google) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := newGoogleStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasRole applies the HasEdge predicate on the "role" edge.
-func HasRole() predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, RoleTable, RoleColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasRoleWith applies the HasEdge predicate on the "role" edge with a given conditions (other predicates).
-func HasRoleWith(preds ...predicate.Role) predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := newRoleStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

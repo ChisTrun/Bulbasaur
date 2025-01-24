@@ -8,20 +8,6 @@ import (
 )
 
 var (
-	// ActionsColumns holds the columns for the "actions" table.
-	ActionsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "name", Type: field.TypeString, Unique: true},
-		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2147483647},
-	}
-	// ActionsTable holds the schema information for the "actions" table.
-	ActionsTable = &schema.Table{
-		Name:       "actions",
-		Columns:    ActionsColumns,
-		PrimaryKey: []*schema.Column{ActionsColumns[0]},
-	}
 	// GooglesColumns holds the columns for the "googles" table.
 	GooglesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -83,78 +69,23 @@ var (
 			},
 		},
 	}
-	// PermissionsColumns holds the columns for the "permissions" table.
-	PermissionsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "action_id", Type: field.TypeUint64},
-		{Name: "role_id", Type: field.TypeUint64},
-	}
-	// PermissionsTable holds the schema information for the "permissions" table.
-	PermissionsTable = &schema.Table{
-		Name:       "permissions",
-		Columns:    PermissionsColumns,
-		PrimaryKey: []*schema.Column{PermissionsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "permissions_actions_permission",
-				Columns:    []*schema.Column{PermissionsColumns[1]},
-				RefColumns: []*schema.Column{ActionsColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-			{
-				Symbol:     "permissions_roles_permission",
-				Columns:    []*schema.Column{PermissionsColumns[2]},
-				RefColumns: []*schema.Column{RolesColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "permission_role_id_action_id",
-				Unique:  true,
-				Columns: []*schema.Column{PermissionsColumns[2], PermissionsColumns[1]},
-			},
-		},
-	}
-	// RolesColumns holds the columns for the "roles" table.
-	RolesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "name", Type: field.TypeString, Unique: true},
-		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2147483647},
-	}
-	// RolesTable holds the schema information for the "roles" table.
-	RolesTable = &schema.Table{
-		Name:       "roles",
-		Columns:    RolesColumns,
-		PrimaryKey: []*schema.Column{RolesColumns[0]},
-	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "tenant_id", Type: field.TypeString},
-		{Name: "safe_id", Type: field.TypeString, Default: "0c48a583-4982-4881-a8bb-295197e8775a"},
+		{Name: "safe_id", Type: field.TypeString, Default: "ed8890a4-0887-44fa-ab7b-6520b12b6fd1"},
 		{Name: "email", Type: field.TypeString, Nullable: true},
 		{Name: "metadata", Type: field.TypeString, Nullable: true, Size: 2147483647},
 		{Name: "last_signed_in", Type: field.TypeTime, Nullable: true},
-		{Name: "role_id", Type: field.TypeUint64},
+		{Name: "role", Type: field.TypeInt32},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
 		Name:       "users",
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "users_roles_user",
-				Columns:    []*schema.Column{UsersColumns[8]},
-				RefColumns: []*schema.Column{RolesColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "user_tenant_id_id",
@@ -170,11 +101,8 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		ActionsTable,
 		GooglesTable,
 		LocalsTable,
-		PermissionsTable,
-		RolesTable,
 		UsersTable,
 	}
 )
@@ -182,7 +110,4 @@ var (
 func init() {
 	GooglesTable.ForeignKeys[0].RefTable = UsersTable
 	LocalsTable.ForeignKeys[0].RefTable = UsersTable
-	PermissionsTable.ForeignKeys[0].RefTable = ActionsTable
-	PermissionsTable.ForeignKeys[1].RefTable = RolesTable
-	UsersTable.ForeignKeys[0].RefTable = RolesTable
 }

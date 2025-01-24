@@ -6,20 +6,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// Action is the predicate function for action builders.
-type Action func(*sql.Selector)
-
 // Google is the predicate function for google builders.
 type Google func(*sql.Selector)
 
 // Local is the predicate function for local builders.
 type Local func(*sql.Selector)
-
-// Permission is the predicate function for permission builders.
-type Permission func(*sql.Selector)
-
-// Role is the predicate function for role builders.
-type Role func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

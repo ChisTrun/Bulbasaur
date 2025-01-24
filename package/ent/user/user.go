@@ -28,14 +28,12 @@ const (
 	FieldMetadata = "metadata"
 	// FieldLastSignedIn holds the string denoting the last_signed_in field in the database.
 	FieldLastSignedIn = "last_signed_in"
-	// FieldRoleID holds the string denoting the role_id field in the database.
-	FieldRoleID = "role_id"
+	// FieldRole holds the string denoting the role field in the database.
+	FieldRole = "role"
 	// EdgeLocal holds the string denoting the local edge name in mutations.
 	EdgeLocal = "local"
 	// EdgeGoogle holds the string denoting the google edge name in mutations.
 	EdgeGoogle = "google"
-	// EdgeRole holds the string denoting the role edge name in mutations.
-	EdgeRole = "role"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// LocalTable is the table that holds the local relation/edge.
@@ -52,13 +50,6 @@ const (
 	GoogleInverseTable = "googles"
 	// GoogleColumn is the table column denoting the google relation/edge.
 	GoogleColumn = "user_id"
-	// RoleTable is the table that holds the role relation/edge.
-	RoleTable = "users"
-	// RoleInverseTable is the table name for the Role entity.
-	// It exists in this package in order to avoid circular dependency with the "role" package.
-	RoleInverseTable = "roles"
-	// RoleColumn is the table column denoting the role relation/edge.
-	RoleColumn = "role_id"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -71,7 +62,7 @@ var Columns = []string{
 	FieldEmail,
 	FieldMetadata,
 	FieldLastSignedIn,
-	FieldRoleID,
+	FieldRole,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -138,9 +129,9 @@ func ByLastSignedIn(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastSignedIn, opts...).ToFunc()
 }
 
-// ByRoleID orders the results by the role_id field.
-func ByRoleID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRoleID, opts...).ToFunc()
+// ByRole orders the results by the role field.
+func ByRole(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRole, opts...).ToFunc()
 }
 
 // ByLocalField orders the results by local field.
@@ -156,13 +147,6 @@ func ByGoogleField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newGoogleStep(), sql.OrderByField(field, opts...))
 	}
 }
-
-// ByRoleField orders the results by role field.
-func ByRoleField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newRoleStep(), sql.OrderByField(field, opts...))
-	}
-}
 func newLocalStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -175,12 +159,5 @@ func newGoogleStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(GoogleInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2O, false, GoogleTable, GoogleColumn),
-	)
-}
-func newRoleStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(RoleInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, RoleTable, RoleColumn),
 	)
 }

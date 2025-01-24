@@ -9,8 +9,13 @@ database:
   username: ${DATABASE_USERNAME}
   password: ${DATABASE_PASSWORD}
 
-
-auth: 
+auth:
   access_key: ${AUTH_ACCESS_KEY}
   refesh_key: ${AUTH_REFESH_KEY}
 
+redis:
+  address: ${REDIS_ADDRESS}
+  namespace: ${REDIS_NAMESPACE}
+
+google:
+  client_id: ${GOOGLE_CLIENT_ID}

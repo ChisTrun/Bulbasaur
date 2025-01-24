@@ -2,8 +2,10 @@ package server
 
 import (
 	pb0 "bulbasaur/api"
+	"bulbasaur/internal/google"
 	"bulbasaur/internal/repositories"
 	"bulbasaur/internal/server/bulbasaur"
+	"bulbasaur/internal/services/redis"
 	"bulbasaur/internal/services/signer"
 	"bulbasaur/package/config"
 	"bulbasaur/package/ent"
@@ -37,7 +39,14 @@ func Serve(cfg *config.Config) {
 	repo := repositories.NewRepository(client)
 	signer := signer.NewSigner(cfg)
 
-	pb0.RegisterBulbasaurServer(grpcServer, bulbasaur.NewServer(repo, signer))
+	redis := redis.New(true, cfg)
+
+	google, err := google.New(cfg, client)
+	if err != nil {
+		log.Fatalf("failed to create google client: %v", err)
+	}
+
+	pb0.RegisterBulbasaurServer(grpcServer, bulbasaur.NewServer(repo, signer, google, redis))
 
 	log.Printf("server is runing on: %v:%v", cfg.Server.Host, cfg.Server.Port)
 	grpcServer.Serve(lis)

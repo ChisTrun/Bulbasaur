@@ -3,9 +3,9 @@
 package ent
 
 import (
+	bulbasaur "bulbasaur/api"
 	"bulbasaur/package/ent/google"
 	"bulbasaur/package/ent/local"
-	"bulbasaur/package/ent/role"
 	"bulbasaur/package/ent/user"
 	"context"
 	"errors"
@@ -115,9 +115,9 @@ func (uc *UserCreate) SetNillableLastSignedIn(t *time.Time) *UserCreate {
 	return uc
 }
 
-// SetRoleID sets the "role_id" field.
-func (uc *UserCreate) SetRoleID(u uint64) *UserCreate {
-	uc.mutation.SetRoleID(u)
+// SetRole sets the "role" field.
+func (uc *UserCreate) SetRole(b bulbasaur.Role) *UserCreate {
+	uc.mutation.SetRole(b)
 	return uc
 }
 
@@ -163,11 +163,6 @@ func (uc *UserCreate) SetNillableGoogleID(id *uint64) *UserCreate {
 // SetGoogle sets the "google" edge to the Google entity.
 func (uc *UserCreate) SetGoogle(g *Google) *UserCreate {
 	return uc.SetGoogleID(g.ID)
-}
-
-// SetRole sets the "role" edge to the Role entity.
-func (uc *UserCreate) SetRole(r *Role) *UserCreate {
-	return uc.SetRoleID(r.ID)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -233,11 +228,8 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.SafeID(); !ok {
 		return &ValidationError{Name: "safe_id", err: errors.New(`ent: missing required field "User.safe_id"`)}
 	}
-	if _, ok := uc.mutation.RoleID(); !ok {
-		return &ValidationError{Name: "role_id", err: errors.New(`ent: missing required field "User.role_id"`)}
-	}
-	if len(uc.mutation.RoleIDs()) == 0 {
-		return &ValidationError{Name: "role", err: errors.New(`ent: missing required edge "User.role"`)}
+	if _, ok := uc.mutation.Role(); !ok {
+		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "User.role"`)}
 	}
 	return nil
 }
@@ -300,6 +292,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldLastSignedIn, field.TypeTime, value)
 		_node.LastSignedIn = &value
 	}
+	if value, ok := uc.mutation.Role(); ok {
+		_spec.SetField(user.FieldRole, field.TypeInt32, value)
+		_node.Role = value
+	}
 	if nodes := uc.mutation.LocalIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -330,23 +326,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := uc.mutation.RoleIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   user.RoleTable,
-			Columns: []string{user.RoleColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.RoleID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -491,15 +470,21 @@ func (u *UserUpsert) ClearLastSignedIn() *UserUpsert {
 	return u
 }
 
-// SetRoleID sets the "role_id" field.
-func (u *UserUpsert) SetRoleID(v uint64) *UserUpsert {
-	u.Set(user.FieldRoleID, v)
+// SetRole sets the "role" field.
+func (u *UserUpsert) SetRole(v bulbasaur.Role) *UserUpsert {
+	u.Set(user.FieldRole, v)
 	return u
 }
 
-// UpdateRoleID sets the "role_id" field to the value that was provided on create.
-func (u *UserUpsert) UpdateRoleID() *UserUpsert {
-	u.SetExcluded(user.FieldRoleID)
+// UpdateRole sets the "role" field to the value that was provided on create.
+func (u *UserUpsert) UpdateRole() *UserUpsert {
+	u.SetExcluded(user.FieldRole)
+	return u
+}
+
+// AddRole adds v to the "role" field.
+func (u *UserUpsert) AddRole(v bulbasaur.Role) *UserUpsert {
+	u.Add(user.FieldRole, v)
 	return u
 }
 
@@ -659,17 +644,24 @@ func (u *UserUpsertOne) ClearLastSignedIn() *UserUpsertOne {
 	})
 }
 
-// SetRoleID sets the "role_id" field.
-func (u *UserUpsertOne) SetRoleID(v uint64) *UserUpsertOne {
+// SetRole sets the "role" field.
+func (u *UserUpsertOne) SetRole(v bulbasaur.Role) *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
-		s.SetRoleID(v)
+		s.SetRole(v)
 	})
 }
 
-// UpdateRoleID sets the "role_id" field to the value that was provided on create.
-func (u *UserUpsertOne) UpdateRoleID() *UserUpsertOne {
+// AddRole adds v to the "role" field.
+func (u *UserUpsertOne) AddRole(v bulbasaur.Role) *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
-		s.UpdateRoleID()
+		s.AddRole(v)
+	})
+}
+
+// UpdateRole sets the "role" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateRole() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateRole()
 	})
 }
 
@@ -995,17 +987,24 @@ func (u *UserUpsertBulk) ClearLastSignedIn() *UserUpsertBulk {
 	})
 }
 
-// SetRoleID sets the "role_id" field.
-func (u *UserUpsertBulk) SetRoleID(v uint64) *UserUpsertBulk {
+// SetRole sets the "role" field.
+func (u *UserUpsertBulk) SetRole(v bulbasaur.Role) *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
-		s.SetRoleID(v)
+		s.SetRole(v)
 	})
 }
 
-// UpdateRoleID sets the "role_id" field to the value that was provided on create.
-func (u *UserUpsertBulk) UpdateRoleID() *UserUpsertBulk {
+// AddRole adds v to the "role" field.
+func (u *UserUpsertBulk) AddRole(v bulbasaur.Role) *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
-		s.UpdateRoleID()
+		s.AddRole(v)
+	})
+}
+
+// UpdateRole sets the "role" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateRole() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateRole()
 	})
 }
 

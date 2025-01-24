@@ -1,6 +1,8 @@
 package schema
 
 import (
+	bulbasaur "bulbasaur/api"
+
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
@@ -30,7 +32,7 @@ func (User) Fields() []ent.Field {
 		field.Time("last_signed_in").
 			Optional().
 			Nillable(),
-		field.Uint64("role_id"),
+		field.Int32("role").GoType(bulbasaur.Role(0)),
 	}
 }
 
@@ -44,7 +46,6 @@ func (User) Edges() []ent.Edge {
 			OnDelete: entsql.Cascade,
 		}).
 			Unique(),
-		edge.From("role", Role.Type).Required().Unique().Ref("user").Field("role_id"),
 	}
 }
 

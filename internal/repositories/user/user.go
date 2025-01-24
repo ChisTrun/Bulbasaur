@@ -4,6 +4,7 @@ import (
 	"bulbasaur/internal/services/hash"
 	"bulbasaur/internal/services/tx"
 	"bulbasaur/package/ent"
+	"bulbasaur/package/ent/google"
 	"bulbasaur/package/ent/local"
 	"bulbasaur/package/ent/user"
 	"context"
@@ -14,6 +15,10 @@ type UserRepository interface {
 	// user local
 	CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword string) (*ent.User, error)
 	GetLocal(ctx context.Context, tx tx.Tx, tenantId, username, password string) (*ent.User, error)
+
+	// user google
+	CreateGoogle(ctx context.Context, tx tx.Tx, tenantId, email string) (*ent.User, error)
+	GetGoogle(ctx context.Context, tx tx.Tx, tenantId, email string) (*ent.User, error)
 
 	// general
 	UpdateMetadata(ctx context.Context, tx tx.Tx, id uint64, metadata string) error
@@ -30,22 +35,6 @@ func NewUserRepository(ent *ent.Client) UserRepository {
 }
 
 func (u *userRepository) CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword string) (*ent.User, error) {
-
-	user, err := tx.Client().User.Query().Where(
-		user.TenantID(tenantId),
-		user.HasLocalWith(
-			local.TenantID(tenantId),
-			local.Username(username),
-		),
-	).Only(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	if user != nil {
-		return nil, fmt.Errorf("user already exists")
-	}
-
 	if password != confirmPassword {
 		return nil, fmt.Errorf("passwords do not match")
 	}
@@ -94,4 +83,33 @@ func (u *userRepository) GetLocal(ctx context.Context, tx tx.Tx, tenantId, usern
 
 func (u *userRepository) UpdateMetadata(ctx context.Context, tx tx.Tx, id uint64, metadata string) error {
 	return tx.Client().User.UpdateOneID(id).SetMetadata(metadata).Exec(ctx)
+}
+
+func (u *userRepository) CreateGoogle(ctx context.Context, tx tx.Tx, tenantId, email string) (*ent.User, error) {
+
+	google, err := tx.Client().Google.Create().
+		SetTenantID(tenantId).
+		SetEmail(email).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return tx.Client().User.Create().SetGoogle(google).SetTenantID(tenantId).Save(ctx)
+}
+
+func (u *userRepository) GetGoogle(ctx context.Context, tx tx.Tx, tenantId, email string) (*ent.User, error) {
+	user, err := tx.Client().User.Query().
+		Where(
+			user.TenantID(tenantId),
+			user.HasGoogleWith(
+				google.TenantID(tenantId),
+			),
+		).
+		WithGoogle().
+		Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

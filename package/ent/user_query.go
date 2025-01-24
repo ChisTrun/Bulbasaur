@@ -6,7 +6,6 @@ import (
 	"bulbasaur/package/ent/google"
 	"bulbasaur/package/ent/local"
 	"bulbasaur/package/ent/predicate"
-	"bulbasaur/package/ent/role"
 	"bulbasaur/package/ent/user"
 	"context"
 	"database/sql/driver"
@@ -29,7 +28,6 @@ type UserQuery struct {
 	predicates []predicate.User
 	withLocal  *LocalQuery
 	withGoogle *GoogleQuery
-	withRole   *RoleQuery
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -104,28 +102,6 @@ func (uq *UserQuery) QueryGoogle() *GoogleQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(google.Table, google.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, user.GoogleTable, user.GoogleColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryRole chains the current query on the "role" edge.
-func (uq *UserQuery) QueryRole() *RoleQuery {
-	query := (&RoleClient{config: uq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := uq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := uq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(role.Table, role.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, user.RoleTable, user.RoleColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -327,7 +303,6 @@ func (uq *UserQuery) Clone() *UserQuery {
 		predicates: append([]predicate.User{}, uq.predicates...),
 		withLocal:  uq.withLocal.Clone(),
 		withGoogle: uq.withGoogle.Clone(),
-		withRole:   uq.withRole.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -353,17 +328,6 @@ func (uq *UserQuery) WithGoogle(opts ...func(*GoogleQuery)) *UserQuery {
 		opt(query)
 	}
 	uq.withGoogle = query
-	return uq
-}
-
-// WithRole tells the query-builder to eager-load the nodes that are connected to
-// the "role" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithRole(opts ...func(*RoleQuery)) *UserQuery {
-	query := (&RoleClient{config: uq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	uq.withRole = query
 	return uq
 }
 
@@ -445,10 +409,9 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [2]bool{
 			uq.withLocal != nil,
 			uq.withGoogle != nil,
-			uq.withRole != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -481,12 +444,6 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	if query := uq.withGoogle; query != nil {
 		if err := uq.loadGoogle(ctx, query, nodes, nil,
 			func(n *User, e *Google) { n.Edges.Google = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := uq.withRole; query != nil {
-		if err := uq.loadRole(ctx, query, nodes, nil,
-			func(n *User, e *Role) { n.Edges.Role = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -547,35 +504,6 @@ func (uq *UserQuery) loadGoogle(ctx context.Context, query *GoogleQuery, nodes [
 	}
 	return nil
 }
-func (uq *UserQuery) loadRole(ctx context.Context, query *RoleQuery, nodes []*User, init func(*User), assign func(*User, *Role)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*User)
-	for i := range nodes {
-		fk := nodes[i].RoleID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(role.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "role_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
 
 func (uq *UserQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := uq.querySpec()
@@ -604,9 +532,6 @@ func (uq *UserQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != user.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
-		}
-		if uq.withRole != nil {
-			_spec.Node.AddColumnOnce(user.FieldRoleID)
 		}
 	}
 	if ps := uq.predicates; len(ps) > 0 {
