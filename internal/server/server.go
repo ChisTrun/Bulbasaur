@@ -4,7 +4,9 @@ import (
 	pb0 "bulbasaur/api"
 	"bulbasaur/internal/google"
 	"bulbasaur/internal/repositories"
+	"bulbasaur/internal/server/authz"
 	"bulbasaur/internal/server/bulbasaur"
+	"bulbasaur/internal/services/extractor"
 	"bulbasaur/internal/services/redis"
 	"bulbasaur/internal/services/signer"
 	"bulbasaur/package/config"
@@ -13,6 +15,8 @@ import (
 	"fmt"
 	"log"
 	"net"
+
+	authv3 "github.com/envoyproxy/go-control-plane/envoy/service/auth/v3"
 
 	_ "github.com/go-sql-driver/mysql"
 	"google.golang.org/grpc"
@@ -50,4 +54,8 @@ func Serve(cfg *config.Config) {
 
 	log.Printf("server is runing on: %v:%v", cfg.Server.Host, cfg.Server.Port)
 	grpcServer.Serve(lis)
+
+	extractor := extractor.New()
+	authv3.RegisterAuthorizationServer(grpcServer, authz.NewServer(extractor, signer))
+
 }
