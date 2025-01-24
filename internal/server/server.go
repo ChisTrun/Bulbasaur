@@ -56,6 +56,5 @@ func Serve(cfg *config.Config) {
 	grpcServer.Serve(lis)
 
 	extractor := extractor.New()
-	authv3.RegisterAuthorizationServer(grpcServer, authz.NewServer(extractor, signer))
-
+	authv3.RegisterAuthorizationServer(grpcServer, authz.NewServer(extractor, signer, redis))
 }

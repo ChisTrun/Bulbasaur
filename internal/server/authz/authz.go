@@ -4,6 +4,7 @@ import (
 	bulbasaur "bulbasaur/api"
 	"bulbasaur/internal/header"
 	"bulbasaur/internal/services/extractor"
+	"bulbasaur/internal/services/redis"
 	"bulbasaur/internal/services/signer"
 	"context"
 	"errors"
@@ -26,13 +27,15 @@ const (
 type authZServer struct {
 	extractor extractor.Extractor
 	signer    signer.Signer
+	redis     redis.Redis
 }
 
 // NewServer creates a new authorization server.
-func NewServer(extractor extractor.Extractor, signer signer.Signer) authv3.AuthorizationServer {
+func NewServer(extractor extractor.Extractor, signer signer.Signer, redis redis.Redis) authv3.AuthorizationServer {
 	return &authZServer{
 		extractor: extractor,
 		signer:    signer,
+		redis:     redis,
 	}
 }
 
@@ -43,10 +46,17 @@ func (s *authZServer) Check(ctx context.Context, req *authv3.CheckRequest) (*aut
 	// tenantID := req.Attributes.Request.Http.Headers[header.TenantID]
 	extracted := strings.Fields(authorization)
 	if len(extracted) == 2 && extracted[0] == _bearer {
+
+		isAvailable := s.redis.Check(ctx, extracted[1])
+		if !isAvailable {
+			return buildDeniedResponse(int32(rpc.UNAUTHENTICATED), typev3.StatusCode_Unauthorized), nil
+		}
+
 		claims, err := s.signer.VerifyToken(extracted[1], bulbasaur.TokenType_TOKEN_TYPE_ACCESS_TOKEN)
 		if err != nil {
 			return buildDeniedResponse(int32(rpc.UNAUTHENTICATED), typev3.StatusCode_Unauthorized), nil
 		}
+
 		return &authv3.CheckResponse{
 			HttpResponse: &authv3.CheckResponse_OkResponse{
 				OkResponse: &authv3.OkHttpResponse{
@@ -83,46 +93,6 @@ var (
 	errTokenInactive      = errors.New("inactive token")
 	errUserNotFound       = errors.New("user not found")
 )
-
-// func (s *authZServer) verifyAccessToken(ctx context.Context, accessToken, tenantID string) (*signer.Token, *data.User, error) {
-// 	tk, err := s.token.AccessToken().Parse(accessToken)
-// 	if err != nil {
-// 		logging.Logger(ctx).Error("could not parse token", zap.String("token", accessToken), zap.Error(err))
-// 		return nil, nil, errCouldNotParseToken
-// 	}
-// 	if tk.Valid() != nil {
-// 		logging.Logger(ctx).Error("invalid token", zap.String("token", accessToken), zap.Error(tk.Valid()))
-// 		return nil, nil, errTokenInvalid
-// 	}
-// 	//if tk.TenantID != tenantID {
-// 	//	logging.Logger(ctx).Error("invalid TenantID", zap.String("TenantID", tk.TenantID))
-// 	//	return nil, nil, errTokenInvalid
-// 	//}
-
-// 	active, err := s.cache.AccessToken().IsActive(ctx, tk)
-// 	if err != nil {
-// 		logging.Logger(ctx).Error("could not find token in cache", zap.String("token", accessToken), zap.Error(err))
-// 		return nil, nil, errCacheNotFound
-// 	}
-// 	if !active {
-// 		hasAnotherToken, err := s.cache.AccessToken().HasToken(ctx, tk.Subject)
-// 		if err == nil && hasAnotherToken {
-// 			return nil, nil, errTokenInactive
-// 		}
-// 		if err != nil {
-// 			logging.Logger(ctx).Error("could not find token in cache by safeID", zap.String("token", accessToken), zap.Error(err))
-// 		}
-// 		return nil, nil, errTokenInvalid
-// 	}
-
-// 	u, err := s.cache.User().Get(ctx, tk.Subject)
-// 	if err != nil {
-// 		logging.Logger(ctx).Error("could not find user in cache", zap.String("UserID", tk.Subject), zap.Error(err))
-// 		return nil, nil, errUserNotFound
-// 	}
-
-// 	return tk, u, nil
-// }
 
 func (s *authZServer) createHeaders(token string, claims jwt.MapClaims) []*corev3.HeaderValueOption {
 	headers := []*corev3.HeaderValueOption{
