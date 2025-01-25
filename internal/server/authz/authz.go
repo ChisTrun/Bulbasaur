@@ -8,6 +8,7 @@ import (
 	"bulbasaur/internal/services/signer"
 	"context"
 	"fmt"
+	"log"
 	"strings"
 
 	corev3 "github.com/envoyproxy/go-control-plane/envoy/config/core/v3"
@@ -42,6 +43,7 @@ func NewServer(extractor extractor.Extractor, signer signer.Signer, redis redis.
 // Check implements authorization's Check interface which performs authorization check based on the
 // attributes associated with the incoming request.
 func (s *authZServer) Check(ctx context.Context, req *authv3.CheckRequest) (*authv3.CheckResponse, error) {
+	log.Println("start authorization check")
 	authorization := req.Attributes.Request.Http.Headers[_authorization]
 	// tenantID := req.Attributes.Request.Http.Headers[header.TenantID]
 	extracted := strings.Fields(authorization)
@@ -49,14 +51,16 @@ func (s *authZServer) Check(ctx context.Context, req *authv3.CheckRequest) (*aut
 
 		claims, err := s.signer.VerifyToken(extracted[1], bulbasaur.TokenType_TOKEN_TYPE_ACCESS_TOKEN)
 		if err != nil {
+			log.Println("authorization check failed")
 			return buildDeniedResponse(int32(rpc.UNAUTHENTICATED), typev3.StatusCode_Unauthorized), nil
 		}
 
 		isAvailable := s.redis.Check(ctx, fmt.Sprintf("%v-at", claims["safe-id"]), extracted[1])
 		if !isAvailable {
+			log.Println("authorization check failed")
 			return buildDeniedResponse(int32(rpc.UNAUTHENTICATED), typev3.StatusCode_Unauthorized), nil
 		}
-
+		log.Println("authorization check success")
 		return &authv3.CheckResponse{
 			HttpResponse: &authv3.CheckResponse_OkResponse{
 				OkResponse: &authv3.OkHttpResponse{
@@ -68,6 +72,7 @@ func (s *authZServer) Check(ctx context.Context, req *authv3.CheckRequest) (*aut
 			},
 		}, nil
 	}
+	log.Println("authorization check failed")
 	return buildDeniedResponse(int32(rpc.UNAUTHENTICATED), typev3.StatusCode_Unauthorized), nil
 }
 
