@@ -33,7 +33,7 @@ func Serve(cfg *config.Config) {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
 
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", cfg.Server.Port))
+	lis, err := net.Listen("tcp", fmt.Sprintf("%v:%d", cfg.Server.Host, cfg.Server.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
