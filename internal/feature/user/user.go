@@ -78,19 +78,19 @@ func (u *userFeature) SignIn(ctx context.Context, request *bulbasaur.SignInReque
 		return nil, err
 	}
 
-	refeshToken, err := u.signer.CreateToken(user.ID, user.SafeID, bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN)
+	refreshToken, err := u.signer.CreateToken(user.ID, user.SafeID, bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN)
 	if err != nil {
 		return nil, err
 	}
 
 	u.redis.Set(ctx, fmt.Sprintf("%v-at", user.SafeID), accessToken, time.Minute*time.Duration(u.cfg.Auth.AccessExp))
-	u.redis.Set(ctx, fmt.Sprintf("%v-rt", user.SafeID), refeshToken, time.Minute*time.Duration(u.cfg.Auth.RefreshExp))
+	u.redis.Set(ctx, fmt.Sprintf("%v-rt", user.SafeID), refreshToken, time.Minute*time.Duration(u.cfg.Auth.RefreshExp))
 
 	return &bulbasaur.SignInResponse{
 		TokenInfo: &bulbasaur.TokenInfo{
 			UserId:       user.ID,
-			RefreshToken: accessToken,
-			AccessToken:  refeshToken,
+			RefreshToken: refreshToken,
+			AccessToken:  accessToken,
 		},
 	}, nil
 }
@@ -141,19 +141,19 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 		return nil, err
 	}
 
-	refeshToken, err := u.signer.CreateToken(user.ID, user.SafeID, bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN)
+	refreshToken, err := u.signer.CreateToken(user.ID, user.SafeID, bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN)
 	if err != nil {
 		return nil, err
 	}
 
 	u.redis.Set(ctx, fmt.Sprintf("%v-at", user.SafeID), accessToken, time.Minute*time.Duration(u.cfg.Auth.AccessExp))
-	u.redis.Set(ctx, fmt.Sprintf("%v-rt", user.SafeID), refeshToken, time.Minute*time.Duration(u.cfg.Auth.RefreshExp))
+	u.redis.Set(ctx, fmt.Sprintf("%v-rt", user.SafeID), refreshToken, time.Minute*time.Duration(u.cfg.Auth.RefreshExp))
 
 	return &bulbasaur.SignUpResponse{
 		TokenInfo: &bulbasaur.TokenInfo{
 			UserId:       user.ID,
 			RefreshToken: accessToken,
-			AccessToken:  refeshToken,
+			AccessToken:  refreshToken,
 		},
 	}, nil
 }

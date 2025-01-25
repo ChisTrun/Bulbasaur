@@ -48,16 +48,16 @@ func (s *authZServer) Check(ctx context.Context, req *authv3.CheckRequest) (*aut
 	// tenantID := req.Attributes.Request.Http.Headers[header.TenantID]
 	extracted := strings.Fields(authorization)
 	if len(extracted) == 2 && extracted[0] == _bearer {
-
+		log.Println("access token found: ", extracted[1])
 		claims, err := s.signer.VerifyToken(extracted[1], bulbasaur.TokenType_TOKEN_TYPE_ACCESS_TOKEN)
 		if err != nil {
-			log.Println("authorization check failed")
+			log.Println("authorization check failed: ", err)
 			return buildDeniedResponse(int32(rpc.UNAUTHENTICATED), typev3.StatusCode_Unauthorized), nil
 		}
 
 		isAvailable := s.redis.Check(ctx, fmt.Sprintf("%v-at", claims["safe-id"]), extracted[1])
 		if !isAvailable {
-			log.Println("authorization check failed")
+			log.Println("authorization check failed: token is not available")
 			return buildDeniedResponse(int32(rpc.UNAUTHENTICATED), typev3.StatusCode_Unauthorized), nil
 		}
 		log.Println("authorization check success")
