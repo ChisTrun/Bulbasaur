@@ -109,6 +109,7 @@ func (u *userRepository) CreateGoogle(ctx context.Context, tx tx.Tx, tenantId, e
 	user.Edges.Google, err = tx.Client().Google.Create().
 		SetTenantID(tenantId).
 		SetEmail(email).
+		SetUserID(user.ID).
 		Save(ctx)
 	if err != nil {
 		return nil, err
