@@ -53,8 +53,9 @@ func Serve(cfg *config.Config) {
 	pb0.RegisterBulbasaurServer(grpcServer, bulbasaur.NewServer(cfg, client, repo, signer, google, redis))
 
 	log.Printf("server is runing on: %v:%v", cfg.Server.Host, cfg.Server.Port)
-	grpcServer.Serve(lis)
 
 	extractor := extractor.New()
 	authv3.RegisterAuthorizationServer(grpcServer, authz.NewServer(extractor, signer, redis))
+
+	grpcServer.Serve(lis)
 }
