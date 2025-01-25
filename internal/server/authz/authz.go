@@ -103,14 +103,14 @@ func (s *authZServer) createHeaders(token string, claims jwt.MapClaims) []*corev
 			Append: &wrapperspb.BoolValue{Value: false},
 			Header: &corev3.HeaderValue{
 				Key:   header.UserID,
-				Value: claims["user_id"].(string),
+				Value: fmt.Sprintf("%v", claims["user_id"]),
 			},
 		},
 		{
 			Append: &wrapperspb.BoolValue{Value: false},
 			Header: &corev3.HeaderValue{
 				Key:   header.SafeID,
-				Value: claims["safe_id"].(string),
+				Value: fmt.Sprintf("%v", claims["safe_id"]),
 			},
 		},
 	}
