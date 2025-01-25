@@ -54,8 +54,7 @@ func (s *authZServer) Check(ctx context.Context, req *authv3.CheckRequest) (*aut
 			log.Println("authorization check failed: ", err)
 			return buildDeniedResponse(int32(rpc.UNAUTHENTICATED), typev3.StatusCode_Unauthorized), nil
 		}
-
-		isAvailable := s.redis.Check(ctx, fmt.Sprintf("%v-at", claims["safe-id"]), extracted[1])
+		isAvailable := s.redis.Check(ctx, fmt.Sprintf("%v-at", claims["safe_id"]), extracted[1])
 		if !isAvailable {
 			log.Println("authorization check failed: token is not available")
 			return buildDeniedResponse(int32(rpc.UNAUTHENTICATED), typev3.StatusCode_Unauthorized), nil
