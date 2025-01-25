@@ -6,5 +6,5 @@ import (
 )
 
 func (s *bulbasaurServer) SignUp(ctx context.Context, request *bulbasaur.SignUpRequest) (*bulbasaur.SignUpResponse, error) {
-	return nil, nil
+	return s.feature.UserFeature.SignUp(ctx, request)
 }

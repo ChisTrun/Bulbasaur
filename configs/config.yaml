@@ -11,7 +11,9 @@ database:
 
 auth:
   access_key: ${AUTH_ACCESS_KEY}
-  refesh_key: ${AUTH_REFESH_KEY}
+  refresh_key: ${AUTH_REFRESH_KEY}
+  access_expires: 5 # minutes
+  refresh_expires: 10 # minutes
 
 redis:
   address: ${REDIS_ADDRESS}

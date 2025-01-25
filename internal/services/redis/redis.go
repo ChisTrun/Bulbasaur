@@ -10,8 +10,8 @@ import (
 )
 
 type Redis interface {
-	Set(ctx context.Context, key string, expireTime time.Duration) (bool, error)
-	Check(ctx context.Context, key string) bool
+	Set(ctx context.Context, key, value string, expireTime time.Duration) (bool, error)
+	Check(ctx context.Context, key, value string) bool
 	Delete(ctx context.Context, key string) error
 }
 
@@ -37,14 +37,14 @@ func (r *redis) withNamespace(key string) string {
 	return fmt.Sprintf("%s:%s", r.namespace, key)
 }
 
-func (r *redis) Set(ctx context.Context, key string, expireTime time.Duration) (bool, error) {
+func (r *redis) Set(ctx context.Context, key, value string, expireTime time.Duration) (bool, error) {
 	namespacedKey := r.withNamespace(key)
-	return r.redis.SetNX(ctx, namespacedKey, "available", expireTime).Result()
+	return r.redis.SetNX(ctx, namespacedKey, value, expireTime).Result()
 }
 
-func (r *redis) Check(ctx context.Context, key string) bool {
+func (r *redis) Check(ctx context.Context, key, value string) bool {
 	namespacedKey := r.withNamespace(key)
-	return r.redis.Get(ctx, namespacedKey).Val() == "available"
+	return r.redis.Get(ctx, namespacedKey).Val() == value
 }
 
 func (r *redis) Delete(ctx context.Context, key string) error {

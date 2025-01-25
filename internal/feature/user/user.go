@@ -8,6 +8,7 @@ import (
 	"bulbasaur/internal/services/redis"
 	"bulbasaur/internal/services/signer"
 	"bulbasaur/internal/services/tx"
+	"bulbasaur/package/config"
 	"bulbasaur/package/ent"
 	"context"
 	"fmt"
@@ -17,9 +18,11 @@ import (
 type UserFeature interface {
 	SignIn(ctx context.Context, request *bulbasaur.SignInRequest) (*bulbasaur.SignInResponse, error)
 	SignUp(ctx context.Context, request *bulbasaur.SignUpRequest) (*bulbasaur.SignUpResponse, error)
+	RefreshToken(ctx context.Context, request *bulbasaur.RefreshTokenRequest) (*bulbasaur.RefreshTokenResponse, error)
 }
 
 type userFeature struct {
+	cfg       *config.Config
 	repo      *repositories.Repository
 	signer    signer.Signer
 	ent       *ent.Client
@@ -28,14 +31,15 @@ type userFeature struct {
 	extractor extractor.Extractor
 }
 
-func NewUserFeature(repo *repositories.Repository, signer signer.Signer, google google.Google, redis redis.Redis) UserFeature {
+func NewUserFeature(cfg *config.Config, ent *ent.Client, repo *repositories.Repository, signer signer.Signer, google google.Google, redis redis.Redis) UserFeature {
 	return &userFeature{
 		repo:      repo,
 		signer:    signer,
-		ent:       &ent.Client{},
+		ent:       ent,
 		extractor: extractor.New(),
 		google:    google,
 		redis:     redis,
+		cfg:       cfg,
 	}
 }
 
@@ -74,13 +78,13 @@ func (u *userFeature) SignIn(ctx context.Context, request *bulbasaur.SignInReque
 		return nil, err
 	}
 
-	refeshToken, err := u.signer.CreateToken(user.ID, user.SafeID, bulbasaur.TokenType_TOKEN_TYPE_REFESH_TOKEN)
+	refeshToken, err := u.signer.CreateToken(user.ID, user.SafeID, bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN)
 	if err != nil {
 		return nil, err
 	}
 
-	u.redis.Set(ctx, accessToken, time.Minute*5)
-	u.redis.Set(ctx, refeshToken, time.Minute*20)
+	u.redis.Set(ctx, fmt.Sprintf("%v-at", user.SafeID), accessToken, time.Minute*time.Duration(u.cfg.Auth.AccessExp))
+	u.redis.Set(ctx, fmt.Sprintf("%v-rt", user.SafeID), refeshToken, time.Minute*time.Duration(u.cfg.Auth.RefreshExp))
 
 	return &bulbasaur.SignInResponse{
 		TokenInfo: &bulbasaur.TokenInfo{
@@ -103,7 +107,9 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 			user, err = u.repo.UserRepository.CreateLocal(ctx, tx, tenantId,
 				request.GetLocal().GetUsername(),
 				request.GetLocal().GetPassword(),
-				request.GetLocal().GetConfirmPassword())
+				request.GetLocal().GetConfirmPassword(),
+				request.GetRole(),
+			)
 			return err
 		}); txErr != nil {
 			return nil, txErr
@@ -123,7 +129,7 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 		}
 
 		if txErr := tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
-			user, err = u.repo.UserRepository.CreateGoogle(ctx, tx, tenantId, email)
+			user, err = u.repo.UserRepository.CreateGoogle(ctx, tx, tenantId, email, request.GetRole())
 			return err
 		}); txErr != nil {
 			return nil, txErr
@@ -135,19 +141,51 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 		return nil, err
 	}
 
-	refeshToken, err := u.signer.CreateToken(user.ID, user.SafeID, bulbasaur.TokenType_TOKEN_TYPE_REFESH_TOKEN)
+	refeshToken, err := u.signer.CreateToken(user.ID, user.SafeID, bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN)
 	if err != nil {
 		return nil, err
 	}
 
-	u.redis.Set(ctx, accessToken, time.Minute*5)
-	u.redis.Set(ctx, refeshToken, time.Minute*20)
+	u.redis.Set(ctx, fmt.Sprintf("%v-at", user.SafeID), accessToken, time.Minute*time.Duration(u.cfg.Auth.AccessExp))
+	u.redis.Set(ctx, fmt.Sprintf("%v-rt", user.SafeID), refeshToken, time.Minute*time.Duration(u.cfg.Auth.RefreshExp))
 
 	return &bulbasaur.SignUpResponse{
 		TokenInfo: &bulbasaur.TokenInfo{
 			UserId:       user.ID,
 			RefreshToken: accessToken,
 			AccessToken:  refeshToken,
+		},
+	}, nil
+}
+
+func (u *userFeature) RefreshToken(ctx context.Context, request *bulbasaur.RefreshTokenRequest) (*bulbasaur.RefreshTokenResponse, error) {
+	claims, err := u.signer.VerifyToken(request.GetTokenInfo().GetRefreshToken(), bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN)
+	if err != nil {
+		return nil, err
+	}
+
+	if !u.redis.Check(ctx, fmt.Sprintf("%v-rt", claims["safe_id"]), request.GetTokenInfo().GetRefreshToken()) {
+		return nil, fmt.Errorf("refresh token is invalid or expired")
+	}
+
+	accessToken, err := u.signer.CreateToken(uint64(claims["user_id"].(float64)), claims["safe_id"].(string), bulbasaur.TokenType_TOKEN_TYPE_ACCESS_TOKEN)
+	if err != nil {
+		return nil, err
+	}
+
+	refreshToken, err := u.signer.CreateToken(uint64(claims["user_id"].(float64)), claims["safe_id"].(string), bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN)
+	if err != nil {
+		return nil, err
+	}
+
+	u.redis.Set(ctx, fmt.Sprintf("%v-at", claims["safe_id"]), accessToken, time.Minute*time.Duration(u.cfg.Auth.AccessExp))
+	u.redis.Set(ctx, fmt.Sprintf("%v-rt", claims["safe_id"]), refreshToken, time.Minute*time.Duration(u.cfg.Auth.RefreshExp))
+
+	return &bulbasaur.RefreshTokenResponse{
+		TokenInfo: &bulbasaur.TokenInfo{
+			UserId:       uint64(claims["user_id"].(float64)),
+			RefreshToken: accessToken,
+			AccessToken:  refreshToken,
 		},
 	}, nil
 }

@@ -28,8 +28,10 @@ type Config struct {
 		Password string `mapstructure:"password"`
 	} `mapstructure:"database"`
 	Auth struct {
-		AccessKey string `mapstructure:"access_key"`
-		RefeshKey string `mapstructure:"refesh_key"`
+		AccessKey  string `mapstructure:"access_key"`
+		RefreshKey string `mapstructure:"refresh_key"`
+		AccessExp  int    `mapstructure:"access_expires"`
+		RefreshExp int    `mapstructure:"refresh_expires"`
 	} `mapstructure:"auth"`
 }
 

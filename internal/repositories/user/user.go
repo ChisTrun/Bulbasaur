@@ -1,6 +1,7 @@
 package user
 
 import (
+	bulbasaur "bulbasaur/api"
 	"bulbasaur/internal/services/hash"
 	"bulbasaur/internal/services/tx"
 	"bulbasaur/package/ent"
@@ -13,11 +14,11 @@ import (
 
 type UserRepository interface {
 	// user local
-	CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword string) (*ent.User, error)
+	CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword string, role bulbasaur.Role) (*ent.User, error)
 	GetLocal(ctx context.Context, tx tx.Tx, tenantId, username, password string) (*ent.User, error)
 
 	// user google
-	CreateGoogle(ctx context.Context, tx tx.Tx, tenantId, email string) (*ent.User, error)
+	CreateGoogle(ctx context.Context, tx tx.Tx, tenantId, email string, role bulbasaur.Role) (*ent.User, error)
 	GetGoogle(ctx context.Context, tx tx.Tx, tenantId, email string) (*ent.User, error)
 
 	// general
@@ -34,7 +35,7 @@ func NewUserRepository(ent *ent.Client) UserRepository {
 	}
 }
 
-func (u *userRepository) CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword string) (*ent.User, error) {
+func (u *userRepository) CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword string, role bulbasaur.Role) (*ent.User, error) {
 	if password != confirmPassword {
 		return nil, fmt.Errorf("passwords do not match")
 	}
@@ -47,16 +48,26 @@ func (u *userRepository) CreateLocal(ctx context.Context, tx tx.Tx, tenantId, us
 		return nil, err
 	}
 
-	local, err := tx.Client().Local.Create().
+	user, err := tx.Client().User.Create().
 		SetTenantID(tenantId).
-		SetUsername(username).
-		SetPassword(hashPass).
+		SetRole(role).
 		Save(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return tx.Client().User.Create().SetLocal(local).SetTenantID(tenantId).Save(ctx)
+	user.Edges.Local, err = tx.Client().Local.Create().
+		SetTenantID(tenantId).
+		SetUsername(username).
+		SetPassword(hashPass).
+		SetUserID(user.ID).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+
 }
 
 func (u *userRepository) GetLocal(ctx context.Context, tx tx.Tx, tenantId, username, password string) (*ent.User, error) {
@@ -85,9 +96,17 @@ func (u *userRepository) UpdateMetadata(ctx context.Context, tx tx.Tx, id uint64
 	return tx.Client().User.UpdateOneID(id).SetMetadata(metadata).Exec(ctx)
 }
 
-func (u *userRepository) CreateGoogle(ctx context.Context, tx tx.Tx, tenantId, email string) (*ent.User, error) {
+func (u *userRepository) CreateGoogle(ctx context.Context, tx tx.Tx, tenantId, email string, role bulbasaur.Role) (*ent.User, error) {
 
-	google, err := tx.Client().Google.Create().
+	user, err := tx.Client().User.Create().
+		SetTenantID(tenantId).
+		SetRole(role).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	user.Edges.Google, err = tx.Client().Google.Create().
 		SetTenantID(tenantId).
 		SetEmail(email).
 		Save(ctx)
@@ -95,7 +114,7 @@ func (u *userRepository) CreateGoogle(ctx context.Context, tx tx.Tx, tenantId, e
 		return nil, err
 	}
 
-	return tx.Client().User.Create().SetGoogle(google).SetTenantID(tenantId).Save(ctx)
+	return user, nil
 }
 
 func (u *userRepository) GetGoogle(ctx context.Context, tx tx.Tx, tenantId, email string) (*ent.User, error) {

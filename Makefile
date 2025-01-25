@@ -34,7 +34,7 @@ func (s *$$lowercase_service""Server) $$uppercase_rpc""(ctx context.Context, req
 generate:
 	@for proto in $(PROTO_FILES); do \
 		echo "Processing $$proto"; \
-		go_module=$$(echo bulbasaur); \
+		go_module=$$(echo go_pattern); \
 		base_name=$$(basename $$proto .proto); \
 		BaseName=$$(echo $$base_name | awk '{print toupper(substr($$0, 1, 1)) substr($$0, 2)}'); \
 		protoc --go_out=. --go_opt=paths=source_relative \
@@ -103,5 +103,26 @@ gen_web:
 	@for proto in $(PROTO_FILES); do \
 		protoc --js_out=import_style=commonjs,binary:./connect/web \
        --grpc-web_out=import_style=commonjs,mode=grpcwebtext:./connect/web \
+       $$proto; \
+	done
+
+gen_ts:
+	@for proto in $(PROTO_FILES); do \
+		protoc --ts_out=connect/ts \
+		--ts_opt=target=web\
+       $$proto; \
+	done
+
+gen_web2:
+	@for proto in $(PROTO_FILES); do \
+		protoc -I. $$proto\
+  		--grpc-web_out=import_style=closure,mode=grpcweb:./connect/web; \
+	done
+
+gen_proto:
+	@for proto in $(PROTO_FILES); do \
+		protoc \
+		--plugin=protoc-gen-ts="$(HOME)/node_modules/.bin/protoc-gen-ts" \
+		--ts_out=grpc_js:./connect \
        $$proto; \
 	done

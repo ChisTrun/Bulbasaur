@@ -50,7 +50,7 @@ func Serve(cfg *config.Config) {
 		log.Fatalf("failed to create google client: %v", err)
 	}
 
-	pb0.RegisterBulbasaurServer(grpcServer, bulbasaur.NewServer(repo, signer, google, redis))
+	pb0.RegisterBulbasaurServer(grpcServer, bulbasaur.NewServer(cfg, client, repo, signer, google, redis))
 
 	log.Printf("server is runing on: %v:%v", cfg.Server.Host, cfg.Server.Port)
 	grpcServer.Serve(lis)

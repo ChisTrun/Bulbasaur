@@ -17,7 +17,7 @@ service Bulbasaur {
 enum TokenType {
     TOKEN_TYPE_UNKNOWN = 0;
     TOKEN_TYPE_ACCESS_TOKEN = 1;
-    TOKEN_TYPE_REFESH_TOKEN = 2;
+    TOKEN_TYPE_REFRESH_TOKEN = 2;
 }
 
 enum Role {
@@ -45,6 +45,7 @@ message SignUpRequest {
     }
     optional string device_id = 3;
     optional string device_name = 4;
+    Role role = 5;
 
     message Local {
         string username = 1;

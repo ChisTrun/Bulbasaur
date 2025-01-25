@@ -7,7 +7,7 @@ import (
 	"bulbasaur/internal/services/redis"
 	"bulbasaur/internal/services/signer"
 	"context"
-	"errors"
+	"fmt"
 	"strings"
 
 	corev3 "github.com/envoyproxy/go-control-plane/envoy/config/core/v3"
@@ -47,13 +47,13 @@ func (s *authZServer) Check(ctx context.Context, req *authv3.CheckRequest) (*aut
 	extracted := strings.Fields(authorization)
 	if len(extracted) == 2 && extracted[0] == _bearer {
 
-		isAvailable := s.redis.Check(ctx, extracted[1])
-		if !isAvailable {
+		claims, err := s.signer.VerifyToken(extracted[1], bulbasaur.TokenType_TOKEN_TYPE_ACCESS_TOKEN)
+		if err != nil {
 			return buildDeniedResponse(int32(rpc.UNAUTHENTICATED), typev3.StatusCode_Unauthorized), nil
 		}
 
-		claims, err := s.signer.VerifyToken(extracted[1], bulbasaur.TokenType_TOKEN_TYPE_ACCESS_TOKEN)
-		if err != nil {
+		isAvailable := s.redis.Check(ctx, fmt.Sprintf("%v-at", claims["safe-id"]), extracted[1])
+		if !isAvailable {
 			return buildDeniedResponse(int32(rpc.UNAUTHENTICATED), typev3.StatusCode_Unauthorized), nil
 		}
 
@@ -85,14 +85,6 @@ func buildDeniedResponse(outerCode int32, innerCode typev3.StatusCode) *authv3.C
 		},
 	}
 }
-
-var (
-	errCouldNotParseToken = errors.New("could not parse token")
-	errTokenInvalid       = errors.New("invalid token")
-	errCacheNotFound      = errors.New("cache token not found")
-	errTokenInactive      = errors.New("inactive token")
-	errUserNotFound       = errors.New("user not found")
-)
 
 func (s *authZServer) createHeaders(token string, claims jwt.MapClaims) []*corev3.HeaderValueOption {
 	headers := []*corev3.HeaderValueOption{
