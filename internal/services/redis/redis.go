@@ -39,7 +39,7 @@ func (r *redis) withNamespace(key string) string {
 
 func (r *redis) Set(ctx context.Context, key, value string, expireTime time.Duration) (bool, error) {
 	namespacedKey := r.withNamespace(key)
-	return r.redis.SetNX(ctx, namespacedKey, value, expireTime).Result()
+	return r.redis.Set(ctx, namespacedKey, value, expireTime).Err() == nil, nil
 }
 
 func (r *redis) Check(ctx context.Context, key, value string) bool {
