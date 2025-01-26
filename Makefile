@@ -34,7 +34,7 @@ func (s *$$lowercase_service""Server) $$uppercase_rpc""(ctx context.Context, req
 generate:
 	@for proto in $(PROTO_FILES); do \
 		echo "Processing $$proto"; \
-		go_module=$$(echo go_pattern); \
+		go_module=$$(echo bulbasaur); \
 		base_name=$$(basename $$proto .proto); \
 		BaseName=$$(echo $$base_name | awk '{print toupper(substr($$0, 1, 1)) substr($$0, 2)}'); \
 		protoc --go_out=. --go_opt=paths=source_relative \

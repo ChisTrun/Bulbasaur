@@ -4,12 +4,13 @@ package bulbasaur;
 
 option go_package = "bulbasaur/api;bulbasaur";
 
+import "google/protobuf/empty.proto";
 
 service Bulbasaur {
     rpc SignUp (SignUpRequest) returns (SignUpResponse);
     rpc SignIn (SignInRequest) returns (SignInResponse);
-    rpc UpdateMetadata (UpdateMetadataRequest) returns (UpdateMetadataResponse);
-    rpc RefeshToken (RefreshTokenRequest) returns (RefreshTokenResponse);
+    rpc UpdateMetadata (UpdateMetadataRequest) returns (google.protobuf.Empty);
+    rpc RefreshToken (RefreshTokenRequest) returns (RefreshTokenResponse);
 }
 
 //======================================== ENUM =======================================
@@ -32,9 +33,10 @@ enum Role {
 //======================================== MESSAGE ========================================
 
 message TokenInfo {
-    uint64 user_id = 1;
+    string safe_id = 1;
     string refresh_token = 2;
     string access_token = 3;
+    Role role = 4;
 }
   
   
@@ -94,9 +96,6 @@ message RefreshTokenResponse {
 }
 
 message UpdateMetadataRequest {
-    
+    string metadata = 1;
 }
 
-message UpdateMetadataResponse {
-    
-}

@@ -19,6 +19,7 @@ type UserFeature interface {
 	SignIn(ctx context.Context, request *bulbasaur.SignInRequest) (*bulbasaur.SignInResponse, error)
 	SignUp(ctx context.Context, request *bulbasaur.SignUpRequest) (*bulbasaur.SignUpResponse, error)
 	RefreshToken(ctx context.Context, request *bulbasaur.RefreshTokenRequest) (*bulbasaur.RefreshTokenResponse, error)
+	UpdateMetadata(ctx context.Context, request *bulbasaur.UpdateMetadataRequest) error
 }
 
 type userFeature struct {
@@ -73,12 +74,12 @@ func (u *userFeature) SignIn(ctx context.Context, request *bulbasaur.SignInReque
 		}
 	}
 
-	accessToken, err := u.signer.CreateToken(user.ID, user.SafeID, bulbasaur.TokenType_TOKEN_TYPE_ACCESS_TOKEN)
+	accessToken, err := u.signer.CreateToken(user.ID, user.SafeID, user.Role, bulbasaur.TokenType_TOKEN_TYPE_ACCESS_TOKEN)
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := u.signer.CreateToken(user.ID, user.SafeID, bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN)
+	refreshToken, err := u.signer.CreateToken(user.ID, user.SafeID, user.Role, bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN)
 	if err != nil {
 		return nil, err
 	}
@@ -88,9 +89,10 @@ func (u *userFeature) SignIn(ctx context.Context, request *bulbasaur.SignInReque
 
 	return &bulbasaur.SignInResponse{
 		TokenInfo: &bulbasaur.TokenInfo{
-			UserId:       user.ID,
+			SafeId:       user.SafeID,
 			RefreshToken: refreshToken,
 			AccessToken:  accessToken,
+			Role:         user.Role,
 		},
 	}, nil
 }
@@ -136,12 +138,12 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 		}
 	}
 
-	accessToken, err := u.signer.CreateToken(user.ID, user.SafeID, bulbasaur.TokenType_TOKEN_TYPE_ACCESS_TOKEN)
+	accessToken, err := u.signer.CreateToken(user.ID, user.SafeID, user.Role, bulbasaur.TokenType_TOKEN_TYPE_ACCESS_TOKEN)
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := u.signer.CreateToken(user.ID, user.SafeID, bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN)
+	refreshToken, err := u.signer.CreateToken(user.ID, user.SafeID, user.Role, bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN)
 	if err != nil {
 		return nil, err
 	}
@@ -151,9 +153,10 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 
 	return &bulbasaur.SignUpResponse{
 		TokenInfo: &bulbasaur.TokenInfo{
-			UserId:       user.ID,
+			SafeId:       user.SafeID,
 			RefreshToken: accessToken,
 			AccessToken:  refreshToken,
+			Role:         user.Role,
 		},
 	}, nil
 }
@@ -168,12 +171,17 @@ func (u *userFeature) RefreshToken(ctx context.Context, request *bulbasaur.Refre
 		return nil, fmt.Errorf("refresh token is invalid or expired")
 	}
 
-	accessToken, err := u.signer.CreateToken(uint64(claims["user_id"].(float64)), claims["safe_id"].(string), bulbasaur.TokenType_TOKEN_TYPE_ACCESS_TOKEN)
+	user, err := u.repo.UserRepository.GetUserBySafeID(ctx, claims["safe_id"].(string))
+	if err != nil {
+		return nil, fmt.Errorf("user not found")
+	}
+
+	accessToken, err := u.signer.CreateToken(user.ID, user.SafeID, user.Role, bulbasaur.TokenType_TOKEN_TYPE_ACCESS_TOKEN)
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := u.signer.CreateToken(uint64(claims["user_id"].(float64)), claims["safe_id"].(string), bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN)
+	refreshToken, err := u.signer.CreateToken(user.ID, user.SafeID, user.Role, bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN)
 	if err != nil {
 		return nil, err
 	}
@@ -183,9 +191,21 @@ func (u *userFeature) RefreshToken(ctx context.Context, request *bulbasaur.Refre
 
 	return &bulbasaur.RefreshTokenResponse{
 		TokenInfo: &bulbasaur.TokenInfo{
-			UserId:       uint64(claims["user_id"].(float64)),
+			SafeId:       user.SafeID,
 			RefreshToken: accessToken,
 			AccessToken:  refreshToken,
+			Role:         user.Role,
 		},
 	}, nil
+}
+
+func (u *userFeature) UpdateMetadata(ctx context.Context, request *bulbasaur.UpdateMetadataRequest) error {
+	userId, err := u.extractor.GetUserID(ctx)
+	if err != nil {
+		return err
+	}
+
+	return tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
+		return u.repo.UserRepository.UpdateMetadata(ctx, tx, uint64(userId), request.GetMetadata())
+	})
 }

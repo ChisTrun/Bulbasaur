@@ -10,7 +10,7 @@ import (
 )
 
 type Signer interface {
-	CreateToken(userId uint64, safeId string, tokenType bulbasaur.TokenType) (string, error)
+	CreateToken(userId uint64, safeId string, role bulbasaur.Role, tokenType bulbasaur.TokenType) (string, error)
 	VerifyToken(token string, tokenType bulbasaur.TokenType) (jwt.MapClaims, error)
 }
 
@@ -24,7 +24,7 @@ func NewSigner(cfg *config.Config) Signer {
 	}
 }
 
-func (s *signer) CreateToken(userId uint64, safeId string, tokenType bulbasaur.TokenType) (string, error) {
+func (s *signer) CreateToken(userId uint64, safeId string, role bulbasaur.Role, tokenType bulbasaur.TokenType) (string, error) {
 	secretKey := ""
 	expTime := 0
 	switch tokenType {
@@ -40,6 +40,7 @@ func (s *signer) CreateToken(userId uint64, safeId string, tokenType bulbasaur.T
 		jwt.MapClaims{
 			"user_id": userId,
 			"safe_id": safeId,
+			"role":    role,
 			"exp":     time.Now().Add(time.Hour * time.Duration(expTime)).Unix(),
 		})
 

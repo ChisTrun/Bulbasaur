@@ -13,6 +13,8 @@ import (
 )
 
 type UserRepository interface {
+	GetUserBySafeID(ctx context.Context, safeId string) (*ent.User, error)
+
 	// user local
 	CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword string, role bulbasaur.Role) (*ent.User, error)
 	GetLocal(ctx context.Context, tx tx.Tx, tenantId, username, password string) (*ent.User, error)
@@ -33,6 +35,10 @@ func NewUserRepository(ent *ent.Client) UserRepository {
 	return &userRepository{
 		ent: ent,
 	}
+}
+
+func (u *userRepository) GetUserBySafeID(ctx context.Context, safeId string) (*ent.User, error) {
+	return u.ent.User.Query().Where(user.SafeID(safeId)).Only(ctx)
 }
 
 func (u *userRepository) CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword string, role bulbasaur.Role) (*ent.User, error) {

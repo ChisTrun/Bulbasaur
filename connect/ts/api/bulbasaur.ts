@@ -3,6 +3,7 @@
  * compiler version: 5.27.1
  * source: api/bulbasaur.proto
  * git: https://github.com/thesayyn/protoc-gen-ts */
+import * as dependency_1 from "./../google/protobuf/empty";
 import * as pb_1 from "google-protobuf";
 import * as grpc_1 from "@grpc/grpc-js";
 import * as grpc_web_1 from "grpc-web";
@@ -20,15 +21,16 @@ export namespace bulbasaur {
     export class TokenInfo extends pb_1.Message {
         #one_of_decls: number[][] = [];
         constructor(data?: any[] | {
-            user_id?: number;
+            safe_id?: string;
             refresh_token?: string;
             access_token?: string;
+            role?: Role;
         }) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
             if (!Array.isArray(data) && typeof data == "object") {
-                if ("user_id" in data && data.user_id != undefined) {
-                    this.user_id = data.user_id;
+                if ("safe_id" in data && data.safe_id != undefined) {
+                    this.safe_id = data.safe_id;
                 }
                 if ("refresh_token" in data && data.refresh_token != undefined) {
                     this.refresh_token = data.refresh_token;
@@ -36,12 +38,15 @@ export namespace bulbasaur {
                 if ("access_token" in data && data.access_token != undefined) {
                     this.access_token = data.access_token;
                 }
+                if ("role" in data && data.role != undefined) {
+                    this.role = data.role;
+                }
             }
         }
-        get user_id() {
-            return pb_1.Message.getFieldWithDefault(this, 1, 0) as number;
+        get safe_id() {
+            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
         }
-        set user_id(value: number) {
+        set safe_id(value: string) {
             pb_1.Message.setField(this, 1, value);
         }
         get refresh_token() {
@@ -56,14 +61,21 @@ export namespace bulbasaur {
         set access_token(value: string) {
             pb_1.Message.setField(this, 3, value);
         }
+        get role() {
+            return pb_1.Message.getFieldWithDefault(this, 4, Role.ROLE_UNKNOWN) as Role;
+        }
+        set role(value: Role) {
+            pb_1.Message.setField(this, 4, value);
+        }
         static fromObject(data: {
-            user_id?: number;
+            safe_id?: string;
             refresh_token?: string;
             access_token?: string;
+            role?: Role;
         }): TokenInfo {
             const message = new TokenInfo({});
-            if (data.user_id != null) {
-                message.user_id = data.user_id;
+            if (data.safe_id != null) {
+                message.safe_id = data.safe_id;
             }
             if (data.refresh_token != null) {
                 message.refresh_token = data.refresh_token;
@@ -71,16 +83,20 @@ export namespace bulbasaur {
             if (data.access_token != null) {
                 message.access_token = data.access_token;
             }
+            if (data.role != null) {
+                message.role = data.role;
+            }
             return message;
         }
         toObject() {
             const data: {
-                user_id?: number;
+                safe_id?: string;
                 refresh_token?: string;
                 access_token?: string;
+                role?: Role;
             } = {};
-            if (this.user_id != null) {
-                data.user_id = this.user_id;
+            if (this.safe_id != null) {
+                data.safe_id = this.safe_id;
             }
             if (this.refresh_token != null) {
                 data.refresh_token = this.refresh_token;
@@ -88,18 +104,23 @@ export namespace bulbasaur {
             if (this.access_token != null) {
                 data.access_token = this.access_token;
             }
+            if (this.role != null) {
+                data.role = this.role;
+            }
             return data;
         }
         serialize(): Uint8Array;
         serialize(w: pb_1.BinaryWriter): void;
         serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
             const writer = w || new pb_1.BinaryWriter();
-            if (this.user_id != 0)
-                writer.writeUint64(1, this.user_id);
+            if (this.safe_id.length)
+                writer.writeString(1, this.safe_id);
             if (this.refresh_token.length)
                 writer.writeString(2, this.refresh_token);
             if (this.access_token.length)
                 writer.writeString(3, this.access_token);
+            if (this.role != Role.ROLE_UNKNOWN)
+                writer.writeEnum(4, this.role);
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -110,13 +131,16 @@ export namespace bulbasaur {
                     break;
                 switch (reader.getFieldNumber()) {
                     case 1:
-                        message.user_id = reader.readUint64();
+                        message.safe_id = reader.readString();
                         break;
                     case 2:
                         message.refresh_token = reader.readString();
                         break;
                     case 3:
                         message.access_token = reader.readString();
+                        break;
+                    case 4:
+                        message.role = reader.readEnum();
                         break;
                     default: reader.skipField();
                 }
@@ -1139,23 +1163,47 @@ export namespace bulbasaur {
     }
     export class UpdateMetadataRequest extends pb_1.Message {
         #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {}) {
+        constructor(data?: any[] | {
+            metadata?: string;
+        }) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") { }
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("metadata" in data && data.metadata != undefined) {
+                    this.metadata = data.metadata;
+                }
+            }
         }
-        static fromObject(data: {}): UpdateMetadataRequest {
+        get metadata() {
+            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        }
+        set metadata(value: string) {
+            pb_1.Message.setField(this, 1, value);
+        }
+        static fromObject(data: {
+            metadata?: string;
+        }): UpdateMetadataRequest {
             const message = new UpdateMetadataRequest({});
+            if (data.metadata != null) {
+                message.metadata = data.metadata;
+            }
             return message;
         }
         toObject() {
-            const data: {} = {};
+            const data: {
+                metadata?: string;
+            } = {};
+            if (this.metadata != null) {
+                data.metadata = this.metadata;
+            }
             return data;
         }
         serialize(): Uint8Array;
         serialize(w: pb_1.BinaryWriter): void;
         serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
             const writer = w || new pb_1.BinaryWriter();
+            if (this.metadata.length)
+                writer.writeString(1, this.metadata);
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -1165,6 +1213,9 @@ export namespace bulbasaur {
                 if (reader.isEndGroup())
                     break;
                 switch (reader.getFieldNumber()) {
+                    case 1:
+                        message.metadata = reader.readString();
+                        break;
                     default: reader.skipField();
                 }
             }
@@ -1175,46 +1226,6 @@ export namespace bulbasaur {
         }
         static deserializeBinary(bytes: Uint8Array): UpdateMetadataRequest {
             return UpdateMetadataRequest.deserialize(bytes);
-        }
-    }
-    export class UpdateMetadataResponse extends pb_1.Message {
-        #one_of_decls: number[][] = [];
-        constructor(data?: any[] | {}) {
-            super();
-            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
-            if (!Array.isArray(data) && typeof data == "object") { }
-        }
-        static fromObject(data: {}): UpdateMetadataResponse {
-            const message = new UpdateMetadataResponse({});
-            return message;
-        }
-        toObject() {
-            const data: {} = {};
-            return data;
-        }
-        serialize(): Uint8Array;
-        serialize(w: pb_1.BinaryWriter): void;
-        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
-            const writer = w || new pb_1.BinaryWriter();
-            if (!w)
-                return writer.getResultBuffer();
-        }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): UpdateMetadataResponse {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new UpdateMetadataResponse();
-            while (reader.nextField()) {
-                if (reader.isEndGroup())
-                    break;
-                switch (reader.getFieldNumber()) {
-                    default: reader.skipField();
-                }
-            }
-            return message;
-        }
-        serializeBinary(): Uint8Array {
-            return this.serialize();
-        }
-        static deserializeBinary(bytes: Uint8Array): UpdateMetadataResponse {
-            return UpdateMetadataResponse.deserialize(bytes);
         }
     }
     export abstract class UnimplementedBulbasaurService {
@@ -1243,11 +1254,11 @@ export namespace bulbasaur {
                 responseStream: false,
                 requestSerialize: (message: UpdateMetadataRequest) => Buffer.from(message.serialize()),
                 requestDeserialize: (bytes: Buffer) => UpdateMetadataRequest.deserialize(new Uint8Array(bytes)),
-                responseSerialize: (message: UpdateMetadataResponse) => Buffer.from(message.serialize()),
-                responseDeserialize: (bytes: Buffer) => UpdateMetadataResponse.deserialize(new Uint8Array(bytes))
+                responseSerialize: (message: dependency_1.google.protobuf.Empty) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => dependency_1.google.protobuf.Empty.deserialize(new Uint8Array(bytes))
             },
-            RefeshToken: {
-                path: "/bulbasaur.Bulbasaur/RefeshToken",
+            RefreshToken: {
+                path: "/bulbasaur.Bulbasaur/RefreshToken",
                 requestStream: false,
                 responseStream: false,
                 requestSerialize: (message: RefreshTokenRequest) => Buffer.from(message.serialize()),
@@ -1259,8 +1270,8 @@ export namespace bulbasaur {
         [method: string]: grpc_1.UntypedHandleCall;
         abstract SignUp(call: grpc_1.ServerUnaryCall<SignUpRequest, SignUpResponse>, callback: grpc_1.sendUnaryData<SignUpResponse>): void;
         abstract SignIn(call: grpc_1.ServerUnaryCall<SignInRequest, SignInResponse>, callback: grpc_1.sendUnaryData<SignInResponse>): void;
-        abstract UpdateMetadata(call: grpc_1.ServerUnaryCall<UpdateMetadataRequest, UpdateMetadataResponse>, callback: grpc_1.sendUnaryData<UpdateMetadataResponse>): void;
-        abstract RefeshToken(call: grpc_1.ServerUnaryCall<RefreshTokenRequest, RefreshTokenResponse>, callback: grpc_1.sendUnaryData<RefreshTokenResponse>): void;
+        abstract UpdateMetadata(call: grpc_1.ServerUnaryCall<UpdateMetadataRequest, dependency_1.google.protobuf.Empty>, callback: grpc_1.sendUnaryData<dependency_1.google.protobuf.Empty>): void;
+        abstract RefreshToken(call: grpc_1.ServerUnaryCall<RefreshTokenRequest, RefreshTokenResponse>, callback: grpc_1.sendUnaryData<RefreshTokenResponse>): void;
     }
     export class BulbasaurClient {
         private _address: string;
@@ -1280,13 +1291,13 @@ export namespace bulbasaur {
         SignIn(message: SignInRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: SignInResponse) => void) {
             return this._client.rpcCall<SignInRequest, SignInResponse>(this._address + "/bulbasaur.Bulbasaur/SignIn", message, metadata || {}, BulbasaurClient.SignIn, callback);
         }
-        private static UpdateMetadata = new grpc_web_1.MethodDescriptor<UpdateMetadataRequest, UpdateMetadataResponse>("/bulbasaur.Bulbasaur/UpdateMetadata", grpc_web_1.MethodType.UNARY, UpdateMetadataRequest, UpdateMetadataResponse, (message: UpdateMetadataRequest) => message.serialize(), UpdateMetadataResponse.deserialize);
-        UpdateMetadata(message: UpdateMetadataRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: UpdateMetadataResponse) => void) {
-            return this._client.rpcCall<UpdateMetadataRequest, UpdateMetadataResponse>(this._address + "/bulbasaur.Bulbasaur/UpdateMetadata", message, metadata || {}, BulbasaurClient.UpdateMetadata, callback);
+        private static UpdateMetadata = new grpc_web_1.MethodDescriptor<UpdateMetadataRequest, dependency_1.google.protobuf.Empty>("/bulbasaur.Bulbasaur/UpdateMetadata", grpc_web_1.MethodType.UNARY, UpdateMetadataRequest, dependency_1.google.protobuf.Empty, (message: UpdateMetadataRequest) => message.serialize(), dependency_1.google.protobuf.Empty.deserialize);
+        UpdateMetadata(message: UpdateMetadataRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: dependency_1.google.protobuf.Empty) => void) {
+            return this._client.rpcCall<UpdateMetadataRequest, dependency_1.google.protobuf.Empty>(this._address + "/bulbasaur.Bulbasaur/UpdateMetadata", message, metadata || {}, BulbasaurClient.UpdateMetadata, callback);
         }
-        private static RefeshToken = new grpc_web_1.MethodDescriptor<RefreshTokenRequest, RefreshTokenResponse>("/bulbasaur.Bulbasaur/RefeshToken", grpc_web_1.MethodType.UNARY, RefreshTokenRequest, RefreshTokenResponse, (message: RefreshTokenRequest) => message.serialize(), RefreshTokenResponse.deserialize);
-        RefeshToken(message: RefreshTokenRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: RefreshTokenResponse) => void) {
-            return this._client.rpcCall<RefreshTokenRequest, RefreshTokenResponse>(this._address + "/bulbasaur.Bulbasaur/RefeshToken", message, metadata || {}, BulbasaurClient.RefeshToken, callback);
+        private static RefreshToken = new grpc_web_1.MethodDescriptor<RefreshTokenRequest, RefreshTokenResponse>("/bulbasaur.Bulbasaur/RefreshToken", grpc_web_1.MethodType.UNARY, RefreshTokenRequest, RefreshTokenResponse, (message: RefreshTokenRequest) => message.serialize(), RefreshTokenResponse.deserialize);
+        RefreshToken(message: RefreshTokenRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: RefreshTokenResponse) => void) {
+            return this._client.rpcCall<RefreshTokenRequest, RefreshTokenResponse>(this._address + "/bulbasaur.Bulbasaur/RefreshToken", message, metadata || {}, BulbasaurClient.RefreshToken, callback);
         }
     }
 }

@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -22,7 +23,7 @@ const (
 	Bulbasaur_SignUp_FullMethodName         = "/bulbasaur.Bulbasaur/SignUp"
 	Bulbasaur_SignIn_FullMethodName         = "/bulbasaur.Bulbasaur/SignIn"
 	Bulbasaur_UpdateMetadata_FullMethodName = "/bulbasaur.Bulbasaur/UpdateMetadata"
-	Bulbasaur_RefeshToken_FullMethodName    = "/bulbasaur.Bulbasaur/RefeshToken"
+	Bulbasaur_RefreshToken_FullMethodName   = "/bulbasaur.Bulbasaur/RefreshToken"
 )
 
 // BulbasaurClient is the client API for Bulbasaur service.
@@ -31,8 +32,8 @@ const (
 type BulbasaurClient interface {
 	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*SignUpResponse, error)
 	SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error)
-	UpdateMetadata(ctx context.Context, in *UpdateMetadataRequest, opts ...grpc.CallOption) (*UpdateMetadataResponse, error)
-	RefeshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*RefreshTokenResponse, error)
+	UpdateMetadata(ctx context.Context, in *UpdateMetadataRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*RefreshTokenResponse, error)
 }
 
 type bulbasaurClient struct {
@@ -63,9 +64,9 @@ func (c *bulbasaurClient) SignIn(ctx context.Context, in *SignInRequest, opts ..
 	return out, nil
 }
 
-func (c *bulbasaurClient) UpdateMetadata(ctx context.Context, in *UpdateMetadataRequest, opts ...grpc.CallOption) (*UpdateMetadataResponse, error) {
+func (c *bulbasaurClient) UpdateMetadata(ctx context.Context, in *UpdateMetadataRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateMetadataResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, Bulbasaur_UpdateMetadata_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -73,10 +74,10 @@ func (c *bulbasaurClient) UpdateMetadata(ctx context.Context, in *UpdateMetadata
 	return out, nil
 }
 
-func (c *bulbasaurClient) RefeshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*RefreshTokenResponse, error) {
+func (c *bulbasaurClient) RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*RefreshTokenResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(RefreshTokenResponse)
-	err := c.cc.Invoke(ctx, Bulbasaur_RefeshToken_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Bulbasaur_RefreshToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -89,8 +90,8 @@ func (c *bulbasaurClient) RefeshToken(ctx context.Context, in *RefreshTokenReque
 type BulbasaurServer interface {
 	SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error)
 	SignIn(context.Context, *SignInRequest) (*SignInResponse, error)
-	UpdateMetadata(context.Context, *UpdateMetadataRequest) (*UpdateMetadataResponse, error)
-	RefeshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error)
+	UpdateMetadata(context.Context, *UpdateMetadataRequest) (*emptypb.Empty, error)
+	RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error)
 	mustEmbedUnimplementedBulbasaurServer()
 }
 
@@ -104,11 +105,11 @@ func (UnimplementedBulbasaurServer) SignUp(context.Context, *SignUpRequest) (*Si
 func (UnimplementedBulbasaurServer) SignIn(context.Context, *SignInRequest) (*SignInResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignIn not implemented")
 }
-func (UnimplementedBulbasaurServer) UpdateMetadata(context.Context, *UpdateMetadataRequest) (*UpdateMetadataResponse, error) {
+func (UnimplementedBulbasaurServer) UpdateMetadata(context.Context, *UpdateMetadataRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMetadata not implemented")
 }
-func (UnimplementedBulbasaurServer) RefeshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RefeshToken not implemented")
+func (UnimplementedBulbasaurServer) RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
 }
 func (UnimplementedBulbasaurServer) mustEmbedUnimplementedBulbasaurServer() {}
 
@@ -177,20 +178,20 @@ func _Bulbasaur_UpdateMetadata_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Bulbasaur_RefeshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Bulbasaur_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RefreshTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BulbasaurServer).RefeshToken(ctx, in)
+		return srv.(BulbasaurServer).RefreshToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Bulbasaur_RefeshToken_FullMethodName,
+		FullMethod: Bulbasaur_RefreshToken_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BulbasaurServer).RefeshToken(ctx, req.(*RefreshTokenRequest))
+		return srv.(BulbasaurServer).RefreshToken(ctx, req.(*RefreshTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -215,8 +216,8 @@ var Bulbasaur_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Bulbasaur_UpdateMetadata_Handler,
 		},
 		{
-			MethodName: "RefeshToken",
-			Handler:    _Bulbasaur_RefeshToken_Handler,
+			MethodName: "RefreshToken",
+			Handler:    _Bulbasaur_RefreshToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
