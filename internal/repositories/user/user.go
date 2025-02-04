@@ -16,7 +16,7 @@ type UserRepository interface {
 	GetUserBySafeID(ctx context.Context, safeId string) (*ent.User, error)
 
 	// user local
-	CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword string, role bulbasaur.Role) (*ent.User, error)
+	CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword, email string, role bulbasaur.Role) (*ent.User, error)
 	GetLocal(ctx context.Context, tx tx.Tx, tenantId, username, password string) (*ent.User, error)
 
 	// user google
@@ -25,6 +25,7 @@ type UserRepository interface {
 
 	// general
 	UpdateMetadata(ctx context.Context, tx tx.Tx, id uint64, metadata string) error
+	List(ctx context.Context, userIds []uint64) ([]*ent.User, error)
 }
 
 type userRepository struct {
@@ -38,10 +39,13 @@ func NewUserRepository(ent *ent.Client) UserRepository {
 }
 
 func (u *userRepository) GetUserBySafeID(ctx context.Context, safeId string) (*ent.User, error) {
-	return u.ent.User.Query().Where(user.SafeID(safeId)).Only(ctx)
+	return u.ent.User.Query().Where(user.SafeID(safeId)).
+		WithGoogle().
+		WithLocal().
+		Only(ctx)
 }
 
-func (u *userRepository) CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword string, role bulbasaur.Role) (*ent.User, error) {
+func (u *userRepository) CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword, email string, role bulbasaur.Role) (*ent.User, error) {
 	if password != confirmPassword {
 		return nil, fmt.Errorf("passwords do not match")
 	}
@@ -50,12 +54,9 @@ func (u *userRepository) CreateLocal(ctx context.Context, tx tx.Tx, tenantId, us
 	if err != nil {
 		return nil, err
 	}
-	if err != nil {
-		return nil, err
-	}
-
 	user, err := tx.Client().User.Create().
 		SetTenantID(tenantId).
+		SetEmail(email).
 		SetRole(role).
 		Save(ctx)
 	if err != nil {
@@ -73,7 +74,6 @@ func (u *userRepository) CreateLocal(ctx context.Context, tx tx.Tx, tenantId, us
 	}
 
 	return user, nil
-
 }
 
 func (u *userRepository) GetLocal(ctx context.Context, tx tx.Tx, tenantId, username, password string) (*ent.User, error) {
@@ -138,4 +138,8 @@ func (u *userRepository) GetGoogle(ctx context.Context, tx tx.Tx, tenantId, emai
 		return nil, err
 	}
 	return user, nil
+}
+
+func (u *userRepository) List(ctx context.Context, userIds []uint64) ([]*ent.User, error) {
+	return u.ent.User.Query().Where(user.IDIn(userIds...)).All(ctx)
 }

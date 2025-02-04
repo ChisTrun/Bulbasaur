@@ -24,6 +24,8 @@ const (
 	Bulbasaur_SignIn_FullMethodName         = "/bulbasaur.Bulbasaur/SignIn"
 	Bulbasaur_UpdateMetadata_FullMethodName = "/bulbasaur.Bulbasaur/UpdateMetadata"
 	Bulbasaur_RefreshToken_FullMethodName   = "/bulbasaur.Bulbasaur/RefreshToken"
+	Bulbasaur_ListUsers_FullMethodName      = "/bulbasaur.Bulbasaur/ListUsers"
+	Bulbasaur_Me_FullMethodName             = "/bulbasaur.Bulbasaur/Me"
 )
 
 // BulbasaurClient is the client API for Bulbasaur service.
@@ -34,6 +36,8 @@ type BulbasaurClient interface {
 	SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error)
 	UpdateMetadata(ctx context.Context, in *UpdateMetadataRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*RefreshTokenResponse, error)
+	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error)
+	Me(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeResponse, error)
 }
 
 type bulbasaurClient struct {
@@ -84,6 +88,26 @@ func (c *bulbasaurClient) RefreshToken(ctx context.Context, in *RefreshTokenRequ
 	return out, nil
 }
 
+func (c *bulbasaurClient) ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListUsersResponse)
+	err := c.cc.Invoke(ctx, Bulbasaur_ListUsers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bulbasaurClient) Me(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeResponse)
+	err := c.cc.Invoke(ctx, Bulbasaur_Me_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BulbasaurServer is the server API for Bulbasaur service.
 // All implementations must embed UnimplementedBulbasaurServer
 // for forward compatibility
@@ -92,6 +116,8 @@ type BulbasaurServer interface {
 	SignIn(context.Context, *SignInRequest) (*SignInResponse, error)
 	UpdateMetadata(context.Context, *UpdateMetadataRequest) (*emptypb.Empty, error)
 	RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error)
+	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
+	Me(context.Context, *emptypb.Empty) (*MeResponse, error)
 	mustEmbedUnimplementedBulbasaurServer()
 }
 
@@ -110,6 +136,12 @@ func (UnimplementedBulbasaurServer) UpdateMetadata(context.Context, *UpdateMetad
 }
 func (UnimplementedBulbasaurServer) RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
+}
+func (UnimplementedBulbasaurServer) ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
+}
+func (UnimplementedBulbasaurServer) Me(context.Context, *emptypb.Empty) (*MeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Me not implemented")
 }
 func (UnimplementedBulbasaurServer) mustEmbedUnimplementedBulbasaurServer() {}
 
@@ -196,6 +228,42 @@ func _Bulbasaur_RefreshToken_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Bulbasaur_ListUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BulbasaurServer).ListUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Bulbasaur_ListUsers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BulbasaurServer).ListUsers(ctx, req.(*ListUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Bulbasaur_Me_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BulbasaurServer).Me(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Bulbasaur_Me_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BulbasaurServer).Me(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Bulbasaur_ServiceDesc is the grpc.ServiceDesc for Bulbasaur service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -218,6 +286,14 @@ var Bulbasaur_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RefreshToken",
 			Handler:    _Bulbasaur_RefreshToken_Handler,
+		},
+		{
+			MethodName: "ListUsers",
+			Handler:    _Bulbasaur_ListUsers_Handler,
+		},
+		{
+			MethodName: "Me",
+			Handler:    _Bulbasaur_Me_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

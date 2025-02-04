@@ -11,6 +11,9 @@ service Bulbasaur {
     rpc SignIn (SignInRequest) returns (SignInResponse);
     rpc UpdateMetadata (UpdateMetadataRequest) returns (google.protobuf.Empty);
     rpc RefreshToken (RefreshTokenRequest) returns (RefreshTokenResponse);
+    rpc ListUsers (ListUsersRequest) returns (ListUsersResponse);
+
+    rpc Me (google.protobuf.Empty) returns (MeResponse);
 }
 
 //======================================== ENUM =======================================
@@ -27,9 +30,6 @@ enum Role {
     ROLE_BUSINESS_MANAGER = 2; 
 }
 
-//======================================== DATA ========================================
-
-
 //======================================== MESSAGE ========================================
 
 message TokenInfo {
@@ -38,8 +38,26 @@ message TokenInfo {
     string access_token = 3;
     Role role = 4;
 }
+
+message User {
+    string username = 2;
+    string email = 3;
+    optional string metadata = 4;
+    Role role = 5;
+}
+
+message MeResponse{
+    User user = 1;
+}
   
-  
+message ListUsersRequest {
+    repeated uint64 user_ids = 1;
+}
+
+message ListUsersResponse {
+    repeated User users = 1;
+}
+
 message SignUpRequest {
     oneof credential {
         Local local = 1;
@@ -53,6 +71,7 @@ message SignUpRequest {
         string username = 1;
         string password = 2;
         string confirm_password = 3;
+        string email = 4;   
     }
 
     message Google {

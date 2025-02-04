@@ -366,6 +366,7 @@ export namespace bulbasaur {
                 username?: string;
                 password?: string;
                 confirm_password?: string;
+                email?: string;
             }) {
                 super();
                 pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -378,6 +379,9 @@ export namespace bulbasaur {
                     }
                     if ("confirm_password" in data && data.confirm_password != undefined) {
                         this.confirm_password = data.confirm_password;
+                    }
+                    if ("email" in data && data.email != undefined) {
+                        this.email = data.email;
                     }
                 }
             }
@@ -399,10 +403,17 @@ export namespace bulbasaur {
             set confirm_password(value: string) {
                 pb_1.Message.setField(this, 3, value);
             }
+            get email() {
+                return pb_1.Message.getFieldWithDefault(this, 4, "") as string;
+            }
+            set email(value: string) {
+                pb_1.Message.setField(this, 4, value);
+            }
             static fromObject(data: {
                 username?: string;
                 password?: string;
                 confirm_password?: string;
+                email?: string;
             }): Local {
                 const message = new Local({});
                 if (data.username != null) {
@@ -414,6 +425,9 @@ export namespace bulbasaur {
                 if (data.confirm_password != null) {
                     message.confirm_password = data.confirm_password;
                 }
+                if (data.email != null) {
+                    message.email = data.email;
+                }
                 return message;
             }
             toObject() {
@@ -421,6 +435,7 @@ export namespace bulbasaur {
                     username?: string;
                     password?: string;
                     confirm_password?: string;
+                    email?: string;
                 } = {};
                 if (this.username != null) {
                     data.username = this.username;
@@ -430,6 +445,9 @@ export namespace bulbasaur {
                 }
                 if (this.confirm_password != null) {
                     data.confirm_password = this.confirm_password;
+                }
+                if (this.email != null) {
+                    data.email = this.email;
                 }
                 return data;
             }
@@ -443,6 +461,8 @@ export namespace bulbasaur {
                     writer.writeString(2, this.password);
                 if (this.confirm_password.length)
                     writer.writeString(3, this.confirm_password);
+                if (this.email.length)
+                    writer.writeString(4, this.email);
                 if (!w)
                     return writer.getResultBuffer();
             }
@@ -460,6 +480,9 @@ export namespace bulbasaur {
                             break;
                         case 3:
                             message.confirm_password = reader.readString();
+                            break;
+                        case 4:
+                            message.email = reader.readString();
                             break;
                         default: reader.skipField();
                     }

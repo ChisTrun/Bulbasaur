@@ -20,6 +20,9 @@ type UserFeature interface {
 	SignUp(ctx context.Context, request *bulbasaur.SignUpRequest) (*bulbasaur.SignUpResponse, error)
 	RefreshToken(ctx context.Context, request *bulbasaur.RefreshTokenRequest) (*bulbasaur.RefreshTokenResponse, error)
 	UpdateMetadata(ctx context.Context, request *bulbasaur.UpdateMetadataRequest) error
+
+	Me(ctx context.Context) (*bulbasaur.MeResponse, error)
+	ListUser(ctx context.Context, request *bulbasaur.ListUsersRequest) (*bulbasaur.ListUsersResponse, error)
 }
 
 type userFeature struct {
@@ -110,6 +113,7 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 				request.GetLocal().GetUsername(),
 				request.GetLocal().GetPassword(),
 				request.GetLocal().GetConfirmPassword(),
+				request.GetLocal().GetEmail(),
 				request.GetRole(),
 			)
 			return err
@@ -208,4 +212,54 @@ func (u *userFeature) UpdateMetadata(ctx context.Context, request *bulbasaur.Upd
 	return tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
 		return u.repo.UserRepository.UpdateMetadata(ctx, tx, uint64(userId), request.GetMetadata())
 	})
+}
+
+func (u *userFeature) Me(ctx context.Context) (*bulbasaur.MeResponse, error) {
+	safeId, ok := u.extractor.GetSafeID(ctx)
+	if !ok {
+		return nil, fmt.Errorf("safe id not found")
+	}
+
+	user, err := u.repo.UserRepository.GetUserBySafeID(ctx, safeId)
+	if err != nil {
+		return nil, err
+	}
+
+	mssUser := &bulbasaur.User{
+		Email:    user.Email,
+		Metadata: user.Metadata,
+		Role:     user.Role,
+	}
+
+	if user.Edges.Local != nil {
+		mssUser.Username = user.Edges.Local.Username
+	}
+
+	return &bulbasaur.MeResponse{
+		User: mssUser,
+	}, nil
+}
+
+func (u *userFeature) ListUser(ctx context.Context, request *bulbasaur.ListUsersRequest) (*bulbasaur.ListUsersResponse, error) {
+	entUsers, err := u.repo.UserRepository.List(ctx, request.GetUserIds())
+	if err != nil {
+		return nil, err
+	}
+
+	users := []*bulbasaur.User{}
+	for _, entUser := range entUsers {
+		mss := &bulbasaur.User{
+			Email:    entUser.Email,
+			Metadata: entUser.Metadata,
+			Role:     entUser.Role,
+		}
+		if entUser.Edges.Local != nil {
+			mss.Username = entUser.Edges.Local.Username
+		}
+		users = append(users, mss)
+	}
+
+	return &bulbasaur.ListUsersResponse{
+		Users: users,
+	}, nil
 }
