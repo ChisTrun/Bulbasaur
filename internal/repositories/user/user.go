@@ -10,6 +10,8 @@ import (
 	"bulbasaur/package/ent/user"
 	"context"
 	"fmt"
+
+	"github.com/google/uuid"
 )
 
 type UserRepository interface {
@@ -56,6 +58,7 @@ func (u *userRepository) CreateLocal(ctx context.Context, tx tx.Tx, tenantId, us
 	}
 	user, err := tx.Client().User.Create().
 		SetTenantID(tenantId).
+		SetSafeID(uuid.NewString()).
 		SetEmail(email).
 		SetRole(role).
 		Save(ctx)
@@ -106,6 +109,7 @@ func (u *userRepository) CreateGoogle(ctx context.Context, tx tx.Tx, tenantId, e
 
 	user, err := tx.Client().User.Create().
 		SetTenantID(tenantId).
+		SetSafeID(uuid.NewString()).
 		SetRole(role).
 		Save(ctx)
 	if err != nil {
