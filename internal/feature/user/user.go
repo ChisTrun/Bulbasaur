@@ -196,8 +196,8 @@ func (u *userFeature) RefreshToken(ctx context.Context, request *bulbasaur.Refre
 	return &bulbasaur.RefreshTokenResponse{
 		TokenInfo: &bulbasaur.TokenInfo{
 			SafeId:       user.SafeID,
-			RefreshToken: accessToken,
-			AccessToken:  refreshToken,
+			RefreshToken: refreshToken,
+			AccessToken:  accessToken,
 			Role:         user.Role,
 		},
 	}, nil
