@@ -154,6 +154,359 @@ export namespace bulbasaur {
             return TokenInfo.deserialize(bytes);
         }
     }
+    export class User extends pb_1.Message {
+        #one_of_decls: number[][] = [[4]];
+        constructor(data?: any[] | ({
+            username?: string;
+            email?: string;
+            role?: Role;
+        } & (({
+            metadata?: string;
+        })))) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("username" in data && data.username != undefined) {
+                    this.username = data.username;
+                }
+                if ("email" in data && data.email != undefined) {
+                    this.email = data.email;
+                }
+                if ("metadata" in data && data.metadata != undefined) {
+                    this.metadata = data.metadata;
+                }
+                if ("role" in data && data.role != undefined) {
+                    this.role = data.role;
+                }
+            }
+        }
+        get username() {
+            return pb_1.Message.getFieldWithDefault(this, 2, "") as string;
+        }
+        set username(value: string) {
+            pb_1.Message.setField(this, 2, value);
+        }
+        get email() {
+            return pb_1.Message.getFieldWithDefault(this, 3, "") as string;
+        }
+        set email(value: string) {
+            pb_1.Message.setField(this, 3, value);
+        }
+        get metadata() {
+            return pb_1.Message.getFieldWithDefault(this, 4, "") as string;
+        }
+        set metadata(value: string) {
+            pb_1.Message.setOneofField(this, 4, this.#one_of_decls[0], value);
+        }
+        get has_metadata() {
+            return pb_1.Message.getField(this, 4) != null;
+        }
+        get role() {
+            return pb_1.Message.getFieldWithDefault(this, 5, Role.ROLE_UNKNOWN) as Role;
+        }
+        set role(value: Role) {
+            pb_1.Message.setField(this, 5, value);
+        }
+        get _metadata() {
+            const cases: {
+                [index: number]: "none" | "metadata";
+            } = {
+                0: "none",
+                4: "metadata"
+            };
+            return cases[pb_1.Message.computeOneofCase(this, [4])];
+        }
+        static fromObject(data: {
+            username?: string;
+            email?: string;
+            metadata?: string;
+            role?: Role;
+        }): User {
+            const message = new User({});
+            if (data.username != null) {
+                message.username = data.username;
+            }
+            if (data.email != null) {
+                message.email = data.email;
+            }
+            if (data.metadata != null) {
+                message.metadata = data.metadata;
+            }
+            if (data.role != null) {
+                message.role = data.role;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                username?: string;
+                email?: string;
+                metadata?: string;
+                role?: Role;
+            } = {};
+            if (this.username != null) {
+                data.username = this.username;
+            }
+            if (this.email != null) {
+                data.email = this.email;
+            }
+            if (this.metadata != null) {
+                data.metadata = this.metadata;
+            }
+            if (this.role != null) {
+                data.role = this.role;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.username.length)
+                writer.writeString(2, this.username);
+            if (this.email.length)
+                writer.writeString(3, this.email);
+            if (this.has_metadata)
+                writer.writeString(4, this.metadata);
+            if (this.role != Role.ROLE_UNKNOWN)
+                writer.writeEnum(5, this.role);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): User {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new User();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 2:
+                        message.username = reader.readString();
+                        break;
+                    case 3:
+                        message.email = reader.readString();
+                        break;
+                    case 4:
+                        message.metadata = reader.readString();
+                        break;
+                    case 5:
+                        message.role = reader.readEnum();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): User {
+            return User.deserialize(bytes);
+        }
+    }
+    export class MeResponse extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            user?: User;
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("user" in data && data.user != undefined) {
+                    this.user = data.user;
+                }
+            }
+        }
+        get user() {
+            return pb_1.Message.getWrapperField(this, User, 1) as User;
+        }
+        set user(value: User) {
+            pb_1.Message.setWrapperField(this, 1, value);
+        }
+        get has_user() {
+            return pb_1.Message.getField(this, 1) != null;
+        }
+        static fromObject(data: {
+            user?: ReturnType<typeof User.prototype.toObject>;
+        }): MeResponse {
+            const message = new MeResponse({});
+            if (data.user != null) {
+                message.user = User.fromObject(data.user);
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                user?: ReturnType<typeof User.prototype.toObject>;
+            } = {};
+            if (this.user != null) {
+                data.user = this.user.toObject();
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.has_user)
+                writer.writeMessage(1, this.user, () => this.user.serialize(writer));
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): MeResponse {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new MeResponse();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        reader.readMessage(message.user, () => message.user = User.deserialize(reader));
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): MeResponse {
+            return MeResponse.deserialize(bytes);
+        }
+    }
+    export class ListUsersRequest extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            user_ids?: number[];
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("user_ids" in data && data.user_ids != undefined) {
+                    this.user_ids = data.user_ids;
+                }
+            }
+        }
+        get user_ids() {
+            return pb_1.Message.getFieldWithDefault(this, 1, []) as number[];
+        }
+        set user_ids(value: number[]) {
+            pb_1.Message.setField(this, 1, value);
+        }
+        static fromObject(data: {
+            user_ids?: number[];
+        }): ListUsersRequest {
+            const message = new ListUsersRequest({});
+            if (data.user_ids != null) {
+                message.user_ids = data.user_ids;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                user_ids?: number[];
+            } = {};
+            if (this.user_ids != null) {
+                data.user_ids = this.user_ids;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.user_ids.length)
+                writer.writePackedUint64(1, this.user_ids);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ListUsersRequest {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ListUsersRequest();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        message.user_ids = reader.readPackedUint64();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): ListUsersRequest {
+            return ListUsersRequest.deserialize(bytes);
+        }
+    }
+    export class ListUsersResponse extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            users?: User[];
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("users" in data && data.users != undefined) {
+                    this.users = data.users;
+                }
+            }
+        }
+        get users() {
+            return pb_1.Message.getRepeatedWrapperField(this, User, 1) as User[];
+        }
+        set users(value: User[]) {
+            pb_1.Message.setRepeatedWrapperField(this, 1, value);
+        }
+        static fromObject(data: {
+            users?: ReturnType<typeof User.prototype.toObject>[];
+        }): ListUsersResponse {
+            const message = new ListUsersResponse({});
+            if (data.users != null) {
+                message.users = data.users.map(item => User.fromObject(item));
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                users?: ReturnType<typeof User.prototype.toObject>[];
+            } = {};
+            if (this.users != null) {
+                data.users = this.users.map((item: User) => item.toObject());
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.users.length)
+                writer.writeRepeatedMessage(1, this.users, (item: User) => item.serialize(writer));
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): ListUsersResponse {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new ListUsersResponse();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        reader.readMessage(message.users, () => pb_1.Message.addToRepeatedWrapperField(message, 1, User.deserialize(reader), User));
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): ListUsersResponse {
+            return ListUsersResponse.deserialize(bytes);
+        }
+    }
     export class SignUpRequest extends pb_1.Message {
         #one_of_decls: number[][] = [[1, 2], [3], [4]];
         constructor(data?: any[] | ({
@@ -1288,6 +1641,24 @@ export namespace bulbasaur {
                 requestDeserialize: (bytes: Buffer) => RefreshTokenRequest.deserialize(new Uint8Array(bytes)),
                 responseSerialize: (message: RefreshTokenResponse) => Buffer.from(message.serialize()),
                 responseDeserialize: (bytes: Buffer) => RefreshTokenResponse.deserialize(new Uint8Array(bytes))
+            },
+            ListUsers: {
+                path: "/bulbasaur.Bulbasaur/ListUsers",
+                requestStream: false,
+                responseStream: false,
+                requestSerialize: (message: ListUsersRequest) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => ListUsersRequest.deserialize(new Uint8Array(bytes)),
+                responseSerialize: (message: ListUsersResponse) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => ListUsersResponse.deserialize(new Uint8Array(bytes))
+            },
+            Me: {
+                path: "/bulbasaur.Bulbasaur/Me",
+                requestStream: false,
+                responseStream: false,
+                requestSerialize: (message: dependency_1.google.protobuf.Empty) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => dependency_1.google.protobuf.Empty.deserialize(new Uint8Array(bytes)),
+                responseSerialize: (message: MeResponse) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => MeResponse.deserialize(new Uint8Array(bytes))
             }
         };
         [method: string]: grpc_1.UntypedHandleCall;
@@ -1295,6 +1666,8 @@ export namespace bulbasaur {
         abstract SignIn(call: grpc_1.ServerUnaryCall<SignInRequest, SignInResponse>, callback: grpc_1.sendUnaryData<SignInResponse>): void;
         abstract UpdateMetadata(call: grpc_1.ServerUnaryCall<UpdateMetadataRequest, dependency_1.google.protobuf.Empty>, callback: grpc_1.sendUnaryData<dependency_1.google.protobuf.Empty>): void;
         abstract RefreshToken(call: grpc_1.ServerUnaryCall<RefreshTokenRequest, RefreshTokenResponse>, callback: grpc_1.sendUnaryData<RefreshTokenResponse>): void;
+        abstract ListUsers(call: grpc_1.ServerUnaryCall<ListUsersRequest, ListUsersResponse>, callback: grpc_1.sendUnaryData<ListUsersResponse>): void;
+        abstract Me(call: grpc_1.ServerUnaryCall<dependency_1.google.protobuf.Empty, MeResponse>, callback: grpc_1.sendUnaryData<MeResponse>): void;
     }
     export class BulbasaurClient {
         private _address: string;
@@ -1321,6 +1694,14 @@ export namespace bulbasaur {
         private static RefreshToken = new grpc_web_1.MethodDescriptor<RefreshTokenRequest, RefreshTokenResponse>("/bulbasaur.Bulbasaur/RefreshToken", grpc_web_1.MethodType.UNARY, RefreshTokenRequest, RefreshTokenResponse, (message: RefreshTokenRequest) => message.serialize(), RefreshTokenResponse.deserialize);
         RefreshToken(message: RefreshTokenRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: RefreshTokenResponse) => void) {
             return this._client.rpcCall<RefreshTokenRequest, RefreshTokenResponse>(this._address + "/bulbasaur.Bulbasaur/RefreshToken", message, metadata || {}, BulbasaurClient.RefreshToken, callback);
+        }
+        private static ListUsers = new grpc_web_1.MethodDescriptor<ListUsersRequest, ListUsersResponse>("/bulbasaur.Bulbasaur/ListUsers", grpc_web_1.MethodType.UNARY, ListUsersRequest, ListUsersResponse, (message: ListUsersRequest) => message.serialize(), ListUsersResponse.deserialize);
+        ListUsers(message: ListUsersRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: ListUsersResponse) => void) {
+            return this._client.rpcCall<ListUsersRequest, ListUsersResponse>(this._address + "/bulbasaur.Bulbasaur/ListUsers", message, metadata || {}, BulbasaurClient.ListUsers, callback);
+        }
+        private static Me = new grpc_web_1.MethodDescriptor<dependency_1.google.protobuf.Empty, MeResponse>("/bulbasaur.Bulbasaur/Me", grpc_web_1.MethodType.UNARY, dependency_1.google.protobuf.Empty, MeResponse, (message: dependency_1.google.protobuf.Empty) => message.serialize(), MeResponse.deserialize);
+        Me(message: dependency_1.google.protobuf.Empty, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: MeResponse) => void) {
+            return this._client.rpcCall<dependency_1.google.protobuf.Empty, MeResponse>(this._address + "/bulbasaur.Bulbasaur/Me", message, metadata || {}, BulbasaurClient.Me, callback);
         }
     }
 }
