@@ -41,7 +41,7 @@ func (s *signer) CreateToken(userId uint64, safeId string, role bulbasaur.Role, 
 			"user_id": userId,
 			"safe_id": safeId,
 			"role":    role,
-			"exp":     time.Now().Add(time.Hour * time.Duration(expTime)).Unix(),
+			"exp":     time.Now().Add(time.Minute * time.Duration(expTime)).Unix(),
 		})
 
 	return token.SignedString([]byte(secretKey))
