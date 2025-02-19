@@ -158,8 +158,8 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 	return &bulbasaur.SignUpResponse{
 		TokenInfo: &bulbasaur.TokenInfo{
 			SafeId:       user.SafeID,
-			RefreshToken: accessToken,
-			AccessToken:  refreshToken,
+			RefreshToken: refreshToken,
+			AccessToken:  accessToken,
 			Role:         user.Role,
 		},
 	}, nil

@@ -30,10 +30,10 @@ func (s *signer) CreateToken(userId uint64, safeId string, role bulbasaur.Role, 
 	switch tokenType {
 	case bulbasaur.TokenType_TOKEN_TYPE_ACCESS_TOKEN:
 		secretKey = s.cfg.Auth.AccessKey
-		expTime = 1
+		expTime = s.cfg.Auth.AccessExp
 	case bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN:
 		secretKey = s.cfg.Auth.RefreshKey
-		expTime = 2
+		expTime = s.cfg.Auth.RefreshExp
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
