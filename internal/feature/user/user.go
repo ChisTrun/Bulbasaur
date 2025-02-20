@@ -96,6 +96,7 @@ func (u *userFeature) SignIn(ctx context.Context, request *bulbasaur.SignInReque
 			RefreshToken: refreshToken,
 			AccessToken:  accessToken,
 			Role:         user.Role,
+			UserId:       user.ID,
 		},
 	}, nil
 }
@@ -161,6 +162,7 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 			RefreshToken: refreshToken,
 			AccessToken:  accessToken,
 			Role:         user.Role,
+			UserId:       user.ID,
 		},
 	}, nil
 }
@@ -229,6 +231,7 @@ func (u *userFeature) Me(ctx context.Context) (*bulbasaur.MeResponse, error) {
 		Email:    user.Email,
 		Metadata: user.Metadata,
 		Role:     user.Role,
+		Id:       user.ID,
 	}
 
 	if user.Edges.Local != nil {

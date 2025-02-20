@@ -37,6 +37,7 @@ message TokenInfo {
     string refresh_token = 2;
     string access_token = 3;
     Role role = 4;
+    uint64 user_id = 5;
 }
 
 message User {
@@ -44,6 +45,7 @@ message User {
     string email = 3;
     optional string metadata = 4;
     Role role = 5;
+    uint64 id = 6;
 }
 
 message MeResponse{

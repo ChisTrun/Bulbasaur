@@ -25,6 +25,7 @@ export namespace bulbasaur {
             refresh_token?: string;
             access_token?: string;
             role?: Role;
+            user_id?: number;
         }) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
@@ -40,6 +41,9 @@ export namespace bulbasaur {
                 }
                 if ("role" in data && data.role != undefined) {
                     this.role = data.role;
+                }
+                if ("user_id" in data && data.user_id != undefined) {
+                    this.user_id = data.user_id;
                 }
             }
         }
@@ -67,11 +71,18 @@ export namespace bulbasaur {
         set role(value: Role) {
             pb_1.Message.setField(this, 4, value);
         }
+        get user_id() {
+            return pb_1.Message.getFieldWithDefault(this, 5, 0) as number;
+        }
+        set user_id(value: number) {
+            pb_1.Message.setField(this, 5, value);
+        }
         static fromObject(data: {
             safe_id?: string;
             refresh_token?: string;
             access_token?: string;
             role?: Role;
+            user_id?: number;
         }): TokenInfo {
             const message = new TokenInfo({});
             if (data.safe_id != null) {
@@ -86,6 +97,9 @@ export namespace bulbasaur {
             if (data.role != null) {
                 message.role = data.role;
             }
+            if (data.user_id != null) {
+                message.user_id = data.user_id;
+            }
             return message;
         }
         toObject() {
@@ -94,6 +108,7 @@ export namespace bulbasaur {
                 refresh_token?: string;
                 access_token?: string;
                 role?: Role;
+                user_id?: number;
             } = {};
             if (this.safe_id != null) {
                 data.safe_id = this.safe_id;
@@ -106,6 +121,9 @@ export namespace bulbasaur {
             }
             if (this.role != null) {
                 data.role = this.role;
+            }
+            if (this.user_id != null) {
+                data.user_id = this.user_id;
             }
             return data;
         }
@@ -121,6 +139,8 @@ export namespace bulbasaur {
                 writer.writeString(3, this.access_token);
             if (this.role != Role.ROLE_UNKNOWN)
                 writer.writeEnum(4, this.role);
+            if (this.user_id != 0)
+                writer.writeUint64(5, this.user_id);
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -142,6 +162,9 @@ export namespace bulbasaur {
                     case 4:
                         message.role = reader.readEnum();
                         break;
+                    case 5:
+                        message.user_id = reader.readUint64();
+                        break;
                     default: reader.skipField();
                 }
             }
@@ -160,6 +183,7 @@ export namespace bulbasaur {
             username?: string;
             email?: string;
             role?: Role;
+            id?: number;
         } & (({
             metadata?: string;
         })))) {
@@ -177,6 +201,9 @@ export namespace bulbasaur {
                 }
                 if ("role" in data && data.role != undefined) {
                     this.role = data.role;
+                }
+                if ("id" in data && data.id != undefined) {
+                    this.id = data.id;
                 }
             }
         }
@@ -207,6 +234,12 @@ export namespace bulbasaur {
         set role(value: Role) {
             pb_1.Message.setField(this, 5, value);
         }
+        get id() {
+            return pb_1.Message.getFieldWithDefault(this, 6, 0) as number;
+        }
+        set id(value: number) {
+            pb_1.Message.setField(this, 6, value);
+        }
         get _metadata() {
             const cases: {
                 [index: number]: "none" | "metadata";
@@ -221,6 +254,7 @@ export namespace bulbasaur {
             email?: string;
             metadata?: string;
             role?: Role;
+            id?: number;
         }): User {
             const message = new User({});
             if (data.username != null) {
@@ -235,6 +269,9 @@ export namespace bulbasaur {
             if (data.role != null) {
                 message.role = data.role;
             }
+            if (data.id != null) {
+                message.id = data.id;
+            }
             return message;
         }
         toObject() {
@@ -243,6 +280,7 @@ export namespace bulbasaur {
                 email?: string;
                 metadata?: string;
                 role?: Role;
+                id?: number;
             } = {};
             if (this.username != null) {
                 data.username = this.username;
@@ -255,6 +293,9 @@ export namespace bulbasaur {
             }
             if (this.role != null) {
                 data.role = this.role;
+            }
+            if (this.id != null) {
+                data.id = this.id;
             }
             return data;
         }
@@ -270,6 +311,8 @@ export namespace bulbasaur {
                 writer.writeString(4, this.metadata);
             if (this.role != Role.ROLE_UNKNOWN)
                 writer.writeEnum(5, this.role);
+            if (this.id != 0)
+                writer.writeUint64(6, this.id);
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -290,6 +333,9 @@ export namespace bulbasaur {
                         break;
                     case 5:
                         message.role = reader.readEnum();
+                        break;
+                    case 6:
+                        message.id = reader.readUint64();
                         break;
                     default: reader.skipField();
                 }
