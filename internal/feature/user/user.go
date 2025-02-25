@@ -75,6 +75,16 @@ func (u *userFeature) SignIn(ctx context.Context, request *bulbasaur.SignInReque
 		}); txErr != nil {
 			return nil, txErr
 		}
+	default:
+		return nil, fmt.Errorf("credential type is not supported")
+	}
+
+	if u.signer == nil {
+		return nil, fmt.Errorf("signer is nil")
+	}
+
+	if user == nil {
+		return nil, fmt.Errorf("user is nil")
 	}
 
 	accessToken, err := u.signer.CreateToken(user.ID, user.SafeID, user.Role, bulbasaur.TokenType_TOKEN_TYPE_ACCESS_TOKEN)
@@ -141,6 +151,16 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 		}); txErr != nil {
 			return nil, txErr
 		}
+	default:
+		return nil, fmt.Errorf("credential type is not supported")
+	}
+
+	if u.signer == nil {
+		return nil, fmt.Errorf("signer is nil")
+	}
+
+	if user == nil {
+		return nil, fmt.Errorf("user is nil")
 	}
 
 	accessToken, err := u.signer.CreateToken(user.ID, user.SafeID, user.Role, bulbasaur.TokenType_TOKEN_TYPE_ACCESS_TOKEN)
