@@ -16,12 +16,16 @@ import (
 	"bulbasaur/internal/feature"
 	"bulbasaur/internal/google"
 	"bulbasaur/internal/repositories"
+	"bulbasaur/internal/server/authz"
 	"bulbasaur/internal/server/bulbasaur"
 	"bulbasaur/internal/server/ivysaur"
+	"bulbasaur/internal/utils/extractor"
 	"bulbasaur/internal/utils/mailer"
 	"bulbasaur/internal/utils/redis"
 	"bulbasaur/internal/utils/signer"
 	config "bulbasaur/pkg/config"
+
+	authv3 "github.com/envoyproxy/go-control-plane/envoy/service/auth/v3"
 )
 
 // Serve ...
@@ -88,6 +92,9 @@ func Serve(cfg *config.Config) {
 	// Register reflection service on gRPC server.
 	// Please remove if you it's not necessary for your service
 	reflection.Register(server)
+
+	extractor := extractor.New()
+	authv3.RegisterAuthorizationServer(server, authz.NewServer(extractor, signer, redis))
 
 	service.Serve()
 }
