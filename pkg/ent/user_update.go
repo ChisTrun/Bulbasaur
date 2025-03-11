@@ -87,16 +87,8 @@ func (uu *UserUpdate) ClearEmail() *UserUpdate {
 }
 
 // SetMetadata sets the "metadata" field.
-func (uu *UserUpdate) SetMetadata(s string) *UserUpdate {
-	uu.mutation.SetMetadata(s)
-	return uu
-}
-
-// SetNillableMetadata sets the "metadata" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableMetadata(s *string) *UserUpdate {
-	if s != nil {
-		uu.SetMetadata(*s)
-	}
+func (uu *UserUpdate) SetMetadata(b *bulbasaur.Metadata) *UserUpdate {
+	uu.mutation.SetMetadata(b)
 	return uu
 }
 
@@ -269,10 +261,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.ClearField(user.FieldEmail, field.TypeString)
 	}
 	if value, ok := uu.mutation.Metadata(); ok {
-		_spec.SetField(user.FieldMetadata, field.TypeString, value)
+		_spec.SetField(user.FieldMetadata, field.TypeJSON, value)
 	}
 	if uu.mutation.MetadataCleared() {
-		_spec.ClearField(user.FieldMetadata, field.TypeString)
+		_spec.ClearField(user.FieldMetadata, field.TypeJSON)
 	}
 	if value, ok := uu.mutation.LastSignedIn(); ok {
 		_spec.SetField(user.FieldLastSignedIn, field.TypeTime, value)
@@ -421,16 +413,8 @@ func (uuo *UserUpdateOne) ClearEmail() *UserUpdateOne {
 }
 
 // SetMetadata sets the "metadata" field.
-func (uuo *UserUpdateOne) SetMetadata(s string) *UserUpdateOne {
-	uuo.mutation.SetMetadata(s)
-	return uuo
-}
-
-// SetNillableMetadata sets the "metadata" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableMetadata(s *string) *UserUpdateOne {
-	if s != nil {
-		uuo.SetMetadata(*s)
-	}
+func (uuo *UserUpdateOne) SetMetadata(b *bulbasaur.Metadata) *UserUpdateOne {
+	uuo.mutation.SetMetadata(b)
 	return uuo
 }
 
@@ -633,10 +617,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		_spec.ClearField(user.FieldEmail, field.TypeString)
 	}
 	if value, ok := uuo.mutation.Metadata(); ok {
-		_spec.SetField(user.FieldMetadata, field.TypeString, value)
+		_spec.SetField(user.FieldMetadata, field.TypeJSON, value)
 	}
 	if uuo.mutation.MetadataCleared() {
-		_spec.ClearField(user.FieldMetadata, field.TypeString)
+		_spec.ClearField(user.FieldMetadata, field.TypeJSON)
 	}
 	if value, ok := uuo.mutation.LastSignedIn(); ok {
 		_spec.SetField(user.FieldLastSignedIn, field.TypeTime, value)

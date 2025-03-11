@@ -28,10 +28,6 @@ type Google struct {
 	UserID uint64 `json:"user_id,omitempty"`
 	// Email holds the value of the "email" field.
 	Email string `json:"email,omitempty"`
-	// Fullname holds the value of the "fullname" field.
-	Fullname *string `json:"fullname,omitempty"`
-	// AvatarPath holds the value of the "avatarPath" field.
-	AvatarPath *string `json:"avatarPath,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the GoogleQuery when eager-loading is set.
 	Edges        GoogleEdges `json:"edges"`
@@ -65,7 +61,7 @@ func (*Google) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case google.FieldID, google.FieldUserID:
 			values[i] = new(sql.NullInt64)
-		case google.FieldTenantID, google.FieldEmail, google.FieldFullname, google.FieldAvatarPath:
+		case google.FieldTenantID, google.FieldEmail:
 			values[i] = new(sql.NullString)
 		case google.FieldCreatedAt, google.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -119,20 +115,6 @@ func (_go *Google) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field email", values[i])
 			} else if value.Valid {
 				_go.Email = value.String
-			}
-		case google.FieldFullname:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field fullname", values[i])
-			} else if value.Valid {
-				_go.Fullname = new(string)
-				*_go.Fullname = value.String
-			}
-		case google.FieldAvatarPath:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field avatarPath", values[i])
-			} else if value.Valid {
-				_go.AvatarPath = new(string)
-				*_go.AvatarPath = value.String
 			}
 		default:
 			_go.selectValues.Set(columns[i], values[i])
@@ -189,16 +171,6 @@ func (_go *Google) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("email=")
 	builder.WriteString(_go.Email)
-	builder.WriteString(", ")
-	if v := _go.Fullname; v != nil {
-		builder.WriteString("fullname=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _go.AvatarPath; v != nil {
-		builder.WriteString("avatarPath=")
-		builder.WriteString(*v)
-	}
 	builder.WriteByte(')')
 	return builder.String()
 }

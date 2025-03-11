@@ -18,7 +18,7 @@ type UserRepository interface {
 	GetUserBySafeID(ctx context.Context, safeId string) (*ent.User, error)
 
 	// user local
-	CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword, email, fullname, company, country, jobTitle string, role bulbasaur.Role) (*ent.User, error)
+	CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword, email string, metadata *bulbasaur.Metadata, role bulbasaur.Role) (*ent.User, error)
 	GetLocal(ctx context.Context, tx tx.Tx, email, username, password string) (*ent.User, error)
 
 	// user google
@@ -26,7 +26,7 @@ type UserRepository interface {
 	GetGoogle(ctx context.Context, tx tx.Tx, tenantId, email string) (*ent.User, error)
 
 	// general
-	UpdateMetadata(ctx context.Context, tx tx.Tx, id uint64, metadata string) error
+	UpdateMetadata(ctx context.Context, tx tx.Tx, id uint64, metadata *bulbasaur.Metadata) error
 	List(ctx context.Context, userIds []uint64) ([]*ent.User, error)
 	IsEmailExists(ctx context.Context, tx tx.Tx, email string) (bool, error)
 	UpdatePassword(ctx context.Context, tx tx.Tx, tenantId, email, newPassword string) error
@@ -49,7 +49,7 @@ func (u *userRepository) GetUserBySafeID(ctx context.Context, safeId string) (*e
 		Only(ctx)
 }
 
-func (u *userRepository) CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword, email, fullname, company, country, jobTitle string, role bulbasaur.Role) (*ent.User, error) {
+func (u *userRepository) CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword, email string, metadata *bulbasaur.Metadata, role bulbasaur.Role) (*ent.User, error) {
 	if password != confirmPassword {
 		return nil, fmt.Errorf("passwords do not match")
 	}
@@ -63,6 +63,7 @@ func (u *userRepository) CreateLocal(ctx context.Context, tx tx.Tx, tenantId, us
 		SetSafeID(uuid.NewString()).
 		SetEmail(email).
 		SetRole(role).
+		SetMetadata(metadata).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -72,11 +73,6 @@ func (u *userRepository) CreateLocal(ctx context.Context, tx tx.Tx, tenantId, us
 		SetTenantID(tenantId).
 		SetUsername(username).
 		SetPassword(hashPass).
-		SetFullname(fullname).
-		SetCompany(company).
-		SetCountry(country).
-		SetJobTitle(jobTitle).
-		SetAvatarPath("https://sipr.mojokertokab.go.id/images/avatar/no-image.jpg").
 		SetUserID(user.ID).
 		Save(ctx)
 	if err != nil {
@@ -108,7 +104,7 @@ func (u *userRepository) GetLocal(ctx context.Context, tx tx.Tx, tenantId, usern
 	return user, nil
 }
 
-func (u *userRepository) UpdateMetadata(ctx context.Context, tx tx.Tx, id uint64, metadata string) error {
+func (u *userRepository) UpdateMetadata(ctx context.Context, tx tx.Tx, id uint64, metadata *bulbasaur.Metadata) error {
 	return tx.Client().User.UpdateOneID(id).SetMetadata(metadata).Exec(ctx)
 }
 
@@ -127,8 +123,6 @@ func (u *userRepository) CreateGoogle(ctx context.Context, tx tx.Tx, tenantId, e
 		SetTenantID(tenantId).
 		SetEmail(email).
 		SetUserID(user.ID).
-		SetFullname(fullname).
-		SetAvatarPath(avatarPath).
 		Save(ctx)
 	if err != nil {
 		return nil, err

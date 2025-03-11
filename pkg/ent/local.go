@@ -30,16 +30,6 @@ type Local struct {
 	Username string `json:"username,omitempty"`
 	// Password holds the value of the "password" field.
 	Password string `json:"password,omitempty"`
-	// Fullname holds the value of the "fullname" field.
-	Fullname string `json:"fullname,omitempty"`
-	// Company holds the value of the "company" field.
-	Company string `json:"company,omitempty"`
-	// Country holds the value of the "country" field.
-	Country string `json:"country,omitempty"`
-	// JobTitle holds the value of the "jobTitle" field.
-	JobTitle string `json:"jobTitle,omitempty"`
-	// AvatarPath holds the value of the "avatarPath" field.
-	AvatarPath string `json:"avatarPath,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the LocalQuery when eager-loading is set.
 	Edges        LocalEdges `json:"edges"`
@@ -73,7 +63,7 @@ func (*Local) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case local.FieldID, local.FieldUserID:
 			values[i] = new(sql.NullInt64)
-		case local.FieldTenantID, local.FieldUsername, local.FieldPassword, local.FieldFullname, local.FieldCompany, local.FieldCountry, local.FieldJobTitle, local.FieldAvatarPath:
+		case local.FieldTenantID, local.FieldUsername, local.FieldPassword:
 			values[i] = new(sql.NullString)
 		case local.FieldCreatedAt, local.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -134,36 +124,6 @@ func (l *Local) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				l.Password = value.String
 			}
-		case local.FieldFullname:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field fullname", values[i])
-			} else if value.Valid {
-				l.Fullname = value.String
-			}
-		case local.FieldCompany:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field company", values[i])
-			} else if value.Valid {
-				l.Company = value.String
-			}
-		case local.FieldCountry:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field country", values[i])
-			} else if value.Valid {
-				l.Country = value.String
-			}
-		case local.FieldJobTitle:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field jobTitle", values[i])
-			} else if value.Valid {
-				l.JobTitle = value.String
-			}
-		case local.FieldAvatarPath:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field avatarPath", values[i])
-			} else if value.Valid {
-				l.AvatarPath = value.String
-			}
 		default:
 			l.selectValues.Set(columns[i], values[i])
 		}
@@ -222,21 +182,6 @@ func (l *Local) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("password=")
 	builder.WriteString(l.Password)
-	builder.WriteString(", ")
-	builder.WriteString("fullname=")
-	builder.WriteString(l.Fullname)
-	builder.WriteString(", ")
-	builder.WriteString("company=")
-	builder.WriteString(l.Company)
-	builder.WriteString(", ")
-	builder.WriteString("country=")
-	builder.WriteString(l.Country)
-	builder.WriteString(", ")
-	builder.WriteString("jobTitle=")
-	builder.WriteString(l.JobTitle)
-	builder.WriteString(", ")
-	builder.WriteString("avatarPath=")
-	builder.WriteString(l.AvatarPath)
 	builder.WriteByte(')')
 	return builder.String()
 }

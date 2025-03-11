@@ -69,34 +69,6 @@ func (gc *GoogleCreate) SetEmail(s string) *GoogleCreate {
 	return gc
 }
 
-// SetFullname sets the "fullname" field.
-func (gc *GoogleCreate) SetFullname(s string) *GoogleCreate {
-	gc.mutation.SetFullname(s)
-	return gc
-}
-
-// SetNillableFullname sets the "fullname" field if the given value is not nil.
-func (gc *GoogleCreate) SetNillableFullname(s *string) *GoogleCreate {
-	if s != nil {
-		gc.SetFullname(*s)
-	}
-	return gc
-}
-
-// SetAvatarPath sets the "avatarPath" field.
-func (gc *GoogleCreate) SetAvatarPath(s string) *GoogleCreate {
-	gc.mutation.SetAvatarPath(s)
-	return gc
-}
-
-// SetNillableAvatarPath sets the "avatarPath" field if the given value is not nil.
-func (gc *GoogleCreate) SetNillableAvatarPath(s *string) *GoogleCreate {
-	if s != nil {
-		gc.SetAvatarPath(*s)
-	}
-	return gc
-}
-
 // SetID sets the "id" field.
 func (gc *GoogleCreate) SetID(u uint64) *GoogleCreate {
 	gc.mutation.SetID(u)
@@ -227,14 +199,6 @@ func (gc *GoogleCreate) createSpec() (*Google, *sqlgraph.CreateSpec) {
 		_spec.SetField(google.FieldEmail, field.TypeString, value)
 		_node.Email = value
 	}
-	if value, ok := gc.mutation.Fullname(); ok {
-		_spec.SetField(google.FieldFullname, field.TypeString, value)
-		_node.Fullname = &value
-	}
-	if value, ok := gc.mutation.AvatarPath(); ok {
-		_spec.SetField(google.FieldAvatarPath, field.TypeString, value)
-		_node.AvatarPath = &value
-	}
 	if nodes := gc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -352,42 +316,6 @@ func (u *GoogleUpsert) UpdateEmail() *GoogleUpsert {
 	return u
 }
 
-// SetFullname sets the "fullname" field.
-func (u *GoogleUpsert) SetFullname(v string) *GoogleUpsert {
-	u.Set(google.FieldFullname, v)
-	return u
-}
-
-// UpdateFullname sets the "fullname" field to the value that was provided on create.
-func (u *GoogleUpsert) UpdateFullname() *GoogleUpsert {
-	u.SetExcluded(google.FieldFullname)
-	return u
-}
-
-// ClearFullname clears the value of the "fullname" field.
-func (u *GoogleUpsert) ClearFullname() *GoogleUpsert {
-	u.SetNull(google.FieldFullname)
-	return u
-}
-
-// SetAvatarPath sets the "avatarPath" field.
-func (u *GoogleUpsert) SetAvatarPath(v string) *GoogleUpsert {
-	u.Set(google.FieldAvatarPath, v)
-	return u
-}
-
-// UpdateAvatarPath sets the "avatarPath" field to the value that was provided on create.
-func (u *GoogleUpsert) UpdateAvatarPath() *GoogleUpsert {
-	u.SetExcluded(google.FieldAvatarPath)
-	return u
-}
-
-// ClearAvatarPath clears the value of the "avatarPath" field.
-func (u *GoogleUpsert) ClearAvatarPath() *GoogleUpsert {
-	u.SetNull(google.FieldAvatarPath)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -492,48 +420,6 @@ func (u *GoogleUpsertOne) SetEmail(v string) *GoogleUpsertOne {
 func (u *GoogleUpsertOne) UpdateEmail() *GoogleUpsertOne {
 	return u.Update(func(s *GoogleUpsert) {
 		s.UpdateEmail()
-	})
-}
-
-// SetFullname sets the "fullname" field.
-func (u *GoogleUpsertOne) SetFullname(v string) *GoogleUpsertOne {
-	return u.Update(func(s *GoogleUpsert) {
-		s.SetFullname(v)
-	})
-}
-
-// UpdateFullname sets the "fullname" field to the value that was provided on create.
-func (u *GoogleUpsertOne) UpdateFullname() *GoogleUpsertOne {
-	return u.Update(func(s *GoogleUpsert) {
-		s.UpdateFullname()
-	})
-}
-
-// ClearFullname clears the value of the "fullname" field.
-func (u *GoogleUpsertOne) ClearFullname() *GoogleUpsertOne {
-	return u.Update(func(s *GoogleUpsert) {
-		s.ClearFullname()
-	})
-}
-
-// SetAvatarPath sets the "avatarPath" field.
-func (u *GoogleUpsertOne) SetAvatarPath(v string) *GoogleUpsertOne {
-	return u.Update(func(s *GoogleUpsert) {
-		s.SetAvatarPath(v)
-	})
-}
-
-// UpdateAvatarPath sets the "avatarPath" field to the value that was provided on create.
-func (u *GoogleUpsertOne) UpdateAvatarPath() *GoogleUpsertOne {
-	return u.Update(func(s *GoogleUpsert) {
-		s.UpdateAvatarPath()
-	})
-}
-
-// ClearAvatarPath clears the value of the "avatarPath" field.
-func (u *GoogleUpsertOne) ClearAvatarPath() *GoogleUpsertOne {
-	return u.Update(func(s *GoogleUpsert) {
-		s.ClearAvatarPath()
 	})
 }
 
@@ -807,48 +693,6 @@ func (u *GoogleUpsertBulk) SetEmail(v string) *GoogleUpsertBulk {
 func (u *GoogleUpsertBulk) UpdateEmail() *GoogleUpsertBulk {
 	return u.Update(func(s *GoogleUpsert) {
 		s.UpdateEmail()
-	})
-}
-
-// SetFullname sets the "fullname" field.
-func (u *GoogleUpsertBulk) SetFullname(v string) *GoogleUpsertBulk {
-	return u.Update(func(s *GoogleUpsert) {
-		s.SetFullname(v)
-	})
-}
-
-// UpdateFullname sets the "fullname" field to the value that was provided on create.
-func (u *GoogleUpsertBulk) UpdateFullname() *GoogleUpsertBulk {
-	return u.Update(func(s *GoogleUpsert) {
-		s.UpdateFullname()
-	})
-}
-
-// ClearFullname clears the value of the "fullname" field.
-func (u *GoogleUpsertBulk) ClearFullname() *GoogleUpsertBulk {
-	return u.Update(func(s *GoogleUpsert) {
-		s.ClearFullname()
-	})
-}
-
-// SetAvatarPath sets the "avatarPath" field.
-func (u *GoogleUpsertBulk) SetAvatarPath(v string) *GoogleUpsertBulk {
-	return u.Update(func(s *GoogleUpsert) {
-		s.SetAvatarPath(v)
-	})
-}
-
-// UpdateAvatarPath sets the "avatarPath" field to the value that was provided on create.
-func (u *GoogleUpsertBulk) UpdateAvatarPath() *GoogleUpsertBulk {
-	return u.Update(func(s *GoogleUpsert) {
-		s.UpdateAvatarPath()
-	})
-}
-
-// ClearAvatarPath clears the value of the "avatarPath" field.
-func (u *GoogleUpsertBulk) ClearAvatarPath() *GoogleUpsertBulk {
-	return u.Update(func(s *GoogleUpsert) {
-		s.ClearAvatarPath()
 	})
 }
 

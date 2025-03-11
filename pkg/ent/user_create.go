@@ -88,16 +88,8 @@ func (uc *UserCreate) SetNillableEmail(s *string) *UserCreate {
 }
 
 // SetMetadata sets the "metadata" field.
-func (uc *UserCreate) SetMetadata(s string) *UserCreate {
-	uc.mutation.SetMetadata(s)
-	return uc
-}
-
-// SetNillableMetadata sets the "metadata" field if the given value is not nil.
-func (uc *UserCreate) SetNillableMetadata(s *string) *UserCreate {
-	if s != nil {
-		uc.SetMetadata(*s)
-	}
+func (uc *UserCreate) SetMetadata(b *bulbasaur.Metadata) *UserCreate {
+	uc.mutation.SetMetadata(b)
 	return uc
 }
 
@@ -228,6 +220,11 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.SafeID(); !ok {
 		return &ValidationError{Name: "safe_id", err: errors.New(`ent: missing required field "User.safe_id"`)}
 	}
+	if v, ok := uc.mutation.Metadata(); ok {
+		if err := v.Validate(); err != nil {
+			return &ValidationError{Name: "metadata", err: fmt.Errorf(`ent: validator failed for field "User.metadata": %w`, err)}
+		}
+	}
 	if _, ok := uc.mutation.Role(); !ok {
 		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "User.role"`)}
 	}
@@ -285,8 +282,8 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_node.Email = value
 	}
 	if value, ok := uc.mutation.Metadata(); ok {
-		_spec.SetField(user.FieldMetadata, field.TypeString, value)
-		_node.Metadata = &value
+		_spec.SetField(user.FieldMetadata, field.TypeJSON, value)
+		_node.Metadata = value
 	}
 	if value, ok := uc.mutation.LastSignedIn(); ok {
 		_spec.SetField(user.FieldLastSignedIn, field.TypeTime, value)
@@ -435,7 +432,7 @@ func (u *UserUpsert) ClearEmail() *UserUpsert {
 }
 
 // SetMetadata sets the "metadata" field.
-func (u *UserUpsert) SetMetadata(v string) *UserUpsert {
+func (u *UserUpsert) SetMetadata(v *bulbasaur.Metadata) *UserUpsert {
 	u.Set(user.FieldMetadata, v)
 	return u
 }
@@ -603,7 +600,7 @@ func (u *UserUpsertOne) ClearEmail() *UserUpsertOne {
 }
 
 // SetMetadata sets the "metadata" field.
-func (u *UserUpsertOne) SetMetadata(v string) *UserUpsertOne {
+func (u *UserUpsertOne) SetMetadata(v *bulbasaur.Metadata) *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.SetMetadata(v)
 	})
@@ -946,7 +943,7 @@ func (u *UserUpsertBulk) ClearEmail() *UserUpsertBulk {
 }
 
 // SetMetadata sets the "metadata" field.
-func (u *UserUpsertBulk) SetMetadata(v string) *UserUpsertBulk {
+func (u *UserUpsertBulk) SetMetadata(v *bulbasaur.Metadata) *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.SetMetadata(v)
 	})

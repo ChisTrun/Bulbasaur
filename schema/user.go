@@ -26,9 +26,7 @@ func (User) Fields() []ent.Field {
 		field.String("tenant_id"),
 		field.String("safe_id").Default(uuid.NewString()),
 		field.String("email").Optional(),
-		field.Text("metadata").
-			Optional().
-			Nillable(),
+		field.JSON("metadata", &bulbasaur.Metadata{}).Optional(),
 		field.Time("last_signed_in").
 			Optional().
 			Nillable(),

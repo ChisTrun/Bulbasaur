@@ -1,4 +1,4 @@
-package bulbasaur
+package ivysaur
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	bulbasaur "bulbasaur/api"
 )
 
-func (s *bulbasaurServer) UpdateMetadata(ctx context.Context, request *bulbasaur.UpdateMetadataRequest) (*emptypb.Empty, error) {
+func (s *ivysaurServer) UpdateMetadata(ctx context.Context, request *bulbasaur.UpdateMetadataRequest) (*emptypb.Empty, error) {
 	if err := s.Feature.UserFeature.UpdateMetadata(ctx, request); err != nil {
 		return nil, err
 	}

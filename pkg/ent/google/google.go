@@ -24,10 +24,6 @@ const (
 	FieldUserID = "user_id"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
-	// FieldFullname holds the string denoting the fullname field in the database.
-	FieldFullname = "fullname"
-	// FieldAvatarPath holds the string denoting the avatarpath field in the database.
-	FieldAvatarPath = "avatar_path"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// Table holds the table name of the google in the database.
@@ -49,8 +45,6 @@ var Columns = []string{
 	FieldTenantID,
 	FieldUserID,
 	FieldEmail,
-	FieldFullname,
-	FieldAvatarPath,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -105,16 +99,6 @@ func ByUserID(opts ...sql.OrderTermOption) OrderOption {
 // ByEmail orders the results by the email field.
 func ByEmail(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEmail, opts...).ToFunc()
-}
-
-// ByFullname orders the results by the fullname field.
-func ByFullname(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldFullname, opts...).ToFunc()
-}
-
-// ByAvatarPath orders the results by the avatarPath field.
-func ByAvatarPath(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldAvatarPath, opts...).ToFunc()
 }
 
 // ByUserField orders the results by user field.

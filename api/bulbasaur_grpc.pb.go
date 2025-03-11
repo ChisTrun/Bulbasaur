@@ -22,10 +22,8 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	Bulbasaur_SignUp_FullMethodName                = "/bulbasaur.bulbasaur/SignUp"
 	Bulbasaur_SignIn_FullMethodName                = "/bulbasaur.bulbasaur/SignIn"
-	Bulbasaur_UpdateMetadata_FullMethodName        = "/bulbasaur.bulbasaur/UpdateMetadata"
 	Bulbasaur_RefreshToken_FullMethodName          = "/bulbasaur.bulbasaur/RefreshToken"
 	Bulbasaur_ListUsers_FullMethodName             = "/bulbasaur.bulbasaur/ListUsers"
-	Bulbasaur_Me_FullMethodName                    = "/bulbasaur.bulbasaur/Me"
 	Bulbasaur_EmailVerification_FullMethodName     = "/bulbasaur.bulbasaur/EmailVerification"
 	Bulbasaur_ResetCodeVerification_FullMethodName = "/bulbasaur.bulbasaur/ResetCodeVerification"
 	Bulbasaur_GenerateResetCode_FullMethodName     = "/bulbasaur.bulbasaur/GenerateResetCode"
@@ -38,10 +36,8 @@ const (
 type BulbasaurClient interface {
 	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*SignUpResponse, error)
 	SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error)
-	UpdateMetadata(ctx context.Context, in *UpdateMetadataRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*RefreshTokenResponse, error)
 	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error)
-	Me(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeResponse, error)
 	EmailVerification(ctx context.Context, in *EmailVerificationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ResetCodeVerification(ctx context.Context, in *ResetCodeVerificationRequest, opts ...grpc.CallOption) (*ResetCodeVerificationResponse, error)
 	GenerateResetCode(ctx context.Context, in *GenerateResetCodeRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -76,16 +72,6 @@ func (c *bulbasaurClient) SignIn(ctx context.Context, in *SignInRequest, opts ..
 	return out, nil
 }
 
-func (c *bulbasaurClient) UpdateMetadata(ctx context.Context, in *UpdateMetadataRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, Bulbasaur_UpdateMetadata_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *bulbasaurClient) RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*RefreshTokenResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(RefreshTokenResponse)
@@ -100,16 +86,6 @@ func (c *bulbasaurClient) ListUsers(ctx context.Context, in *ListUsersRequest, o
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListUsersResponse)
 	err := c.cc.Invoke(ctx, Bulbasaur_ListUsers_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *bulbasaurClient) Me(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MeResponse)
-	err := c.cc.Invoke(ctx, Bulbasaur_Me_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -162,10 +138,8 @@ func (c *bulbasaurClient) ResetPassword(ctx context.Context, in *ResetPasswordRe
 type BulbasaurServer interface {
 	SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error)
 	SignIn(context.Context, *SignInRequest) (*SignInResponse, error)
-	UpdateMetadata(context.Context, *UpdateMetadataRequest) (*emptypb.Empty, error)
 	RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error)
 	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
-	Me(context.Context, *emptypb.Empty) (*MeResponse, error)
 	EmailVerification(context.Context, *EmailVerificationRequest) (*emptypb.Empty, error)
 	ResetCodeVerification(context.Context, *ResetCodeVerificationRequest) (*ResetCodeVerificationResponse, error)
 	GenerateResetCode(context.Context, *GenerateResetCodeRequest) (*emptypb.Empty, error)
@@ -186,17 +160,11 @@ func (UnimplementedBulbasaurServer) SignUp(context.Context, *SignUpRequest) (*Si
 func (UnimplementedBulbasaurServer) SignIn(context.Context, *SignInRequest) (*SignInResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignIn not implemented")
 }
-func (UnimplementedBulbasaurServer) UpdateMetadata(context.Context, *UpdateMetadataRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateMetadata not implemented")
-}
 func (UnimplementedBulbasaurServer) RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
 }
 func (UnimplementedBulbasaurServer) ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
-}
-func (UnimplementedBulbasaurServer) Me(context.Context, *emptypb.Empty) (*MeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Me not implemented")
 }
 func (UnimplementedBulbasaurServer) EmailVerification(context.Context, *EmailVerificationRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EmailVerification not implemented")
@@ -267,24 +235,6 @@ func _Bulbasaur_SignIn_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Bulbasaur_UpdateMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateMetadataRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BulbasaurServer).UpdateMetadata(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Bulbasaur_UpdateMetadata_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BulbasaurServer).UpdateMetadata(ctx, req.(*UpdateMetadataRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Bulbasaur_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RefreshTokenRequest)
 	if err := dec(in); err != nil {
@@ -317,24 +267,6 @@ func _Bulbasaur_ListUsers_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BulbasaurServer).ListUsers(ctx, req.(*ListUsersRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Bulbasaur_Me_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BulbasaurServer).Me(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Bulbasaur_Me_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BulbasaurServer).Me(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -427,20 +359,12 @@ var Bulbasaur_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Bulbasaur_SignIn_Handler,
 		},
 		{
-			MethodName: "UpdateMetadata",
-			Handler:    _Bulbasaur_UpdateMetadata_Handler,
-		},
-		{
 			MethodName: "RefreshToken",
 			Handler:    _Bulbasaur_RefreshToken_Handler,
 		},
 		{
 			MethodName: "ListUsers",
 			Handler:    _Bulbasaur_ListUsers_Handler,
-		},
-		{
-			MethodName: "Me",
-			Handler:    _Bulbasaur_Me_Handler,
 		},
 		{
 			MethodName: "EmailVerification",
@@ -457,6 +381,146 @@ var Bulbasaur_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ResetPassword",
 			Handler:    _Bulbasaur_ResetPassword_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "bulbasaur/api/bulbasaur.proto",
+}
+
+const (
+	Ivysaur_UpdateMetadata_FullMethodName = "/bulbasaur.ivysaur/UpdateMetadata"
+	Ivysaur_Me_FullMethodName             = "/bulbasaur.ivysaur/Me"
+)
+
+// IvysaurClient is the client API for Ivysaur service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type IvysaurClient interface {
+	UpdateMetadata(ctx context.Context, in *UpdateMetadataRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Me(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeResponse, error)
+}
+
+type ivysaurClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewIvysaurClient(cc grpc.ClientConnInterface) IvysaurClient {
+	return &ivysaurClient{cc}
+}
+
+func (c *ivysaurClient) UpdateMetadata(ctx context.Context, in *UpdateMetadataRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Ivysaur_UpdateMetadata_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ivysaurClient) Me(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeResponse)
+	err := c.cc.Invoke(ctx, Ivysaur_Me_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// IvysaurServer is the server API for Ivysaur service.
+// All implementations must embed UnimplementedIvysaurServer
+// for forward compatibility.
+type IvysaurServer interface {
+	UpdateMetadata(context.Context, *UpdateMetadataRequest) (*emptypb.Empty, error)
+	Me(context.Context, *emptypb.Empty) (*MeResponse, error)
+	mustEmbedUnimplementedIvysaurServer()
+}
+
+// UnimplementedIvysaurServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedIvysaurServer struct{}
+
+func (UnimplementedIvysaurServer) UpdateMetadata(context.Context, *UpdateMetadataRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMetadata not implemented")
+}
+func (UnimplementedIvysaurServer) Me(context.Context, *emptypb.Empty) (*MeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Me not implemented")
+}
+func (UnimplementedIvysaurServer) mustEmbedUnimplementedIvysaurServer() {}
+func (UnimplementedIvysaurServer) testEmbeddedByValue()                 {}
+
+// UnsafeIvysaurServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to IvysaurServer will
+// result in compilation errors.
+type UnsafeIvysaurServer interface {
+	mustEmbedUnimplementedIvysaurServer()
+}
+
+func RegisterIvysaurServer(s grpc.ServiceRegistrar, srv IvysaurServer) {
+	// If the following call pancis, it indicates UnimplementedIvysaurServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&Ivysaur_ServiceDesc, srv)
+}
+
+func _Ivysaur_UpdateMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IvysaurServer).UpdateMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ivysaur_UpdateMetadata_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IvysaurServer).UpdateMetadata(ctx, req.(*UpdateMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Ivysaur_Me_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IvysaurServer).Me(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ivysaur_Me_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IvysaurServer).Me(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Ivysaur_ServiceDesc is the grpc.ServiceDesc for Ivysaur service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Ivysaur_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "bulbasaur.ivysaur",
+	HandlerType: (*IvysaurServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "UpdateMetadata",
+			Handler:    _Ivysaur_UpdateMetadata_Handler,
+		},
+		{
+			MethodName: "Me",
+			Handler:    _Ivysaur_Me_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

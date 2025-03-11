@@ -42,8 +42,6 @@ type GoogleMutation struct {
 	updated_at    *time.Time
 	tenant_id     *string
 	email         *string
-	fullname      *string
-	avatarPath    *string
 	clearedFields map[string]struct{}
 	user          *uint64
 	cleareduser   bool
@@ -336,104 +334,6 @@ func (m *GoogleMutation) ResetEmail() {
 	m.email = nil
 }
 
-// SetFullname sets the "fullname" field.
-func (m *GoogleMutation) SetFullname(s string) {
-	m.fullname = &s
-}
-
-// Fullname returns the value of the "fullname" field in the mutation.
-func (m *GoogleMutation) Fullname() (r string, exists bool) {
-	v := m.fullname
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldFullname returns the old "fullname" field's value of the Google entity.
-// If the Google object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GoogleMutation) OldFullname(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldFullname is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldFullname requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldFullname: %w", err)
-	}
-	return oldValue.Fullname, nil
-}
-
-// ClearFullname clears the value of the "fullname" field.
-func (m *GoogleMutation) ClearFullname() {
-	m.fullname = nil
-	m.clearedFields[google.FieldFullname] = struct{}{}
-}
-
-// FullnameCleared returns if the "fullname" field was cleared in this mutation.
-func (m *GoogleMutation) FullnameCleared() bool {
-	_, ok := m.clearedFields[google.FieldFullname]
-	return ok
-}
-
-// ResetFullname resets all changes to the "fullname" field.
-func (m *GoogleMutation) ResetFullname() {
-	m.fullname = nil
-	delete(m.clearedFields, google.FieldFullname)
-}
-
-// SetAvatarPath sets the "avatarPath" field.
-func (m *GoogleMutation) SetAvatarPath(s string) {
-	m.avatarPath = &s
-}
-
-// AvatarPath returns the value of the "avatarPath" field in the mutation.
-func (m *GoogleMutation) AvatarPath() (r string, exists bool) {
-	v := m.avatarPath
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldAvatarPath returns the old "avatarPath" field's value of the Google entity.
-// If the Google object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GoogleMutation) OldAvatarPath(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAvatarPath is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAvatarPath requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAvatarPath: %w", err)
-	}
-	return oldValue.AvatarPath, nil
-}
-
-// ClearAvatarPath clears the value of the "avatarPath" field.
-func (m *GoogleMutation) ClearAvatarPath() {
-	m.avatarPath = nil
-	m.clearedFields[google.FieldAvatarPath] = struct{}{}
-}
-
-// AvatarPathCleared returns if the "avatarPath" field was cleared in this mutation.
-func (m *GoogleMutation) AvatarPathCleared() bool {
-	_, ok := m.clearedFields[google.FieldAvatarPath]
-	return ok
-}
-
-// ResetAvatarPath resets all changes to the "avatarPath" field.
-func (m *GoogleMutation) ResetAvatarPath() {
-	m.avatarPath = nil
-	delete(m.clearedFields, google.FieldAvatarPath)
-}
-
 // ClearUser clears the "user" edge to the User entity.
 func (m *GoogleMutation) ClearUser() {
 	m.cleareduser = true
@@ -495,7 +395,7 @@ func (m *GoogleMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *GoogleMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 5)
 	if m.created_at != nil {
 		fields = append(fields, google.FieldCreatedAt)
 	}
@@ -510,12 +410,6 @@ func (m *GoogleMutation) Fields() []string {
 	}
 	if m.email != nil {
 		fields = append(fields, google.FieldEmail)
-	}
-	if m.fullname != nil {
-		fields = append(fields, google.FieldFullname)
-	}
-	if m.avatarPath != nil {
-		fields = append(fields, google.FieldAvatarPath)
 	}
 	return fields
 }
@@ -535,10 +429,6 @@ func (m *GoogleMutation) Field(name string) (ent.Value, bool) {
 		return m.UserID()
 	case google.FieldEmail:
 		return m.Email()
-	case google.FieldFullname:
-		return m.Fullname()
-	case google.FieldAvatarPath:
-		return m.AvatarPath()
 	}
 	return nil, false
 }
@@ -558,10 +448,6 @@ func (m *GoogleMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldUserID(ctx)
 	case google.FieldEmail:
 		return m.OldEmail(ctx)
-	case google.FieldFullname:
-		return m.OldFullname(ctx)
-	case google.FieldAvatarPath:
-		return m.OldAvatarPath(ctx)
 	}
 	return nil, fmt.Errorf("unknown Google field %s", name)
 }
@@ -606,20 +492,6 @@ func (m *GoogleMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetEmail(v)
 		return nil
-	case google.FieldFullname:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetFullname(v)
-		return nil
-	case google.FieldAvatarPath:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetAvatarPath(v)
-		return nil
 	}
 	return fmt.Errorf("unknown Google field %s", name)
 }
@@ -652,14 +524,7 @@ func (m *GoogleMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *GoogleMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(google.FieldFullname) {
-		fields = append(fields, google.FieldFullname)
-	}
-	if m.FieldCleared(google.FieldAvatarPath) {
-		fields = append(fields, google.FieldAvatarPath)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -672,14 +537,6 @@ func (m *GoogleMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *GoogleMutation) ClearField(name string) error {
-	switch name {
-	case google.FieldFullname:
-		m.ClearFullname()
-		return nil
-	case google.FieldAvatarPath:
-		m.ClearAvatarPath()
-		return nil
-	}
 	return fmt.Errorf("unknown Google nullable field %s", name)
 }
 
@@ -701,12 +558,6 @@ func (m *GoogleMutation) ResetField(name string) error {
 		return nil
 	case google.FieldEmail:
 		m.ResetEmail()
-		return nil
-	case google.FieldFullname:
-		m.ResetFullname()
-		return nil
-	case google.FieldAvatarPath:
-		m.ResetAvatarPath()
 		return nil
 	}
 	return fmt.Errorf("unknown Google field %s", name)
@@ -797,11 +648,6 @@ type LocalMutation struct {
 	tenant_id     *string
 	username      *string
 	password      *string
-	fullname      *string
-	company       *string
-	country       *string
-	jobTitle      *string
-	avatarPath    *string
 	clearedFields map[string]struct{}
 	user          *uint64
 	cleareduser   bool
@@ -1156,251 +1002,6 @@ func (m *LocalMutation) ResetPassword() {
 	delete(m.clearedFields, local.FieldPassword)
 }
 
-// SetFullname sets the "fullname" field.
-func (m *LocalMutation) SetFullname(s string) {
-	m.fullname = &s
-}
-
-// Fullname returns the value of the "fullname" field in the mutation.
-func (m *LocalMutation) Fullname() (r string, exists bool) {
-	v := m.fullname
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldFullname returns the old "fullname" field's value of the Local entity.
-// If the Local object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *LocalMutation) OldFullname(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldFullname is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldFullname requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldFullname: %w", err)
-	}
-	return oldValue.Fullname, nil
-}
-
-// ClearFullname clears the value of the "fullname" field.
-func (m *LocalMutation) ClearFullname() {
-	m.fullname = nil
-	m.clearedFields[local.FieldFullname] = struct{}{}
-}
-
-// FullnameCleared returns if the "fullname" field was cleared in this mutation.
-func (m *LocalMutation) FullnameCleared() bool {
-	_, ok := m.clearedFields[local.FieldFullname]
-	return ok
-}
-
-// ResetFullname resets all changes to the "fullname" field.
-func (m *LocalMutation) ResetFullname() {
-	m.fullname = nil
-	delete(m.clearedFields, local.FieldFullname)
-}
-
-// SetCompany sets the "company" field.
-func (m *LocalMutation) SetCompany(s string) {
-	m.company = &s
-}
-
-// Company returns the value of the "company" field in the mutation.
-func (m *LocalMutation) Company() (r string, exists bool) {
-	v := m.company
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCompany returns the old "company" field's value of the Local entity.
-// If the Local object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *LocalMutation) OldCompany(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCompany is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCompany requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCompany: %w", err)
-	}
-	return oldValue.Company, nil
-}
-
-// ClearCompany clears the value of the "company" field.
-func (m *LocalMutation) ClearCompany() {
-	m.company = nil
-	m.clearedFields[local.FieldCompany] = struct{}{}
-}
-
-// CompanyCleared returns if the "company" field was cleared in this mutation.
-func (m *LocalMutation) CompanyCleared() bool {
-	_, ok := m.clearedFields[local.FieldCompany]
-	return ok
-}
-
-// ResetCompany resets all changes to the "company" field.
-func (m *LocalMutation) ResetCompany() {
-	m.company = nil
-	delete(m.clearedFields, local.FieldCompany)
-}
-
-// SetCountry sets the "country" field.
-func (m *LocalMutation) SetCountry(s string) {
-	m.country = &s
-}
-
-// Country returns the value of the "country" field in the mutation.
-func (m *LocalMutation) Country() (r string, exists bool) {
-	v := m.country
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCountry returns the old "country" field's value of the Local entity.
-// If the Local object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *LocalMutation) OldCountry(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCountry is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCountry requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCountry: %w", err)
-	}
-	return oldValue.Country, nil
-}
-
-// ClearCountry clears the value of the "country" field.
-func (m *LocalMutation) ClearCountry() {
-	m.country = nil
-	m.clearedFields[local.FieldCountry] = struct{}{}
-}
-
-// CountryCleared returns if the "country" field was cleared in this mutation.
-func (m *LocalMutation) CountryCleared() bool {
-	_, ok := m.clearedFields[local.FieldCountry]
-	return ok
-}
-
-// ResetCountry resets all changes to the "country" field.
-func (m *LocalMutation) ResetCountry() {
-	m.country = nil
-	delete(m.clearedFields, local.FieldCountry)
-}
-
-// SetJobTitle sets the "jobTitle" field.
-func (m *LocalMutation) SetJobTitle(s string) {
-	m.jobTitle = &s
-}
-
-// JobTitle returns the value of the "jobTitle" field in the mutation.
-func (m *LocalMutation) JobTitle() (r string, exists bool) {
-	v := m.jobTitle
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldJobTitle returns the old "jobTitle" field's value of the Local entity.
-// If the Local object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *LocalMutation) OldJobTitle(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldJobTitle is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldJobTitle requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldJobTitle: %w", err)
-	}
-	return oldValue.JobTitle, nil
-}
-
-// ClearJobTitle clears the value of the "jobTitle" field.
-func (m *LocalMutation) ClearJobTitle() {
-	m.jobTitle = nil
-	m.clearedFields[local.FieldJobTitle] = struct{}{}
-}
-
-// JobTitleCleared returns if the "jobTitle" field was cleared in this mutation.
-func (m *LocalMutation) JobTitleCleared() bool {
-	_, ok := m.clearedFields[local.FieldJobTitle]
-	return ok
-}
-
-// ResetJobTitle resets all changes to the "jobTitle" field.
-func (m *LocalMutation) ResetJobTitle() {
-	m.jobTitle = nil
-	delete(m.clearedFields, local.FieldJobTitle)
-}
-
-// SetAvatarPath sets the "avatarPath" field.
-func (m *LocalMutation) SetAvatarPath(s string) {
-	m.avatarPath = &s
-}
-
-// AvatarPath returns the value of the "avatarPath" field in the mutation.
-func (m *LocalMutation) AvatarPath() (r string, exists bool) {
-	v := m.avatarPath
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldAvatarPath returns the old "avatarPath" field's value of the Local entity.
-// If the Local object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *LocalMutation) OldAvatarPath(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAvatarPath is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAvatarPath requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAvatarPath: %w", err)
-	}
-	return oldValue.AvatarPath, nil
-}
-
-// ClearAvatarPath clears the value of the "avatarPath" field.
-func (m *LocalMutation) ClearAvatarPath() {
-	m.avatarPath = nil
-	m.clearedFields[local.FieldAvatarPath] = struct{}{}
-}
-
-// AvatarPathCleared returns if the "avatarPath" field was cleared in this mutation.
-func (m *LocalMutation) AvatarPathCleared() bool {
-	_, ok := m.clearedFields[local.FieldAvatarPath]
-	return ok
-}
-
-// ResetAvatarPath resets all changes to the "avatarPath" field.
-func (m *LocalMutation) ResetAvatarPath() {
-	m.avatarPath = nil
-	delete(m.clearedFields, local.FieldAvatarPath)
-}
-
 // ClearUser clears the "user" edge to the User entity.
 func (m *LocalMutation) ClearUser() {
 	m.cleareduser = true
@@ -1462,7 +1063,7 @@ func (m *LocalMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *LocalMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 6)
 	if m.created_at != nil {
 		fields = append(fields, local.FieldCreatedAt)
 	}
@@ -1480,21 +1081,6 @@ func (m *LocalMutation) Fields() []string {
 	}
 	if m.password != nil {
 		fields = append(fields, local.FieldPassword)
-	}
-	if m.fullname != nil {
-		fields = append(fields, local.FieldFullname)
-	}
-	if m.company != nil {
-		fields = append(fields, local.FieldCompany)
-	}
-	if m.country != nil {
-		fields = append(fields, local.FieldCountry)
-	}
-	if m.jobTitle != nil {
-		fields = append(fields, local.FieldJobTitle)
-	}
-	if m.avatarPath != nil {
-		fields = append(fields, local.FieldAvatarPath)
 	}
 	return fields
 }
@@ -1516,16 +1102,6 @@ func (m *LocalMutation) Field(name string) (ent.Value, bool) {
 		return m.Username()
 	case local.FieldPassword:
 		return m.Password()
-	case local.FieldFullname:
-		return m.Fullname()
-	case local.FieldCompany:
-		return m.Company()
-	case local.FieldCountry:
-		return m.Country()
-	case local.FieldJobTitle:
-		return m.JobTitle()
-	case local.FieldAvatarPath:
-		return m.AvatarPath()
 	}
 	return nil, false
 }
@@ -1547,16 +1123,6 @@ func (m *LocalMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldUsername(ctx)
 	case local.FieldPassword:
 		return m.OldPassword(ctx)
-	case local.FieldFullname:
-		return m.OldFullname(ctx)
-	case local.FieldCompany:
-		return m.OldCompany(ctx)
-	case local.FieldCountry:
-		return m.OldCountry(ctx)
-	case local.FieldJobTitle:
-		return m.OldJobTitle(ctx)
-	case local.FieldAvatarPath:
-		return m.OldAvatarPath(ctx)
 	}
 	return nil, fmt.Errorf("unknown Local field %s", name)
 }
@@ -1608,41 +1174,6 @@ func (m *LocalMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPassword(v)
 		return nil
-	case local.FieldFullname:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetFullname(v)
-		return nil
-	case local.FieldCompany:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCompany(v)
-		return nil
-	case local.FieldCountry:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCountry(v)
-		return nil
-	case local.FieldJobTitle:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetJobTitle(v)
-		return nil
-	case local.FieldAvatarPath:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetAvatarPath(v)
-		return nil
 	}
 	return fmt.Errorf("unknown Local field %s", name)
 }
@@ -1682,21 +1213,6 @@ func (m *LocalMutation) ClearedFields() []string {
 	if m.FieldCleared(local.FieldPassword) {
 		fields = append(fields, local.FieldPassword)
 	}
-	if m.FieldCleared(local.FieldFullname) {
-		fields = append(fields, local.FieldFullname)
-	}
-	if m.FieldCleared(local.FieldCompany) {
-		fields = append(fields, local.FieldCompany)
-	}
-	if m.FieldCleared(local.FieldCountry) {
-		fields = append(fields, local.FieldCountry)
-	}
-	if m.FieldCleared(local.FieldJobTitle) {
-		fields = append(fields, local.FieldJobTitle)
-	}
-	if m.FieldCleared(local.FieldAvatarPath) {
-		fields = append(fields, local.FieldAvatarPath)
-	}
 	return fields
 }
 
@@ -1716,21 +1232,6 @@ func (m *LocalMutation) ClearField(name string) error {
 		return nil
 	case local.FieldPassword:
 		m.ClearPassword()
-		return nil
-	case local.FieldFullname:
-		m.ClearFullname()
-		return nil
-	case local.FieldCompany:
-		m.ClearCompany()
-		return nil
-	case local.FieldCountry:
-		m.ClearCountry()
-		return nil
-	case local.FieldJobTitle:
-		m.ClearJobTitle()
-		return nil
-	case local.FieldAvatarPath:
-		m.ClearAvatarPath()
 		return nil
 	}
 	return fmt.Errorf("unknown Local nullable field %s", name)
@@ -1757,21 +1258,6 @@ func (m *LocalMutation) ResetField(name string) error {
 		return nil
 	case local.FieldPassword:
 		m.ResetPassword()
-		return nil
-	case local.FieldFullname:
-		m.ResetFullname()
-		return nil
-	case local.FieldCompany:
-		m.ResetCompany()
-		return nil
-	case local.FieldCountry:
-		m.ResetCountry()
-		return nil
-	case local.FieldJobTitle:
-		m.ResetJobTitle()
-		return nil
-	case local.FieldAvatarPath:
-		m.ResetAvatarPath()
 		return nil
 	}
 	return fmt.Errorf("unknown Local field %s", name)
@@ -1862,7 +1348,7 @@ type UserMutation struct {
 	tenant_id      *string
 	safe_id        *string
 	email          *string
-	metadata       *string
+	metadata       **bulbasaur.Metadata
 	last_signed_in *time.Time
 	role           *bulbasaur.Role
 	addrole        *bulbasaur.Role
@@ -2174,12 +1660,12 @@ func (m *UserMutation) ResetEmail() {
 }
 
 // SetMetadata sets the "metadata" field.
-func (m *UserMutation) SetMetadata(s string) {
-	m.metadata = &s
+func (m *UserMutation) SetMetadata(b *bulbasaur.Metadata) {
+	m.metadata = &b
 }
 
 // Metadata returns the value of the "metadata" field in the mutation.
-func (m *UserMutation) Metadata() (r string, exists bool) {
+func (m *UserMutation) Metadata() (r *bulbasaur.Metadata, exists bool) {
 	v := m.metadata
 	if v == nil {
 		return
@@ -2190,7 +1676,7 @@ func (m *UserMutation) Metadata() (r string, exists bool) {
 // OldMetadata returns the old "metadata" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldMetadata(ctx context.Context) (v *string, err error) {
+func (m *UserMutation) OldMetadata(ctx context.Context) (v *bulbasaur.Metadata, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldMetadata is only allowed on UpdateOne operations")
 	}
@@ -2558,7 +2044,7 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		m.SetEmail(v)
 		return nil
 	case user.FieldMetadata:
-		v, ok := value.(string)
+		v, ok := value.(*bulbasaur.Metadata)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

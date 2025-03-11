@@ -78,46 +78,6 @@ func (gu *GoogleUpdate) SetNillableEmail(s *string) *GoogleUpdate {
 	return gu
 }
 
-// SetFullname sets the "fullname" field.
-func (gu *GoogleUpdate) SetFullname(s string) *GoogleUpdate {
-	gu.mutation.SetFullname(s)
-	return gu
-}
-
-// SetNillableFullname sets the "fullname" field if the given value is not nil.
-func (gu *GoogleUpdate) SetNillableFullname(s *string) *GoogleUpdate {
-	if s != nil {
-		gu.SetFullname(*s)
-	}
-	return gu
-}
-
-// ClearFullname clears the value of the "fullname" field.
-func (gu *GoogleUpdate) ClearFullname() *GoogleUpdate {
-	gu.mutation.ClearFullname()
-	return gu
-}
-
-// SetAvatarPath sets the "avatarPath" field.
-func (gu *GoogleUpdate) SetAvatarPath(s string) *GoogleUpdate {
-	gu.mutation.SetAvatarPath(s)
-	return gu
-}
-
-// SetNillableAvatarPath sets the "avatarPath" field if the given value is not nil.
-func (gu *GoogleUpdate) SetNillableAvatarPath(s *string) *GoogleUpdate {
-	if s != nil {
-		gu.SetAvatarPath(*s)
-	}
-	return gu
-}
-
-// ClearAvatarPath clears the value of the "avatarPath" field.
-func (gu *GoogleUpdate) ClearAvatarPath() *GoogleUpdate {
-	gu.mutation.ClearAvatarPath()
-	return gu
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (gu *GoogleUpdate) SetUser(u *User) *GoogleUpdate {
 	return gu.SetUserID(u.ID)
@@ -209,18 +169,6 @@ func (gu *GoogleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := gu.mutation.Email(); ok {
 		_spec.SetField(google.FieldEmail, field.TypeString, value)
-	}
-	if value, ok := gu.mutation.Fullname(); ok {
-		_spec.SetField(google.FieldFullname, field.TypeString, value)
-	}
-	if gu.mutation.FullnameCleared() {
-		_spec.ClearField(google.FieldFullname, field.TypeString)
-	}
-	if value, ok := gu.mutation.AvatarPath(); ok {
-		_spec.SetField(google.FieldAvatarPath, field.TypeString, value)
-	}
-	if gu.mutation.AvatarPathCleared() {
-		_spec.ClearField(google.FieldAvatarPath, field.TypeString)
 	}
 	if gu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -318,46 +266,6 @@ func (guo *GoogleUpdateOne) SetNillableEmail(s *string) *GoogleUpdateOne {
 	if s != nil {
 		guo.SetEmail(*s)
 	}
-	return guo
-}
-
-// SetFullname sets the "fullname" field.
-func (guo *GoogleUpdateOne) SetFullname(s string) *GoogleUpdateOne {
-	guo.mutation.SetFullname(s)
-	return guo
-}
-
-// SetNillableFullname sets the "fullname" field if the given value is not nil.
-func (guo *GoogleUpdateOne) SetNillableFullname(s *string) *GoogleUpdateOne {
-	if s != nil {
-		guo.SetFullname(*s)
-	}
-	return guo
-}
-
-// ClearFullname clears the value of the "fullname" field.
-func (guo *GoogleUpdateOne) ClearFullname() *GoogleUpdateOne {
-	guo.mutation.ClearFullname()
-	return guo
-}
-
-// SetAvatarPath sets the "avatarPath" field.
-func (guo *GoogleUpdateOne) SetAvatarPath(s string) *GoogleUpdateOne {
-	guo.mutation.SetAvatarPath(s)
-	return guo
-}
-
-// SetNillableAvatarPath sets the "avatarPath" field if the given value is not nil.
-func (guo *GoogleUpdateOne) SetNillableAvatarPath(s *string) *GoogleUpdateOne {
-	if s != nil {
-		guo.SetAvatarPath(*s)
-	}
-	return guo
-}
-
-// ClearAvatarPath clears the value of the "avatarPath" field.
-func (guo *GoogleUpdateOne) ClearAvatarPath() *GoogleUpdateOne {
-	guo.mutation.ClearAvatarPath()
 	return guo
 }
 
@@ -482,18 +390,6 @@ func (guo *GoogleUpdateOne) sqlSave(ctx context.Context) (_node *Google, err err
 	}
 	if value, ok := guo.mutation.Email(); ok {
 		_spec.SetField(google.FieldEmail, field.TypeString, value)
-	}
-	if value, ok := guo.mutation.Fullname(); ok {
-		_spec.SetField(google.FieldFullname, field.TypeString, value)
-	}
-	if guo.mutation.FullnameCleared() {
-		_spec.ClearField(google.FieldFullname, field.TypeString)
-	}
-	if value, ok := guo.mutation.AvatarPath(); ok {
-		_spec.SetField(google.FieldAvatarPath, field.TypeString, value)
-	}
-	if guo.mutation.AvatarPathCleared() {
-		_spec.ClearField(google.FieldAvatarPath, field.TypeString)
 	}
 	if guo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

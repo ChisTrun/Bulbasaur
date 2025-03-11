@@ -15,8 +15,6 @@ var (
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "tenant_id", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString},
-		{Name: "fullname", Type: field.TypeString, Nullable: true},
-		{Name: "avatar_path", Type: field.TypeString, Nullable: true},
 		{Name: "user_id", Type: field.TypeUint64, Unique: true},
 	}
 	// GooglesTable holds the schema information for the "googles" table.
@@ -27,7 +25,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "googles_users_google",
-				Columns:    []*schema.Column{GooglesColumns[7]},
+				Columns:    []*schema.Column{GooglesColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -48,11 +46,6 @@ var (
 		{Name: "tenant_id", Type: field.TypeString},
 		{Name: "username", Type: field.TypeString, Nullable: true},
 		{Name: "password", Type: field.TypeString, Nullable: true},
-		{Name: "fullname", Type: field.TypeString, Nullable: true},
-		{Name: "company", Type: field.TypeString, Nullable: true},
-		{Name: "country", Type: field.TypeString, Nullable: true},
-		{Name: "job_title", Type: field.TypeString, Nullable: true},
-		{Name: "avatar_path", Type: field.TypeString, Nullable: true},
 		{Name: "user_id", Type: field.TypeUint64, Unique: true},
 	}
 	// LocalsTable holds the schema information for the "locals" table.
@@ -63,7 +56,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "locals_users_local",
-				Columns:    []*schema.Column{LocalsColumns[11]},
+				Columns:    []*schema.Column{LocalsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -82,9 +75,9 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "tenant_id", Type: field.TypeString},
-		{Name: "safe_id", Type: field.TypeString, Default: "176c0fb9-260f-4788-984e-45e9cf55d1cd"},
+		{Name: "safe_id", Type: field.TypeString, Default: "1ed140c6-108a-4b07-988e-6039fd59e2b3"},
 		{Name: "email", Type: field.TypeString, Nullable: true},
-		{Name: "metadata", Type: field.TypeString, Nullable: true, Size: 2147483647},
+		{Name: "metadata", Type: field.TypeJSON, Nullable: true},
 		{Name: "last_signed_in", Type: field.TypeTime, Nullable: true},
 		{Name: "role", Type: field.TypeInt32},
 	}

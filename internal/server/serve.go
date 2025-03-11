@@ -17,6 +17,7 @@ import (
 	"bulbasaur/internal/google"
 	"bulbasaur/internal/repositories"
 	"bulbasaur/internal/server/bulbasaur"
+	"bulbasaur/internal/server/ivysaur"
 	"bulbasaur/internal/utils/mailer"
 	"bulbasaur/internal/utils/redis"
 	"bulbasaur/internal/utils/signer"
@@ -58,6 +59,7 @@ func Serve(cfg *config.Config) {
 	feature := feature.NewFeature(cfg, ent, repo, signer, google, redis, mailer)
 
 	bulbasaurServer := bulbasaur.NewServer(feature)
+	ivysaurServer := ivysaur.NewServer(feature)
 
 	grpcGatewayMux := runtime.NewServeMux(
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
@@ -69,13 +71,20 @@ func Serve(cfg *config.Config) {
 		}),
 	)
 	service.HttpServeMux().Handle("/bulbasaur/", grpcGatewayMux)
+	service.HttpServeMux().Handle("/ivysaur/", grpcGatewayMux)
 
 	err = pb0.RegisterBulbasaurHandlerServer(context.Background(), grpcGatewayMux, bulbasaurServer)
 	if err != nil {
 		logger.Fatal("can not register http sibel server", zap.Error(err))
 	}
 
+	err = pb0.RegisterIvysaurHandlerServer(context.Background(), grpcGatewayMux, ivysaurServer)
+	if err != nil {
+		logger.Fatal("can not register http sibel server", zap.Error(err))
+	}
+
 	pb0.RegisterBulbasaurServer(server, bulbasaurServer)
+	pb0.RegisterIvysaurServer(server, ivysaurServer)
 	// Register reflection service on gRPC server.
 	// Please remove if you it's not necessary for your service
 	reflection.Register(server)

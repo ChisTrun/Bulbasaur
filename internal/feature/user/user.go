@@ -155,10 +155,7 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 				request.GetLocal().GetPassword(),
 				request.GetLocal().GetConfirmPassword(),
 				request.GetLocal().GetEmail(),
-				request.GetLocal().GetFullname(),
-				request.GetLocal().GetCompany(),
-				request.GetLocal().GetCountry(),
-				request.GetLocal().GetJobTitle(),
+				request.GetMetadata(),
 				request.GetRole(),
 			)
 			return err
@@ -293,18 +290,6 @@ func (u *userFeature) Me(ctx context.Context) (*bulbasaur.MeResponse, error) {
 
 	if user.Edges.Local != nil {
 		mssUser.Username = user.Edges.Local.Username
-		mssUser.Local = &bulbasaur.User_LocalInfo{
-			Fullname:   &user.Edges.Local.Fullname,
-			Company:    &user.Edges.Local.Company,
-			Country:    &user.Edges.Local.Country,
-			JobTitle:   &user.Edges.Local.JobTitle,
-			AvatarPath: &user.Edges.Local.AvatarPath,
-		}
-	} else if user.Edges.Google != nil {
-		mssUser.Google = &bulbasaur.User_GoogleInfo{
-			Fullname:   user.Edges.Google.Fullname,
-			AvatarPath: user.Edges.Google.AvatarPath,
-		}
 	}
 
 	return &bulbasaur.MeResponse{

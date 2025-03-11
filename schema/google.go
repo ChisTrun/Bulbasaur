@@ -16,8 +16,6 @@ func (Google) Fields() []ent.Field {
 		field.String("tenant_id"),
 		field.Uint64("user_id"),
 		field.String("email").NotEmpty(),
-		field.String("fullname").Optional().Nillable(),
-		field.String("avatarPath").Optional().Nillable(),
 	}
 }
 

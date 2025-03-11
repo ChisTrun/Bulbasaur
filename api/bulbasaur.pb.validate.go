@@ -174,17 +174,13 @@ func (m *User) validate(all bool) error {
 	// no validation rules for Id
 
 	if m.Metadata != nil {
-		// no validation rules for Metadata
-	}
-
-	if m.Local != nil {
 
 		if all {
-			switch v := interface{}(m.GetLocal()).(type) {
+			switch v := interface{}(m.GetMetadata()).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
 					errors = append(errors, UserValidationError{
-						field:  "Local",
+						field:  "Metadata",
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -192,49 +188,16 @@ func (m *User) validate(all bool) error {
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
 					errors = append(errors, UserValidationError{
-						field:  "Local",
+						field:  "Metadata",
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
 				}
 			}
-		} else if v, ok := interface{}(m.GetLocal()).(interface{ Validate() error }); ok {
+		} else if v, ok := interface{}(m.GetMetadata()).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
 				return UserValidationError{
-					field:  "Local",
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
-	if m.Google != nil {
-
-		if all {
-			switch v := interface{}(m.GetGoogle()).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, UserValidationError{
-						field:  "Google",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, UserValidationError{
-						field:  "Google",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(m.GetGoogle()).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return UserValidationError{
-					field:  "Google",
+					field:  "Metadata",
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
@@ -707,6 +670,35 @@ func (m *SignUpRequest) validate(all bool) error {
 	var errors []error
 
 	// no validation rules for Role
+
+	if all {
+		switch v := interface{}(m.GetMetadata()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, SignUpRequestValidationError{
+					field:  "Metadata",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, SignUpRequestValidationError{
+					field:  "Metadata",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetMetadata()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return SignUpRequestValidationError{
+				field:  "Metadata",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	switch v := m.Credential.(type) {
 	case *SignUpRequest_Local_:
@@ -1618,7 +1610,34 @@ func (m *UpdateMetadataRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Metadata
+	if all {
+		switch v := interface{}(m.GetMetadata()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UpdateMetadataRequestValidationError{
+					field:  "Metadata",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UpdateMetadataRequestValidationError{
+					field:  "Metadata",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetMetadata()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateMetadataRequestValidationError{
+				field:  "Metadata",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
 		return UpdateMetadataRequestMultiError(errors)
@@ -2226,22 +2245,22 @@ var _ interface {
 	ErrorName() string
 } = ResetPasswordRequestValidationError{}
 
-// Validate checks the field values on User_LocalInfo with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
+// Validate checks the field values on Metadata with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
-func (m *User_LocalInfo) Validate() error {
+func (m *Metadata) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on User_LocalInfo with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in User_LocalInfoMultiError,
-// or nil if none found.
-func (m *User_LocalInfo) ValidateAll() error {
+// ValidateAll checks the field values on Metadata with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in MetadataMultiError, or nil
+// if none found.
+func (m *Metadata) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *User_LocalInfo) validate(all bool) error {
+func (m *Metadata) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -2269,19 +2288,18 @@ func (m *User_LocalInfo) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return User_LocalInfoMultiError(errors)
+		return MetadataMultiError(errors)
 	}
 
 	return nil
 }
 
-// User_LocalInfoMultiError is an error wrapping multiple validation errors
-// returned by User_LocalInfo.ValidateAll() if the designated constraints
-// aren't met.
-type User_LocalInfoMultiError []error
+// MetadataMultiError is an error wrapping multiple validation errors returned
+// by Metadata.ValidateAll() if the designated constraints aren't met.
+type MetadataMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m User_LocalInfoMultiError) Error() string {
+func (m MetadataMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -2290,11 +2308,11 @@ func (m User_LocalInfoMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m User_LocalInfoMultiError) AllErrors() []error { return m }
+func (m MetadataMultiError) AllErrors() []error { return m }
 
-// User_LocalInfoValidationError is the validation error returned by
-// User_LocalInfo.Validate if the designated constraints aren't met.
-type User_LocalInfoValidationError struct {
+// MetadataValidationError is the validation error returned by
+// Metadata.Validate if the designated constraints aren't met.
+type MetadataValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -2302,22 +2320,22 @@ type User_LocalInfoValidationError struct {
 }
 
 // Field function returns field value.
-func (e User_LocalInfoValidationError) Field() string { return e.field }
+func (e MetadataValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e User_LocalInfoValidationError) Reason() string { return e.reason }
+func (e MetadataValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e User_LocalInfoValidationError) Cause() error { return e.cause }
+func (e MetadataValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e User_LocalInfoValidationError) Key() bool { return e.key }
+func (e MetadataValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e User_LocalInfoValidationError) ErrorName() string { return "User_LocalInfoValidationError" }
+func (e MetadataValidationError) ErrorName() string { return "MetadataValidationError" }
 
 // Error satisfies the builtin error interface
-func (e User_LocalInfoValidationError) Error() string {
+func (e MetadataValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -2329,14 +2347,14 @@ func (e User_LocalInfoValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sUser_LocalInfo.%s: %s%s",
+		"invalid %sMetadata.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = User_LocalInfoValidationError{}
+var _ error = MetadataValidationError{}
 
 var _ interface {
 	Field() string
@@ -2344,115 +2362,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = User_LocalInfoValidationError{}
-
-// Validate checks the field values on User_GoogleInfo with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *User_GoogleInfo) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on User_GoogleInfo with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// User_GoogleInfoMultiError, or nil if none found.
-func (m *User_GoogleInfo) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *User_GoogleInfo) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if m.Fullname != nil {
-		// no validation rules for Fullname
-	}
-
-	if m.AvatarPath != nil {
-		// no validation rules for AvatarPath
-	}
-
-	if len(errors) > 0 {
-		return User_GoogleInfoMultiError(errors)
-	}
-
-	return nil
-}
-
-// User_GoogleInfoMultiError is an error wrapping multiple validation errors
-// returned by User_GoogleInfo.ValidateAll() if the designated constraints
-// aren't met.
-type User_GoogleInfoMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m User_GoogleInfoMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m User_GoogleInfoMultiError) AllErrors() []error { return m }
-
-// User_GoogleInfoValidationError is the validation error returned by
-// User_GoogleInfo.Validate if the designated constraints aren't met.
-type User_GoogleInfoValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e User_GoogleInfoValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e User_GoogleInfoValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e User_GoogleInfoValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e User_GoogleInfoValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e User_GoogleInfoValidationError) ErrorName() string { return "User_GoogleInfoValidationError" }
-
-// Error satisfies the builtin error interface
-func (e User_GoogleInfoValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sUser_GoogleInfo.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = User_GoogleInfoValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = User_GoogleInfoValidationError{}
+} = MetadataValidationError{}
 
 // Validate checks the field values on SignUpRequest_Local with the rules
 // defined in the proto definition for this message. If any rules are
@@ -2484,21 +2394,7 @@ func (m *SignUpRequest_Local) validate(all bool) error {
 
 	// no validation rules for Email
 
-	// no validation rules for Fullname
-
 	// no validation rules for Otp
-
-	if m.Company != nil {
-		// no validation rules for Company
-	}
-
-	if m.Country != nil {
-		// no validation rules for Country
-	}
-
-	if m.JobTitle != nil {
-		// no validation rules for JobTitle
-	}
 
 	if len(errors) > 0 {
 		return SignUpRequest_LocalMultiError(errors)

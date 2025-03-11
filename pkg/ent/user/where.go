@@ -81,11 +81,6 @@ func Email(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldEmail, v))
 }
 
-// Metadata applies equality check predicate on the "metadata" field. It's identical to MetadataEQ.
-func Metadata(v string) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldMetadata, v))
-}
-
 // LastSignedIn applies equality check predicate on the "last_signed_in" field. It's identical to LastSignedInEQ.
 func LastSignedIn(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldLastSignedIn, v))
@@ -382,61 +377,6 @@ func EmailContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldEmail, v))
 }
 
-// MetadataEQ applies the EQ predicate on the "metadata" field.
-func MetadataEQ(v string) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldMetadata, v))
-}
-
-// MetadataNEQ applies the NEQ predicate on the "metadata" field.
-func MetadataNEQ(v string) predicate.User {
-	return predicate.User(sql.FieldNEQ(FieldMetadata, v))
-}
-
-// MetadataIn applies the In predicate on the "metadata" field.
-func MetadataIn(vs ...string) predicate.User {
-	return predicate.User(sql.FieldIn(FieldMetadata, vs...))
-}
-
-// MetadataNotIn applies the NotIn predicate on the "metadata" field.
-func MetadataNotIn(vs ...string) predicate.User {
-	return predicate.User(sql.FieldNotIn(FieldMetadata, vs...))
-}
-
-// MetadataGT applies the GT predicate on the "metadata" field.
-func MetadataGT(v string) predicate.User {
-	return predicate.User(sql.FieldGT(FieldMetadata, v))
-}
-
-// MetadataGTE applies the GTE predicate on the "metadata" field.
-func MetadataGTE(v string) predicate.User {
-	return predicate.User(sql.FieldGTE(FieldMetadata, v))
-}
-
-// MetadataLT applies the LT predicate on the "metadata" field.
-func MetadataLT(v string) predicate.User {
-	return predicate.User(sql.FieldLT(FieldMetadata, v))
-}
-
-// MetadataLTE applies the LTE predicate on the "metadata" field.
-func MetadataLTE(v string) predicate.User {
-	return predicate.User(sql.FieldLTE(FieldMetadata, v))
-}
-
-// MetadataContains applies the Contains predicate on the "metadata" field.
-func MetadataContains(v string) predicate.User {
-	return predicate.User(sql.FieldContains(FieldMetadata, v))
-}
-
-// MetadataHasPrefix applies the HasPrefix predicate on the "metadata" field.
-func MetadataHasPrefix(v string) predicate.User {
-	return predicate.User(sql.FieldHasPrefix(FieldMetadata, v))
-}
-
-// MetadataHasSuffix applies the HasSuffix predicate on the "metadata" field.
-func MetadataHasSuffix(v string) predicate.User {
-	return predicate.User(sql.FieldHasSuffix(FieldMetadata, v))
-}
-
 // MetadataIsNil applies the IsNil predicate on the "metadata" field.
 func MetadataIsNil() predicate.User {
 	return predicate.User(sql.FieldIsNull(FieldMetadata))
@@ -445,16 +385,6 @@ func MetadataIsNil() predicate.User {
 // MetadataNotNil applies the NotNil predicate on the "metadata" field.
 func MetadataNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldMetadata))
-}
-
-// MetadataEqualFold applies the EqualFold predicate on the "metadata" field.
-func MetadataEqualFold(v string) predicate.User {
-	return predicate.User(sql.FieldEqualFold(FieldMetadata, v))
-}
-
-// MetadataContainsFold applies the ContainsFold predicate on the "metadata" field.
-func MetadataContainsFold(v string) predicate.User {
-	return predicate.User(sql.FieldContainsFold(FieldMetadata, v))
 }
 
 // LastSignedInEQ applies the EQ predicate on the "last_signed_in" field.

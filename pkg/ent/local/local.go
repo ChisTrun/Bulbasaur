@@ -26,16 +26,6 @@ const (
 	FieldUsername = "username"
 	// FieldPassword holds the string denoting the password field in the database.
 	FieldPassword = "password"
-	// FieldFullname holds the string denoting the fullname field in the database.
-	FieldFullname = "fullname"
-	// FieldCompany holds the string denoting the company field in the database.
-	FieldCompany = "company"
-	// FieldCountry holds the string denoting the country field in the database.
-	FieldCountry = "country"
-	// FieldJobTitle holds the string denoting the jobtitle field in the database.
-	FieldJobTitle = "job_title"
-	// FieldAvatarPath holds the string denoting the avatarpath field in the database.
-	FieldAvatarPath = "avatar_path"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// Table holds the table name of the local in the database.
@@ -58,11 +48,6 @@ var Columns = []string{
 	FieldUserID,
 	FieldUsername,
 	FieldPassword,
-	FieldFullname,
-	FieldCompany,
-	FieldCountry,
-	FieldJobTitle,
-	FieldAvatarPath,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -120,31 +105,6 @@ func ByUsername(opts ...sql.OrderTermOption) OrderOption {
 // ByPassword orders the results by the password field.
 func ByPassword(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPassword, opts...).ToFunc()
-}
-
-// ByFullname orders the results by the fullname field.
-func ByFullname(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldFullname, opts...).ToFunc()
-}
-
-// ByCompany orders the results by the company field.
-func ByCompany(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCompany, opts...).ToFunc()
-}
-
-// ByCountry orders the results by the country field.
-func ByCountry(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCountry, opts...).ToFunc()
-}
-
-// ByJobTitle orders the results by the jobTitle field.
-func ByJobTitle(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldJobTitle, opts...).ToFunc()
-}
-
-// ByAvatarPath orders the results by the avatarPath field.
-func ByAvatarPath(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldAvatarPath, opts...).ToFunc()
 }
 
 // ByUserField orders the results by user field.

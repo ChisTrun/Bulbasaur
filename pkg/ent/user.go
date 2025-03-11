@@ -7,6 +7,7 @@ import (
 	"bulbasaur/pkg/ent/google"
 	"bulbasaur/pkg/ent/local"
 	"bulbasaur/pkg/ent/user"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -31,7 +32,7 @@ type User struct {
 	// Email holds the value of the "email" field.
 	Email string `json:"email,omitempty"`
 	// Metadata holds the value of the "metadata" field.
-	Metadata *string `json:"metadata,omitempty"`
+	Metadata *bulbasaur.Metadata `json:"metadata,omitempty"`
 	// LastSignedIn holds the value of the "last_signed_in" field.
 	LastSignedIn *time.Time `json:"last_signed_in,omitempty"`
 	// Role holds the value of the "role" field.
@@ -80,9 +81,11 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case user.FieldMetadata:
+			values[i] = new([]byte)
 		case user.FieldID, user.FieldRole:
 			values[i] = new(sql.NullInt64)
-		case user.FieldTenantID, user.FieldSafeID, user.FieldEmail, user.FieldMetadata:
+		case user.FieldTenantID, user.FieldSafeID, user.FieldEmail:
 			values[i] = new(sql.NullString)
 		case user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldLastSignedIn:
 			values[i] = new(sql.NullTime)
@@ -138,11 +141,12 @@ func (u *User) assignValues(columns []string, values []any) error {
 				u.Email = value.String
 			}
 		case user.FieldMetadata:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field metadata", values[i])
-			} else if value.Valid {
-				u.Metadata = new(string)
-				*u.Metadata = value.String
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &u.Metadata); err != nil {
+					return fmt.Errorf("unmarshal field metadata: %w", err)
+				}
 			}
 		case user.FieldLastSignedIn:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -218,10 +222,8 @@ func (u *User) String() string {
 	builder.WriteString("email=")
 	builder.WriteString(u.Email)
 	builder.WriteString(", ")
-	if v := u.Metadata; v != nil {
-		builder.WriteString("metadata=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString("metadata=")
+	builder.WriteString(fmt.Sprintf("%v", u.Metadata))
 	builder.WriteString(", ")
 	if v := u.LastSignedIn; v != nil {
 		builder.WriteString("last_signed_in=")

@@ -119,11 +119,6 @@ func ByEmail(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEmail, opts...).ToFunc()
 }
 
-// ByMetadata orders the results by the metadata field.
-func ByMetadata(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldMetadata, opts...).ToFunc()
-}
-
 // ByLastSignedIn orders the results by the last_signed_in field.
 func ByLastSignedIn(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastSignedIn, opts...).ToFunc()

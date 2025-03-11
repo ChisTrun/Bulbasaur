@@ -22,13 +22,6 @@ service bulbasaur {
     };
   };
 
-  rpc UpdateMetadata (UpdateMetadataRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      post: "/bulbasaur/account/update"
-      body: "*"
-    };
-  };
-
   rpc RefreshToken (RefreshTokenRequest) returns (RefreshTokenResponse) {
     option (google.api.http) = {
       post: "/bulbasaur/account/refresh"
@@ -40,12 +33,6 @@ service bulbasaur {
     option (google.api.http) = {
       post: "/bulbasaur/account/list"
       body: "*"
-    };
-  };
-
-  rpc Me (google.protobuf.Empty) returns (MeResponse) {
-    option (google.api.http) = {
-      get: "/bulbasaur/account/me"
     };
   };
 
@@ -78,6 +65,21 @@ service bulbasaur {
   };
 }
 
+service ivysaur {
+  rpc UpdateMetadata (UpdateMetadataRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/ivysaur/account/update"
+      body: "*"
+    };
+  };
+
+  rpc Me (google.protobuf.Empty) returns (MeResponse) {
+    option (google.api.http) = {
+      get: "/ivysaur/account/me"
+    };
+  };
+}
+
 //======================================== ENUM =======================================
 
 enum TokenType {
@@ -105,24 +107,9 @@ message TokenInfo {
 message User {
   string username = 1;
   string email = 2;
-  optional string metadata = 3;
-  Role role = 4;
-  uint64 id = 5;
-  optional LocalInfo local = 6;
-  optional GoogleInfo google = 7;
-
-  message LocalInfo {
-    optional string fullname = 1;
-    optional string company = 2;
-    optional string country = 3;
-    optional string jobTitle = 4;
-    optional string avatarPath = 5;
-  }
-
-  message GoogleInfo {
-    optional string fullname = 1;
-    optional string avatarPath = 2;
-  }
+  Role role = 3;
+  uint64 id = 4;
+  optional metadata metadata = 5;
 }
 
 message MeResponse{
@@ -145,16 +132,13 @@ message SignUpRequest {
   optional string device_id = 3;
   optional string device_name = 4;
   Role role = 5;
+  metadata metadata = 6;
 
   message Local {
       string username = 1;
       string password = 2;
       string confirm_password = 3;
       string email = 4;
-      string fullname = 5;
-      optional string company = 6;
-      optional string country = 7;
-      optional string jobTitle = 8;
       string otp = 9;
   }
 
@@ -198,7 +182,7 @@ message RefreshTokenResponse {
 }
 
 message UpdateMetadataRequest {
-  string metadata = 1;
+  metadata metadata = 1;
 }
 
 message EmailVerificationRequest {
@@ -221,4 +205,12 @@ message ResetPasswordRequest {
   string email = 1;
   string resetCode = 2;
   string newPassword = 3;
+}
+
+message metadata {
+  optional string fullname = 1;
+  optional string company = 2;
+  optional string country = 3;
+  optional string jobTitle = 4; 
+  optional string avatarPath = 5;
 }

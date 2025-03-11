@@ -1,4 +1,4 @@
-package bulbasaur
+package ivysaur
 
 import (
 	"context"
@@ -8,6 +8,6 @@ import (
 	bulbasaur "bulbasaur/api"
 )
 
-func (s *bulbasaurServer) Me(ctx context.Context, request *emptypb.Empty) (*bulbasaur.MeResponse, error) {
+func (s *ivysaurServer) Me(ctx context.Context, request *emptypb.Empty) (*bulbasaur.MeResponse, error) {
 	return s.Feature.UserFeature.Me(ctx)
 }
