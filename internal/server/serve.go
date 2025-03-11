@@ -6,9 +6,12 @@ import (
 	"bulbasaur/pkg/ent/migrate"
 	mykit "bulbasaur/pkg/mykit/pkg/api"
 	"context"
+	"net/http"
+	"strings"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/encoding/protojson"
 
@@ -27,6 +30,20 @@ import (
 
 	authv3 "github.com/envoyproxy/go-control-plane/envoy/service/auth/v3"
 )
+
+func customMetadataAnnotator(ctx context.Context, req *http.Request) metadata.MD {
+	md := metadata.MD{}
+
+	// Map tất cả các header có prefix "x-" vào metadata
+	for name, values := range req.Header {
+		lowerName := strings.ToLower(name)
+		if strings.HasPrefix(lowerName, "x-") {
+			md.Append(lowerName, values...)
+		}
+	}
+
+	return md
+}
 
 // Serve ...
 func Serve(cfg *config.Config) {
@@ -66,6 +83,7 @@ func Serve(cfg *config.Config) {
 	ivysaurServer := ivysaur.NewServer(feature)
 
 	grpcGatewayMux := runtime.NewServeMux(
+		runtime.WithMetadata(customMetadataAnnotator),
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
 			MarshalOptions: protojson.MarshalOptions{
 				UseProtoNames:   true,
@@ -74,6 +92,7 @@ func Serve(cfg *config.Config) {
 			},
 		}),
 	)
+
 	service.HttpServeMux().Handle("/bulbasaur/", grpcGatewayMux)
 	service.HttpServeMux().Handle("/ivysaur/", grpcGatewayMux)
 
