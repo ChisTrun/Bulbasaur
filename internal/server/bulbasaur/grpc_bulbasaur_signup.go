@@ -1,10 +1,11 @@
 package bulbasaur
 
 import (
-	bulbasaur "bulbasaur/api"
 	"context"
+
+	bulbasaur "bulbasaur/api"
 )
 
 func (s *bulbasaurServer) SignUp(ctx context.Context, request *bulbasaur.SignUpRequest) (*bulbasaur.SignUpResponse, error) {
-	return s.feature.UserFeature.SignUp(ctx, request)
+	return s.Feature.UserFeature.SignUp(ctx, request)
 }

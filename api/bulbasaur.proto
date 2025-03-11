@@ -5,118 +5,220 @@ package bulbasaur;
 option go_package = "bulbasaur/api;bulbasaur";
 
 import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
 
-service Bulbasaur {
-    rpc SignUp (SignUpRequest) returns (SignUpResponse);
-    rpc SignIn (SignInRequest) returns (SignInResponse);
-    rpc UpdateMetadata (UpdateMetadataRequest) returns (google.protobuf.Empty);
-    rpc RefreshToken (RefreshTokenRequest) returns (RefreshTokenResponse);
-    rpc ListUsers (ListUsersRequest) returns (ListUsersResponse);
+service bulbasaur {
+  rpc SignUp (SignUpRequest) returns (SignUpResponse) {
+    option (google.api.http) = {
+      post: "/bulbasaur/account/register"
+      body: "*"
+    };
+  };
 
-    rpc Me (google.protobuf.Empty) returns (MeResponse);
+  rpc SignIn (SignInRequest) returns (SignInResponse) {
+    option (google.api.http) = {
+      post: "/bulbasaur/account/login"
+      body: "*"
+    };
+  };
+
+  rpc UpdateMetadata (UpdateMetadataRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/bulbasaur/account/update"
+      body: "*"
+    };
+  };
+
+  rpc RefreshToken (RefreshTokenRequest) returns (RefreshTokenResponse) {
+    option (google.api.http) = {
+      post: "/bulbasaur/account/refresh"
+      body: "*"
+    };
+  };
+
+  rpc ListUsers (ListUsersRequest) returns (ListUsersResponse) {
+    option (google.api.http) = {
+      post: "/bulbasaur/account/list"
+      body: "*"
+    };
+  };
+
+  rpc Me (google.protobuf.Empty) returns (MeResponse) {
+    option (google.api.http) = {
+      get: "/bulbasaur/account/me"
+    };
+  };
+
+  rpc EmailVerification (EmailVerificationRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/bulbasaur/account/verify/email"
+      body: "*"
+    };
+  };
+
+  rpc ResetCodeVerification (ResetCodeVerificationRequest) returns (ResetCodeVerificationResponse) {
+    option (google.api.http) = {
+      post: "/bulbasaur/account/verify/resetcode"
+      body: "*"
+    };
+  };
+
+  rpc GenerateResetCode (GenerateResetCodeRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/bulbasaur/account/generate/resetcode"
+      body: "*"
+    };
+  };
+
+  rpc ResetPassword (ResetPasswordRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/bulbasaur/account/resetpassword"
+      body: "*"
+    };
+  };
 }
 
 //======================================== ENUM =======================================
 
 enum TokenType {
-    TOKEN_TYPE_UNKNOWN = 0;
-    TOKEN_TYPE_ACCESS_TOKEN = 1;
-    TOKEN_TYPE_REFRESH_TOKEN = 2;
+  TOKEN_TYPE_UNKNOWN = 0;
+  TOKEN_TYPE_ACCESS_TOKEN = 1;
+  TOKEN_TYPE_REFRESH_TOKEN = 2;
 }
 
 enum Role {
-    ROLE_UNKNOWN = 0;
-    ROLE_CANDIDATE = 1;
-    ROLE_BUSINESS_MANAGER = 2; 
+  ROLE_UNKNOWN = 0;
+  ROLE_CANDIDATE = 1;
+  ROLE_BUSINESS_MANAGER = 2; 
 }
 
 //======================================== MESSAGE ========================================
 
 message TokenInfo {
-    string safe_id = 1;
-    string refresh_token = 2;
-    string access_token = 3;
-    Role role = 4;
-    uint64 user_id = 5;
+  string safe_id = 1;
+  string refresh_token = 2;
+  string access_token = 3;
+  Role role = 4;
+  uint64 user_id = 5;
 }
 
 message User {
-    string username = 2;
-    string email = 3;
-    optional string metadata = 4;
-    Role role = 5;
-    uint64 id = 6;
+  string username = 1;
+  string email = 2;
+  optional string metadata = 3;
+  Role role = 4;
+  uint64 id = 5;
+  optional LocalInfo local = 6;
+  optional GoogleInfo google = 7;
+
+  message LocalInfo {
+    optional string fullname = 1;
+    optional string company = 2;
+    optional string country = 3;
+    optional string jobTitle = 4;
+    optional string avatarPath = 5;
+  }
+
+  message GoogleInfo {
+    optional string fullname = 1;
+    optional string avatarPath = 2;
+  }
 }
 
 message MeResponse{
-    User user = 1;
+  User user = 1;
 }
-  
+
 message ListUsersRequest {
-    repeated uint64 user_ids = 1;
+  repeated uint64 user_ids = 1;
 }
 
 message ListUsersResponse {
-    repeated User users = 1;
+  repeated User users = 1;
 }
 
 message SignUpRequest {
-    oneof credential {
-        Local local = 1;
-        Google google = 2;
-    }
-    optional string device_id = 3;
-    optional string device_name = 4;
-    Role role = 5;
+  oneof credential {
+      Local local = 1;
+      Google google = 2;
+  }
+  optional string device_id = 3;
+  optional string device_name = 4;
+  Role role = 5;
 
-    message Local {
-        string username = 1;
-        string password = 2;
-        string confirm_password = 3;
-        string email = 4;   
-    }
+  message Local {
+      string username = 1;
+      string password = 2;
+      string confirm_password = 3;
+      string email = 4;
+      string fullname = 5;
+      optional string company = 6;
+      optional string country = 7;
+      optional string jobTitle = 8;
+      string otp = 9;
+  }
 
-    message Google {
-        string credential = 1;
-    }
+  message Google {
+      string credential = 1;
+  }
 }
 
 message SignUpResponse {
-    TokenInfo token_info = 1;
+  TokenInfo token_info = 1;
 }
 
 message SignInRequest {
-    oneof credential {
-        Local local = 1;
-        Google google = 2;
-    }
-    optional string device_id = 3;
-    optional string device_name = 4;
+  oneof credential {
+      Local local = 1;
+      Google google = 2;
+  }
+  optional string device_id = 3;
+  optional string device_name = 4;
 
-    message Local {
-        string username = 1;
-        string password = 2;
-    }
+  message Local {
+      string username = 1;
+      string password = 2;
+  }
 
-    message Google {
-        string credential = 1;
-    }
-    
+  message Google {
+      string credential = 1;
+  }
 }
 
 message SignInResponse {
-    TokenInfo token_info = 1;
+  TokenInfo token_info = 1;
 }
 
 message RefreshTokenRequest {
-    TokenInfo token_info = 1;
+  TokenInfo token_info = 1;
 }
 
 message RefreshTokenResponse {
-    TokenInfo token_info = 1;
+  TokenInfo token_info = 1;
 }
 
 message UpdateMetadataRequest {
-    string metadata = 1;
+  string metadata = 1;
 }
 
+message EmailVerificationRequest {
+  string email = 1;
+}
+
+message ResetCodeVerificationRequest {
+  string resetCode = 1;
+}
+
+message ResetCodeVerificationResponse {
+  string email = 1;
+}
+
+message GenerateResetCodeRequest {
+  string email = 1;
+}
+
+message ResetPasswordRequest {
+  string email = 1;
+  string resetCode = 2;
+  string newPassword = 3;
+}

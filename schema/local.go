@@ -17,6 +17,11 @@ func (Local) Fields() []ent.Field {
 		field.Uint64("user_id"),
 		field.String("username").Optional(),
 		field.String("password").Optional(),
+		field.String("fullname").Optional(),
+		field.String("company").Optional(),
+		field.String("country").Optional(),
+		field.String("jobTitle").Optional(),
+		field.String("avatarPath").Optional(),
 	}
 }
 

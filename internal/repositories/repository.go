@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"bulbasaur/internal/repositories/user"
-	"bulbasaur/package/ent"
+	"bulbasaur/pkg/ent"
 )
 
 type Repository struct {
