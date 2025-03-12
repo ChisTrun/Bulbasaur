@@ -390,6 +390,7 @@ var Bulbasaur_ServiceDesc = grpc.ServiceDesc{
 const (
 	Ivysaur_UpdateMetadata_FullMethodName = "/bulbasaur.ivysaur/UpdateMetadata"
 	Ivysaur_Me_FullMethodName             = "/bulbasaur.ivysaur/Me"
+	Ivysaur_ChangePassword_FullMethodName = "/bulbasaur.ivysaur/ChangePassword"
 )
 
 // IvysaurClient is the client API for Ivysaur service.
@@ -398,6 +399,7 @@ const (
 type IvysaurClient interface {
 	UpdateMetadata(ctx context.Context, in *UpdateMetadataRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	Me(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeResponse, error)
+	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type ivysaurClient struct {
@@ -428,12 +430,23 @@ func (c *ivysaurClient) Me(ctx context.Context, in *emptypb.Empty, opts ...grpc.
 	return out, nil
 }
 
+func (c *ivysaurClient) ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Ivysaur_ChangePassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // IvysaurServer is the server API for Ivysaur service.
 // All implementations must embed UnimplementedIvysaurServer
 // for forward compatibility.
 type IvysaurServer interface {
 	UpdateMetadata(context.Context, *UpdateMetadataRequest) (*emptypb.Empty, error)
 	Me(context.Context, *emptypb.Empty) (*MeResponse, error)
+	ChangePassword(context.Context, *ChangePasswordRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedIvysaurServer()
 }
 
@@ -449,6 +462,9 @@ func (UnimplementedIvysaurServer) UpdateMetadata(context.Context, *UpdateMetadat
 }
 func (UnimplementedIvysaurServer) Me(context.Context, *emptypb.Empty) (*MeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Me not implemented")
+}
+func (UnimplementedIvysaurServer) ChangePassword(context.Context, *ChangePasswordRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangePassword not implemented")
 }
 func (UnimplementedIvysaurServer) mustEmbedUnimplementedIvysaurServer() {}
 func (UnimplementedIvysaurServer) testEmbeddedByValue()                 {}
@@ -507,6 +523,24 @@ func _Ivysaur_Me_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Ivysaur_ChangePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangePasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IvysaurServer).ChangePassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ivysaur_ChangePassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IvysaurServer).ChangePassword(ctx, req.(*ChangePasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Ivysaur_ServiceDesc is the grpc.ServiceDesc for Ivysaur service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -521,6 +555,10 @@ var Ivysaur_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Me",
 			Handler:    _Ivysaur_Me_Handler,
+		},
+		{
+			MethodName: "ChangePassword",
+			Handler:    _Ivysaur_ChangePassword_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

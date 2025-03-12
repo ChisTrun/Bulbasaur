@@ -5,10 +5,12 @@ import (
 	"bulbasaur/internal/google"
 	"bulbasaur/internal/repositories"
 	"bulbasaur/internal/utils/extractor"
+	"bulbasaur/internal/utils/hash"
 	"bulbasaur/internal/utils/mailer"
 	"bulbasaur/internal/utils/redis"
 	"bulbasaur/internal/utils/signer"
 	"bulbasaur/internal/utils/tx"
+	"bulbasaur/internal/utils/validation"
 	config "bulbasaur/pkg/config"
 	"bulbasaur/pkg/ent"
 	"context"
@@ -29,6 +31,7 @@ type UserFeature interface {
 
 	Me(ctx context.Context) (*bulbasaur.MeResponse, error)
 	ListUser(ctx context.Context, request *bulbasaur.ListUsersRequest) (*bulbasaur.ListUsersResponse, error)
+	ChangePassword(ctx context.Context, request *bulbasaur.ChangePasswordRequest) error
 
 	EmailVerification(ctx context.Context, request *bulbasaur.EmailVerificationRequest) error
 	ResetCodeVerification(ctx context.Context, request *bulbasaur.ResetCodeVerificationRequest) (*bulbasaur.ResetCodeVerificationResponse, error)
@@ -121,6 +124,13 @@ func (u *userFeature) SignIn(ctx context.Context, request *bulbasaur.SignInReque
 	u.redis.Set(ctx, fmt.Sprintf("%v-rt", user.SafeID), refreshToken, time.Minute*time.Duration(u.cfg.Auth.RefreshExp))
 
 	return &bulbasaur.SignInResponse{
+		User: &bulbasaur.User{
+			Username: user.Edges.Local.Username,
+			Email:    user.Email,
+			Metadata: user.Metadata,
+			Role:     user.Role,
+			Id:       user.ID,
+		},
 		TokenInfo: &bulbasaur.TokenInfo{
 			SafeId:       user.SafeID,
 			RefreshToken: refreshToken,
@@ -147,6 +157,10 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 
 		if storedOtp != request.GetLocal().GetOtp() {
 			return nil, fmt.Errorf("invalid OTP")
+		}
+
+		if err := validation.ValidatePassword(request.GetLocal().GetPassword()); err != nil {
+			return nil, err
 		}
 
 		if txErr := tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
@@ -210,6 +224,13 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 	u.redis.Set(ctx, fmt.Sprintf("%v-rt", user.SafeID), refreshToken, time.Minute*time.Duration(u.cfg.Auth.RefreshExp))
 
 	return &bulbasaur.SignUpResponse{
+		User: &bulbasaur.User{
+			Username: user.Edges.Local.Username,
+			Email:    user.Email,
+			Metadata: user.Metadata,
+			Role:     user.Role,
+			Id:       user.ID,
+		},
 		TokenInfo: &bulbasaur.TokenInfo{
 			SafeId:       user.SafeID,
 			RefreshToken: refreshToken,
@@ -340,6 +361,10 @@ func (u *userFeature) EmailVerification(ctx context.Context, request *bulbasaur.
 		return err
 	}
 
+	if !validation.IsValidEmail(email) {
+		return fmt.Errorf("invalid email format")
+	}
+
 	otpKey := fmt.Sprintf("otp:%s", email)
 	cooldownKey := fmt.Sprintf("otpCooldown:%s", email)
 
@@ -464,4 +489,34 @@ func (u *userFeature) ResetPassword(ctx context.Context, request *bulbasaur.Rese
 	}
 
 	return nil
+}
+
+func (u *userFeature) ChangePassword(ctx context.Context, request *bulbasaur.ChangePasswordRequest) error {
+	safeId, ok := u.extractor.GetSafeID(ctx)
+	if !ok {
+		return fmt.Errorf("safe id not found")
+	}
+
+	user, err := u.repo.UserRepository.GetUserBySafeID(ctx, safeId)
+	if err != nil {
+		return err
+	}
+
+	tenantId := u.extractor.GetTenantID(ctx)
+
+	if ok := hash.CheckPasswordHash(hash.CreateInput([]string{tenantId, request.OldPassword}), user.Edges.Local.Password); !ok {
+		return fmt.Errorf("incorrect password")
+	}
+
+	if request.GetNewPassword() != request.GetConfirmNewPassword() {
+		return fmt.Errorf("passwords do not match")
+	}
+
+	if err := validation.ValidatePassword(request.GetNewPassword()); err != nil {
+		return err
+	}
+
+	return tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
+		return u.repo.UserRepository.UpdatePassword(ctx, tx, tenantId, user.Email, request.GetNewPassword())
+	})
 }

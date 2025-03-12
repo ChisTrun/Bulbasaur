@@ -12,5 +12,6 @@ func (s *ivysaurServer) UpdateMetadata(ctx context.Context, request *bulbasaur.U
 	if err := s.Feature.UserFeature.UpdateMetadata(ctx, request); err != nil {
 		return nil, err
 	}
+
 	return &emptypb.Empty{}, nil
 }

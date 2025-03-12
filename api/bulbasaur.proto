@@ -78,6 +78,13 @@ service ivysaur {
       get: "/ivysaur/account/me"
     };
   };
+
+  rpc ChangePassword (ChangePasswordRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/ivysaur/account/changepassword"
+      body: "*"
+    };
+  };
 }
 
 //======================================== ENUM =======================================
@@ -148,7 +155,8 @@ message SignUpRequest {
 }
 
 message SignUpResponse {
-  TokenInfo token_info = 1;
+  User user = 1;
+  TokenInfo token_info = 2;
 }
 
 message SignInRequest {
@@ -170,7 +178,8 @@ message SignInRequest {
 }
 
 message SignInResponse {
-  TokenInfo token_info = 1;
+  User user = 1;
+  TokenInfo token_info = 2;
 }
 
 message RefreshTokenRequest {
@@ -213,4 +222,10 @@ message metadata {
   optional string country = 3;
   optional string jobTitle = 4; 
   optional string avatarPath = 5;
+}
+
+message ChangePasswordRequest {
+  string oldPassword = 1;
+  string newPassword = 2;
+  string confirmNewPassword = 3;
 }
