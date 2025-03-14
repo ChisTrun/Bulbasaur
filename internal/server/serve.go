@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/rs/cors"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
@@ -43,6 +44,16 @@ func customMetadataAnnotator(ctx context.Context, req *http.Request) metadata.MD
 	}
 
 	return md
+}
+
+func enableCORS(handler http.Handler) http.Handler {
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type", "X-Requested-With"},
+		AllowCredentials: true,
+	})
+	return c.Handler(handler)
 }
 
 // Serve ...
@@ -93,8 +104,8 @@ func Serve(cfg *config.Config) {
 		}),
 	)
 
-	service.HttpServeMux().Handle("/bulbasaur/", grpcGatewayMux)
-	service.HttpServeMux().Handle("/ivysaur/", grpcGatewayMux)
+	service.HttpServeMux().Handle("/bulbasaur/", enableCORS(grpcGatewayMux))
+	service.HttpServeMux().Handle("/ivysaur/", enableCORS(grpcGatewayMux))
 
 	err = pb0.RegisterBulbasaurHandlerServer(context.Background(), grpcGatewayMux, bulbasaurServer)
 	if err != nil {

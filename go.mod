@@ -23,6 +23,7 @@ require (
 	github.com/hashicorp/vault/api/auth/kubernetes v0.4.0
 	github.com/lestrrat-go/jwx/v2 v2.1.4
 	github.com/redis/go-redis/v9 v9.1.0
+	github.com/rs/cors v1.11.1
 	github.com/vrischmann/envconfig v1.3.0
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.33.0
