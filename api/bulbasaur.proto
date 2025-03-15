@@ -7,7 +7,7 @@ option go_package = "bulbasaur/api;bulbasaur";
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 
-service bulbasaur {
+service Bulbasaur {
   rpc SignUp (SignUpRequest) returns (SignUpResponse) {
     option (google.api.http) = {
       post: "/bulbasaur/account/register"
@@ -65,7 +65,7 @@ service bulbasaur {
   };
 }
 
-service ivysaur {
+service Ivysaur {
   rpc UpdateMetadata (UpdateMetadataRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/ivysaur/account/update"

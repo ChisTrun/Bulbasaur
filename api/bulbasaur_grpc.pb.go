@@ -20,14 +20,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Bulbasaur_SignUp_FullMethodName                = "/bulbasaur.bulbasaur/SignUp"
-	Bulbasaur_SignIn_FullMethodName                = "/bulbasaur.bulbasaur/SignIn"
-	Bulbasaur_RefreshToken_FullMethodName          = "/bulbasaur.bulbasaur/RefreshToken"
-	Bulbasaur_ListUsers_FullMethodName             = "/bulbasaur.bulbasaur/ListUsers"
-	Bulbasaur_EmailVerification_FullMethodName     = "/bulbasaur.bulbasaur/EmailVerification"
-	Bulbasaur_ResetCodeVerification_FullMethodName = "/bulbasaur.bulbasaur/ResetCodeVerification"
-	Bulbasaur_GenerateResetCode_FullMethodName     = "/bulbasaur.bulbasaur/GenerateResetCode"
-	Bulbasaur_ResetPassword_FullMethodName         = "/bulbasaur.bulbasaur/ResetPassword"
+	Bulbasaur_SignUp_FullMethodName                = "/bulbasaur.Bulbasaur/SignUp"
+	Bulbasaur_SignIn_FullMethodName                = "/bulbasaur.Bulbasaur/SignIn"
+	Bulbasaur_RefreshToken_FullMethodName          = "/bulbasaur.Bulbasaur/RefreshToken"
+	Bulbasaur_ListUsers_FullMethodName             = "/bulbasaur.Bulbasaur/ListUsers"
+	Bulbasaur_EmailVerification_FullMethodName     = "/bulbasaur.Bulbasaur/EmailVerification"
+	Bulbasaur_ResetCodeVerification_FullMethodName = "/bulbasaur.Bulbasaur/ResetCodeVerification"
+	Bulbasaur_GenerateResetCode_FullMethodName     = "/bulbasaur.Bulbasaur/GenerateResetCode"
+	Bulbasaur_ResetPassword_FullMethodName         = "/bulbasaur.Bulbasaur/ResetPassword"
 )
 
 // BulbasaurClient is the client API for Bulbasaur service.
@@ -347,7 +347,7 @@ func _Bulbasaur_ResetPassword_Handler(srv interface{}, ctx context.Context, dec 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Bulbasaur_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "bulbasaur.bulbasaur",
+	ServiceName: "bulbasaur.Bulbasaur",
 	HandlerType: (*BulbasaurServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -388,9 +388,9 @@ var Bulbasaur_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	Ivysaur_UpdateMetadata_FullMethodName = "/bulbasaur.ivysaur/UpdateMetadata"
-	Ivysaur_Me_FullMethodName             = "/bulbasaur.ivysaur/Me"
-	Ivysaur_ChangePassword_FullMethodName = "/bulbasaur.ivysaur/ChangePassword"
+	Ivysaur_UpdateMetadata_FullMethodName = "/bulbasaur.Ivysaur/UpdateMetadata"
+	Ivysaur_Me_FullMethodName             = "/bulbasaur.Ivysaur/Me"
+	Ivysaur_ChangePassword_FullMethodName = "/bulbasaur.Ivysaur/ChangePassword"
 )
 
 // IvysaurClient is the client API for Ivysaur service.
@@ -545,7 +545,7 @@ func _Ivysaur_ChangePassword_Handler(srv interface{}, ctx context.Context, dec f
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Ivysaur_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "bulbasaur.ivysaur",
+	ServiceName: "bulbasaur.Ivysaur",
 	HandlerType: (*IvysaurServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

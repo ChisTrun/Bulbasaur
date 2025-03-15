@@ -2472,10 +2472,10 @@ export namespace bulbasaur {
             return ChangePasswordRequest.deserialize(bytes);
         }
     }
-    export abstract class UnimplementedbulbasaurService {
+    export abstract class UnimplementedBulbasaurService {
         static definition = {
             SignUp: {
-                path: "/bulbasaur.bulbasaur/SignUp",
+                path: "/bulbasaur.Bulbasaur/SignUp",
                 requestStream: false,
                 responseStream: false,
                 requestSerialize: (message: SignUpRequest) => Buffer.from(message.serialize()),
@@ -2484,7 +2484,7 @@ export namespace bulbasaur {
                 responseDeserialize: (bytes: Buffer) => SignUpResponse.deserialize(new Uint8Array(bytes))
             },
             SignIn: {
-                path: "/bulbasaur.bulbasaur/SignIn",
+                path: "/bulbasaur.Bulbasaur/SignIn",
                 requestStream: false,
                 responseStream: false,
                 requestSerialize: (message: SignInRequest) => Buffer.from(message.serialize()),
@@ -2493,7 +2493,7 @@ export namespace bulbasaur {
                 responseDeserialize: (bytes: Buffer) => SignInResponse.deserialize(new Uint8Array(bytes))
             },
             RefreshToken: {
-                path: "/bulbasaur.bulbasaur/RefreshToken",
+                path: "/bulbasaur.Bulbasaur/RefreshToken",
                 requestStream: false,
                 responseStream: false,
                 requestSerialize: (message: RefreshTokenRequest) => Buffer.from(message.serialize()),
@@ -2502,7 +2502,7 @@ export namespace bulbasaur {
                 responseDeserialize: (bytes: Buffer) => RefreshTokenResponse.deserialize(new Uint8Array(bytes))
             },
             ListUsers: {
-                path: "/bulbasaur.bulbasaur/ListUsers",
+                path: "/bulbasaur.Bulbasaur/ListUsers",
                 requestStream: false,
                 responseStream: false,
                 requestSerialize: (message: ListUsersRequest) => Buffer.from(message.serialize()),
@@ -2511,7 +2511,7 @@ export namespace bulbasaur {
                 responseDeserialize: (bytes: Buffer) => ListUsersResponse.deserialize(new Uint8Array(bytes))
             },
             EmailVerification: {
-                path: "/bulbasaur.bulbasaur/EmailVerification",
+                path: "/bulbasaur.Bulbasaur/EmailVerification",
                 requestStream: false,
                 responseStream: false,
                 requestSerialize: (message: EmailVerificationRequest) => Buffer.from(message.serialize()),
@@ -2520,7 +2520,7 @@ export namespace bulbasaur {
                 responseDeserialize: (bytes: Buffer) => dependency_1.google.protobuf.Empty.deserialize(new Uint8Array(bytes))
             },
             ResetCodeVerification: {
-                path: "/bulbasaur.bulbasaur/ResetCodeVerification",
+                path: "/bulbasaur.Bulbasaur/ResetCodeVerification",
                 requestStream: false,
                 responseStream: false,
                 requestSerialize: (message: ResetCodeVerificationRequest) => Buffer.from(message.serialize()),
@@ -2529,7 +2529,7 @@ export namespace bulbasaur {
                 responseDeserialize: (bytes: Buffer) => ResetCodeVerificationResponse.deserialize(new Uint8Array(bytes))
             },
             GenerateResetCode: {
-                path: "/bulbasaur.bulbasaur/GenerateResetCode",
+                path: "/bulbasaur.Bulbasaur/GenerateResetCode",
                 requestStream: false,
                 responseStream: false,
                 requestSerialize: (message: GenerateResetCodeRequest) => Buffer.from(message.serialize()),
@@ -2538,7 +2538,7 @@ export namespace bulbasaur {
                 responseDeserialize: (bytes: Buffer) => dependency_1.google.protobuf.Empty.deserialize(new Uint8Array(bytes))
             },
             ResetPassword: {
-                path: "/bulbasaur.bulbasaur/ResetPassword",
+                path: "/bulbasaur.Bulbasaur/ResetPassword",
                 requestStream: false,
                 responseStream: false,
                 requestSerialize: (message: ResetPasswordRequest) => Buffer.from(message.serialize()),
@@ -2557,7 +2557,7 @@ export namespace bulbasaur {
         abstract GenerateResetCode(call: grpc_1.ServerUnaryCall<GenerateResetCodeRequest, dependency_1.google.protobuf.Empty>, callback: grpc_1.sendUnaryData<dependency_1.google.protobuf.Empty>): void;
         abstract ResetPassword(call: grpc_1.ServerUnaryCall<ResetPasswordRequest, dependency_1.google.protobuf.Empty>, callback: grpc_1.sendUnaryData<dependency_1.google.protobuf.Empty>): void;
     }
-    export class bulbasaurClient {
+    export class BulbasaurClient {
         private _address: string;
         private _client: grpc_web_1.GrpcWebClientBase;
         constructor(address: string, credentials?: Object, options?: grpc_web_1.GrpcWebClientBaseOptions) {
@@ -2567,43 +2567,43 @@ export namespace bulbasaur {
             this._address = address;
             this._client = new grpc_web_1.GrpcWebClientBase(options);
         }
-        private static SignUp = new grpc_web_1.MethodDescriptor<SignUpRequest, SignUpResponse>("/bulbasaur.bulbasaur/SignUp", grpc_web_1.MethodType.UNARY, SignUpRequest, SignUpResponse, (message: SignUpRequest) => message.serialize(), SignUpResponse.deserialize);
+        private static SignUp = new grpc_web_1.MethodDescriptor<SignUpRequest, SignUpResponse>("/bulbasaur.Bulbasaur/SignUp", grpc_web_1.MethodType.UNARY, SignUpRequest, SignUpResponse, (message: SignUpRequest) => message.serialize(), SignUpResponse.deserialize);
         SignUp(message: SignUpRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: SignUpResponse) => void) {
-            return this._client.rpcCall<SignUpRequest, SignUpResponse>(this._address + "/bulbasaur.bulbasaur/SignUp", message, metadata || {}, bulbasaurClient.SignUp, callback);
+            return this._client.rpcCall<SignUpRequest, SignUpResponse>(this._address + "/bulbasaur.Bulbasaur/SignUp", message, metadata || {}, BulbasaurClient.SignUp, callback);
         }
-        private static SignIn = new grpc_web_1.MethodDescriptor<SignInRequest, SignInResponse>("/bulbasaur.bulbasaur/SignIn", grpc_web_1.MethodType.UNARY, SignInRequest, SignInResponse, (message: SignInRequest) => message.serialize(), SignInResponse.deserialize);
+        private static SignIn = new grpc_web_1.MethodDescriptor<SignInRequest, SignInResponse>("/bulbasaur.Bulbasaur/SignIn", grpc_web_1.MethodType.UNARY, SignInRequest, SignInResponse, (message: SignInRequest) => message.serialize(), SignInResponse.deserialize);
         SignIn(message: SignInRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: SignInResponse) => void) {
-            return this._client.rpcCall<SignInRequest, SignInResponse>(this._address + "/bulbasaur.bulbasaur/SignIn", message, metadata || {}, bulbasaurClient.SignIn, callback);
+            return this._client.rpcCall<SignInRequest, SignInResponse>(this._address + "/bulbasaur.Bulbasaur/SignIn", message, metadata || {}, BulbasaurClient.SignIn, callback);
         }
-        private static RefreshToken = new grpc_web_1.MethodDescriptor<RefreshTokenRequest, RefreshTokenResponse>("/bulbasaur.bulbasaur/RefreshToken", grpc_web_1.MethodType.UNARY, RefreshTokenRequest, RefreshTokenResponse, (message: RefreshTokenRequest) => message.serialize(), RefreshTokenResponse.deserialize);
+        private static RefreshToken = new grpc_web_1.MethodDescriptor<RefreshTokenRequest, RefreshTokenResponse>("/bulbasaur.Bulbasaur/RefreshToken", grpc_web_1.MethodType.UNARY, RefreshTokenRequest, RefreshTokenResponse, (message: RefreshTokenRequest) => message.serialize(), RefreshTokenResponse.deserialize);
         RefreshToken(message: RefreshTokenRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: RefreshTokenResponse) => void) {
-            return this._client.rpcCall<RefreshTokenRequest, RefreshTokenResponse>(this._address + "/bulbasaur.bulbasaur/RefreshToken", message, metadata || {}, bulbasaurClient.RefreshToken, callback);
+            return this._client.rpcCall<RefreshTokenRequest, RefreshTokenResponse>(this._address + "/bulbasaur.Bulbasaur/RefreshToken", message, metadata || {}, BulbasaurClient.RefreshToken, callback);
         }
-        private static ListUsers = new grpc_web_1.MethodDescriptor<ListUsersRequest, ListUsersResponse>("/bulbasaur.bulbasaur/ListUsers", grpc_web_1.MethodType.UNARY, ListUsersRequest, ListUsersResponse, (message: ListUsersRequest) => message.serialize(), ListUsersResponse.deserialize);
+        private static ListUsers = new grpc_web_1.MethodDescriptor<ListUsersRequest, ListUsersResponse>("/bulbasaur.Bulbasaur/ListUsers", grpc_web_1.MethodType.UNARY, ListUsersRequest, ListUsersResponse, (message: ListUsersRequest) => message.serialize(), ListUsersResponse.deserialize);
         ListUsers(message: ListUsersRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: ListUsersResponse) => void) {
-            return this._client.rpcCall<ListUsersRequest, ListUsersResponse>(this._address + "/bulbasaur.bulbasaur/ListUsers", message, metadata || {}, bulbasaurClient.ListUsers, callback);
+            return this._client.rpcCall<ListUsersRequest, ListUsersResponse>(this._address + "/bulbasaur.Bulbasaur/ListUsers", message, metadata || {}, BulbasaurClient.ListUsers, callback);
         }
-        private static EmailVerification = new grpc_web_1.MethodDescriptor<EmailVerificationRequest, dependency_1.google.protobuf.Empty>("/bulbasaur.bulbasaur/EmailVerification", grpc_web_1.MethodType.UNARY, EmailVerificationRequest, dependency_1.google.protobuf.Empty, (message: EmailVerificationRequest) => message.serialize(), dependency_1.google.protobuf.Empty.deserialize);
+        private static EmailVerification = new grpc_web_1.MethodDescriptor<EmailVerificationRequest, dependency_1.google.protobuf.Empty>("/bulbasaur.Bulbasaur/EmailVerification", grpc_web_1.MethodType.UNARY, EmailVerificationRequest, dependency_1.google.protobuf.Empty, (message: EmailVerificationRequest) => message.serialize(), dependency_1.google.protobuf.Empty.deserialize);
         EmailVerification(message: EmailVerificationRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: dependency_1.google.protobuf.Empty) => void) {
-            return this._client.rpcCall<EmailVerificationRequest, dependency_1.google.protobuf.Empty>(this._address + "/bulbasaur.bulbasaur/EmailVerification", message, metadata || {}, bulbasaurClient.EmailVerification, callback);
+            return this._client.rpcCall<EmailVerificationRequest, dependency_1.google.protobuf.Empty>(this._address + "/bulbasaur.Bulbasaur/EmailVerification", message, metadata || {}, BulbasaurClient.EmailVerification, callback);
         }
-        private static ResetCodeVerification = new grpc_web_1.MethodDescriptor<ResetCodeVerificationRequest, ResetCodeVerificationResponse>("/bulbasaur.bulbasaur/ResetCodeVerification", grpc_web_1.MethodType.UNARY, ResetCodeVerificationRequest, ResetCodeVerificationResponse, (message: ResetCodeVerificationRequest) => message.serialize(), ResetCodeVerificationResponse.deserialize);
+        private static ResetCodeVerification = new grpc_web_1.MethodDescriptor<ResetCodeVerificationRequest, ResetCodeVerificationResponse>("/bulbasaur.Bulbasaur/ResetCodeVerification", grpc_web_1.MethodType.UNARY, ResetCodeVerificationRequest, ResetCodeVerificationResponse, (message: ResetCodeVerificationRequest) => message.serialize(), ResetCodeVerificationResponse.deserialize);
         ResetCodeVerification(message: ResetCodeVerificationRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: ResetCodeVerificationResponse) => void) {
-            return this._client.rpcCall<ResetCodeVerificationRequest, ResetCodeVerificationResponse>(this._address + "/bulbasaur.bulbasaur/ResetCodeVerification", message, metadata || {}, bulbasaurClient.ResetCodeVerification, callback);
+            return this._client.rpcCall<ResetCodeVerificationRequest, ResetCodeVerificationResponse>(this._address + "/bulbasaur.Bulbasaur/ResetCodeVerification", message, metadata || {}, BulbasaurClient.ResetCodeVerification, callback);
         }
-        private static GenerateResetCode = new grpc_web_1.MethodDescriptor<GenerateResetCodeRequest, dependency_1.google.protobuf.Empty>("/bulbasaur.bulbasaur/GenerateResetCode", grpc_web_1.MethodType.UNARY, GenerateResetCodeRequest, dependency_1.google.protobuf.Empty, (message: GenerateResetCodeRequest) => message.serialize(), dependency_1.google.protobuf.Empty.deserialize);
+        private static GenerateResetCode = new grpc_web_1.MethodDescriptor<GenerateResetCodeRequest, dependency_1.google.protobuf.Empty>("/bulbasaur.Bulbasaur/GenerateResetCode", grpc_web_1.MethodType.UNARY, GenerateResetCodeRequest, dependency_1.google.protobuf.Empty, (message: GenerateResetCodeRequest) => message.serialize(), dependency_1.google.protobuf.Empty.deserialize);
         GenerateResetCode(message: GenerateResetCodeRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: dependency_1.google.protobuf.Empty) => void) {
-            return this._client.rpcCall<GenerateResetCodeRequest, dependency_1.google.protobuf.Empty>(this._address + "/bulbasaur.bulbasaur/GenerateResetCode", message, metadata || {}, bulbasaurClient.GenerateResetCode, callback);
+            return this._client.rpcCall<GenerateResetCodeRequest, dependency_1.google.protobuf.Empty>(this._address + "/bulbasaur.Bulbasaur/GenerateResetCode", message, metadata || {}, BulbasaurClient.GenerateResetCode, callback);
         }
-        private static ResetPassword = new grpc_web_1.MethodDescriptor<ResetPasswordRequest, dependency_1.google.protobuf.Empty>("/bulbasaur.bulbasaur/ResetPassword", grpc_web_1.MethodType.UNARY, ResetPasswordRequest, dependency_1.google.protobuf.Empty, (message: ResetPasswordRequest) => message.serialize(), dependency_1.google.protobuf.Empty.deserialize);
+        private static ResetPassword = new grpc_web_1.MethodDescriptor<ResetPasswordRequest, dependency_1.google.protobuf.Empty>("/bulbasaur.Bulbasaur/ResetPassword", grpc_web_1.MethodType.UNARY, ResetPasswordRequest, dependency_1.google.protobuf.Empty, (message: ResetPasswordRequest) => message.serialize(), dependency_1.google.protobuf.Empty.deserialize);
         ResetPassword(message: ResetPasswordRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: dependency_1.google.protobuf.Empty) => void) {
-            return this._client.rpcCall<ResetPasswordRequest, dependency_1.google.protobuf.Empty>(this._address + "/bulbasaur.bulbasaur/ResetPassword", message, metadata || {}, bulbasaurClient.ResetPassword, callback);
+            return this._client.rpcCall<ResetPasswordRequest, dependency_1.google.protobuf.Empty>(this._address + "/bulbasaur.Bulbasaur/ResetPassword", message, metadata || {}, BulbasaurClient.ResetPassword, callback);
         }
     }
-    export abstract class UnimplementedivysaurService {
+    export abstract class UnimplementedIvysaurService {
         static definition = {
             UpdateMetadata: {
-                path: "/bulbasaur.ivysaur/UpdateMetadata",
+                path: "/bulbasaur.Ivysaur/UpdateMetadata",
                 requestStream: false,
                 responseStream: false,
                 requestSerialize: (message: UpdateMetadataRequest) => Buffer.from(message.serialize()),
@@ -2612,7 +2612,7 @@ export namespace bulbasaur {
                 responseDeserialize: (bytes: Buffer) => dependency_1.google.protobuf.Empty.deserialize(new Uint8Array(bytes))
             },
             Me: {
-                path: "/bulbasaur.ivysaur/Me",
+                path: "/bulbasaur.Ivysaur/Me",
                 requestStream: false,
                 responseStream: false,
                 requestSerialize: (message: dependency_1.google.protobuf.Empty) => Buffer.from(message.serialize()),
@@ -2621,7 +2621,7 @@ export namespace bulbasaur {
                 responseDeserialize: (bytes: Buffer) => MeResponse.deserialize(new Uint8Array(bytes))
             },
             ChangePassword: {
-                path: "/bulbasaur.ivysaur/ChangePassword",
+                path: "/bulbasaur.Ivysaur/ChangePassword",
                 requestStream: false,
                 responseStream: false,
                 requestSerialize: (message: ChangePasswordRequest) => Buffer.from(message.serialize()),
@@ -2635,7 +2635,7 @@ export namespace bulbasaur {
         abstract Me(call: grpc_1.ServerUnaryCall<dependency_1.google.protobuf.Empty, MeResponse>, callback: grpc_1.sendUnaryData<MeResponse>): void;
         abstract ChangePassword(call: grpc_1.ServerUnaryCall<ChangePasswordRequest, dependency_1.google.protobuf.Empty>, callback: grpc_1.sendUnaryData<dependency_1.google.protobuf.Empty>): void;
     }
-    export class ivysaurClient {
+    export class IvysaurClient {
         private _address: string;
         private _client: grpc_web_1.GrpcWebClientBase;
         constructor(address: string, credentials?: Object, options?: grpc_web_1.GrpcWebClientBaseOptions) {
@@ -2645,17 +2645,17 @@ export namespace bulbasaur {
             this._address = address;
             this._client = new grpc_web_1.GrpcWebClientBase(options);
         }
-        private static UpdateMetadata = new grpc_web_1.MethodDescriptor<UpdateMetadataRequest, dependency_1.google.protobuf.Empty>("/bulbasaur.ivysaur/UpdateMetadata", grpc_web_1.MethodType.UNARY, UpdateMetadataRequest, dependency_1.google.protobuf.Empty, (message: UpdateMetadataRequest) => message.serialize(), dependency_1.google.protobuf.Empty.deserialize);
+        private static UpdateMetadata = new grpc_web_1.MethodDescriptor<UpdateMetadataRequest, dependency_1.google.protobuf.Empty>("/bulbasaur.Ivysaur/UpdateMetadata", grpc_web_1.MethodType.UNARY, UpdateMetadataRequest, dependency_1.google.protobuf.Empty, (message: UpdateMetadataRequest) => message.serialize(), dependency_1.google.protobuf.Empty.deserialize);
         UpdateMetadata(message: UpdateMetadataRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: dependency_1.google.protobuf.Empty) => void) {
-            return this._client.rpcCall<UpdateMetadataRequest, dependency_1.google.protobuf.Empty>(this._address + "/bulbasaur.ivysaur/UpdateMetadata", message, metadata || {}, ivysaurClient.UpdateMetadata, callback);
+            return this._client.rpcCall<UpdateMetadataRequest, dependency_1.google.protobuf.Empty>(this._address + "/bulbasaur.Ivysaur/UpdateMetadata", message, metadata || {}, IvysaurClient.UpdateMetadata, callback);
         }
-        private static Me = new grpc_web_1.MethodDescriptor<dependency_1.google.protobuf.Empty, MeResponse>("/bulbasaur.ivysaur/Me", grpc_web_1.MethodType.UNARY, dependency_1.google.protobuf.Empty, MeResponse, (message: dependency_1.google.protobuf.Empty) => message.serialize(), MeResponse.deserialize);
+        private static Me = new grpc_web_1.MethodDescriptor<dependency_1.google.protobuf.Empty, MeResponse>("/bulbasaur.Ivysaur/Me", grpc_web_1.MethodType.UNARY, dependency_1.google.protobuf.Empty, MeResponse, (message: dependency_1.google.protobuf.Empty) => message.serialize(), MeResponse.deserialize);
         Me(message: dependency_1.google.protobuf.Empty, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: MeResponse) => void) {
-            return this._client.rpcCall<dependency_1.google.protobuf.Empty, MeResponse>(this._address + "/bulbasaur.ivysaur/Me", message, metadata || {}, ivysaurClient.Me, callback);
+            return this._client.rpcCall<dependency_1.google.protobuf.Empty, MeResponse>(this._address + "/bulbasaur.Ivysaur/Me", message, metadata || {}, IvysaurClient.Me, callback);
         }
-        private static ChangePassword = new grpc_web_1.MethodDescriptor<ChangePasswordRequest, dependency_1.google.protobuf.Empty>("/bulbasaur.ivysaur/ChangePassword", grpc_web_1.MethodType.UNARY, ChangePasswordRequest, dependency_1.google.protobuf.Empty, (message: ChangePasswordRequest) => message.serialize(), dependency_1.google.protobuf.Empty.deserialize);
+        private static ChangePassword = new grpc_web_1.MethodDescriptor<ChangePasswordRequest, dependency_1.google.protobuf.Empty>("/bulbasaur.Ivysaur/ChangePassword", grpc_web_1.MethodType.UNARY, ChangePasswordRequest, dependency_1.google.protobuf.Empty, (message: ChangePasswordRequest) => message.serialize(), dependency_1.google.protobuf.Empty.deserialize);
         ChangePassword(message: ChangePasswordRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: dependency_1.google.protobuf.Empty) => void) {
-            return this._client.rpcCall<ChangePasswordRequest, dependency_1.google.protobuf.Empty>(this._address + "/bulbasaur.ivysaur/ChangePassword", message, metadata || {}, ivysaurClient.ChangePassword, callback);
+            return this._client.rpcCall<ChangePasswordRequest, dependency_1.google.protobuf.Empty>(this._address + "/bulbasaur.Ivysaur/ChangePassword", message, metadata || {}, IvysaurClient.ChangePassword, callback);
         }
     }
 }
