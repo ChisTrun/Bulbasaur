@@ -37,6 +37,7 @@ type UserFeature interface {
 	ResetCodeVerification(ctx context.Context, request *bulbasaur.ResetCodeVerificationRequest) (*bulbasaur.ResetCodeVerificationResponse, error)
 	GenerateResetCode(ctx context.Context, request *bulbasaur.GenerateResetCodeRequest) error
 	ResetPassword(ctx context.Context, request *bulbasaur.ResetPasswordRequest) error
+	FindUserByName(ctx context.Context, request *bulbasaur.FindUserByNameRequest) (*bulbasaur.FindUserByNameResponse, error)
 }
 
 type userFeature struct {
@@ -519,4 +520,26 @@ func (u *userFeature) ChangePassword(ctx context.Context, request *bulbasaur.Cha
 	return tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
 		return u.repo.UserRepository.UpdatePassword(ctx, tx, tenantId, user.Email, request.GetNewPassword())
 	})
+}
+
+func (u *userFeature) FindUserByName(ctx context.Context, request *bulbasaur.FindUserByNameRequest) (*bulbasaur.FindUserByNameResponse, error) {
+	searchName := request.GetName()
+
+	if searchName == "" {
+		return nil, fmt.Errorf("username cannot be empty")
+	}
+
+	users, err := u.repo.UserRepository.GetUserByName(ctx, searchName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find users: %w", err)
+	}
+
+	var userIDs []uint64
+	for _, user := range users {
+		userIDs = append(userIDs, uint64(user.ID))
+	}
+
+	return &bulbasaur.FindUserByNameResponse{
+		Ids: userIDs,
+	}, nil
 }

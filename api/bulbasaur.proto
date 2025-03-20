@@ -63,6 +63,13 @@ service Bulbasaur {
       body: "*"
     };
   };
+
+  rpc FindUserByName (FindUserByNameRequest) returns (FindUserByNameResponse) {
+    option (google.api.http) = {
+      post: "/bulbasaur/account/finduserbyname"
+      body: "*"
+    };
+  };
 }
 
 service Ivysaur {
@@ -228,4 +235,12 @@ message ChangePasswordRequest {
   string oldPassword = 1;
   string newPassword = 2;
   string confirmNewPassword = 3;
+}
+
+message FindUserByNameRequest {
+  string name = 1;
+}
+
+message FindUserByNameResponse {
+  repeated uint64 ids = 1;
 }

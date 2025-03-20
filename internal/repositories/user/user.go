@@ -11,11 +11,13 @@ import (
 	"context"
 	"fmt"
 
+	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 )
 
 type UserRepository interface {
 	GetUserBySafeID(ctx context.Context, safeId string) (*ent.User, error)
+	GetUserByName(ctx context.Context, name string) ([]*ent.User, error)
 
 	// user local
 	CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword, email string, metadata *bulbasaur.Metadata, role bulbasaur.Role) (*ent.User, error)
@@ -191,4 +193,21 @@ func (u *userRepository) UpdatePassword(ctx context.Context, tx tx.Tx, tenantId,
 	}
 
 	return nil
+}
+
+func (u *userRepository) GetUserByName(ctx context.Context, name string) ([]*ent.User, error) {
+	predicate := func(s *sql.Selector) {
+		s.Where(sql.ExprP("metadata->>'fullname' ILIKE ?", "%"+name+"%"))
+	}
+
+	users, err := u.ent.User.Query().
+		Where().
+		Modify(predicate).
+		All(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to get users by name: %w", err)
+	}
+
+	return users, nil
 }

@@ -2530,6 +2530,212 @@ var _ interface {
 	ErrorName() string
 } = ChangePasswordRequestValidationError{}
 
+// Validate checks the field values on FindUserByNameRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *FindUserByNameRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on FindUserByNameRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// FindUserByNameRequestMultiError, or nil if none found.
+func (m *FindUserByNameRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FindUserByNameRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Name
+
+	if len(errors) > 0 {
+		return FindUserByNameRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// FindUserByNameRequestMultiError is an error wrapping multiple validation
+// errors returned by FindUserByNameRequest.ValidateAll() if the designated
+// constraints aren't met.
+type FindUserByNameRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FindUserByNameRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FindUserByNameRequestMultiError) AllErrors() []error { return m }
+
+// FindUserByNameRequestValidationError is the validation error returned by
+// FindUserByNameRequest.Validate if the designated constraints aren't met.
+type FindUserByNameRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FindUserByNameRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e FindUserByNameRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e FindUserByNameRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e FindUserByNameRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e FindUserByNameRequestValidationError) ErrorName() string {
+	return "FindUserByNameRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e FindUserByNameRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFindUserByNameRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FindUserByNameRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FindUserByNameRequestValidationError{}
+
+// Validate checks the field values on FindUserByNameResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *FindUserByNameResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on FindUserByNameResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// FindUserByNameResponseMultiError, or nil if none found.
+func (m *FindUserByNameResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FindUserByNameResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return FindUserByNameResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// FindUserByNameResponseMultiError is an error wrapping multiple validation
+// errors returned by FindUserByNameResponse.ValidateAll() if the designated
+// constraints aren't met.
+type FindUserByNameResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FindUserByNameResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FindUserByNameResponseMultiError) AllErrors() []error { return m }
+
+// FindUserByNameResponseValidationError is the validation error returned by
+// FindUserByNameResponse.Validate if the designated constraints aren't met.
+type FindUserByNameResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FindUserByNameResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e FindUserByNameResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e FindUserByNameResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e FindUserByNameResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e FindUserByNameResponseValidationError) ErrorName() string {
+	return "FindUserByNameResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e FindUserByNameResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFindUserByNameResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FindUserByNameResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FindUserByNameResponseValidationError{}
+
 // Validate checks the field values on SignUpRequest_Local with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
