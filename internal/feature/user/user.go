@@ -524,12 +524,13 @@ func (u *userFeature) ChangePassword(ctx context.Context, request *bulbasaur.Cha
 
 func (u *userFeature) FindUserByName(ctx context.Context, request *bulbasaur.FindUserByNameRequest) (*bulbasaur.FindUserByNameResponse, error) {
 	searchName := request.GetName()
+	roles := request.GetRoles()
 
 	if searchName == "" {
-		return nil, fmt.Errorf("username cannot be empty")
+		return nil, fmt.Errorf("name cannot be empty")
 	}
 
-	users, err := u.repo.UserRepository.GetUserByName(ctx, searchName)
+	users, err := u.repo.UserRepository.GetUserByName(ctx, searchName, roles)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find users: %w", err)
 	}

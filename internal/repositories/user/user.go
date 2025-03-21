@@ -17,7 +17,7 @@ import (
 
 type UserRepository interface {
 	GetUserBySafeID(ctx context.Context, safeId string) (*ent.User, error)
-	GetUserByName(ctx context.Context, name string) ([]*ent.User, error)
+	GetUserByName(ctx context.Context, name string, roles []bulbasaur.Role) ([]*ent.User, error)
 
 	// user local
 	CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword, email string, metadata *bulbasaur.Metadata, role bulbasaur.Role) (*ent.User, error)
@@ -195,9 +195,17 @@ func (u *userRepository) UpdatePassword(ctx context.Context, tx tx.Tx, tenantId,
 	return nil
 }
 
-func (u *userRepository) GetUserByName(ctx context.Context, name string) ([]*ent.User, error) {
+func (u *userRepository) GetUserByName(ctx context.Context, name string, roles []bulbasaur.Role) ([]*ent.User, error) {
 	predicate := func(s *sql.Selector) {
-		s.Where(sql.ExprP("metadata->>'fullname' ILIKE ?", "%"+name+"%"))
+		s.Where(sql.ExprP("LOWER(JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.fullname'))) LIKE LOWER(?)", "%"+name+"%"))
+
+		if len(roles) > 0 {
+			roleValues := make([]interface{}, len(roles))
+			for i, role := range roles {
+				roleValues[i] = role
+			}
+			s.Where(sql.In("role", roleValues...))
+		}
 	}
 
 	users, err := u.ent.User.Query().

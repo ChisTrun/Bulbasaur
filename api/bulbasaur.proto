@@ -239,6 +239,7 @@ message ChangePasswordRequest {
 
 message FindUserByNameRequest {
   string name = 1;
+  repeated Role roles = 2;
 }
 
 message FindUserByNameResponse {
