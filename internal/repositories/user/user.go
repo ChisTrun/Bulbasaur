@@ -151,7 +151,7 @@ func (u *userRepository) GetGoogle(ctx context.Context, tx tx.Tx, tenantId, emai
 }
 
 func (u *userRepository) List(ctx context.Context, userIds []uint64) ([]*ent.User, error) {
-	return u.ent.User.Query().Where(user.IDIn(userIds...)).All(ctx)
+	return u.ent.User.Query().Where(user.IDIn(userIds...)).WithLocal().All(ctx)
 }
 
 func (u *userRepository) IsEmailExists(ctx context.Context, tx tx.Tx, email string) (bool, error) {

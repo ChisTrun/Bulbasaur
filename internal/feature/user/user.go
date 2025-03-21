@@ -331,6 +331,7 @@ func (u *userFeature) ListUser(ctx context.Context, request *bulbasaur.ListUsers
 			Email:    entUser.Email,
 			Metadata: entUser.Metadata,
 			Role:     entUser.Role,
+			Id:       entUser.ID,
 		}
 		if entUser.Edges.Local != nil {
 			mss.Username = entUser.Edges.Local.Username
