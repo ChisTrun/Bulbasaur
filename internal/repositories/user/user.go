@@ -22,6 +22,7 @@ type UserRepository interface {
 	// user local
 	CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword, email string, metadata *bulbasaur.Metadata, role bulbasaur.Role) (*ent.User, error)
 	GetLocal(ctx context.Context, tx tx.Tx, email, username, password string) (*ent.User, error)
+	GetLocalByEmail(ctx context.Context, tx tx.Tx, tenantId, email, password string) (*ent.User, error)
 
 	// user google
 	CreateGoogle(ctx context.Context, tx tx.Tx, tenantId, email, fullname, avatarPath string, role bulbasaur.Role) (*ent.User, error)
@@ -91,6 +92,28 @@ func (u *userRepository) GetLocal(ctx context.Context, tx tx.Tx, tenantId, usern
 			user.HasLocalWith(
 				local.TenantID(tenantId),
 				local.Username(username),
+			),
+		).
+		WithLocal().
+		Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if ok := hash.CheckPasswordHash(hash.CreateInput([]string{tenantId, password}), user.Edges.Local.Password); !ok {
+		return nil, fmt.Errorf("incorrect password")
+	}
+
+	return user, nil
+}
+
+func (u *userRepository) GetLocalByEmail(ctx context.Context, tx tx.Tx, tenantId, email, password string) (*ent.User, error) {
+	user, err := tx.Client().User.Query().
+		Where(
+			user.TenantID(tenantId),
+			user.Email(email),
+			user.HasLocalWith(
+				local.TenantID(tenantId),
 			),
 		).
 		WithLocal().

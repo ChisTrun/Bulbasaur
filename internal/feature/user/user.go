@@ -80,7 +80,7 @@ func (u *userFeature) SignIn(ctx context.Context, request *bulbasaur.SignInReque
 	switch request.Credential.(type) {
 	case *bulbasaur.SignInRequest_Local_:
 		if txErr := tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
-			user, err = u.repo.UserRepository.GetLocal(ctx, tx, tenantId, request.GetLocal().GetUsername(), request.GetLocal().GetPassword())
+			user, err = u.repo.UserRepository.GetLocalByEmail(ctx, tx, tenantId, request.GetLocal().GetEmail(), request.GetLocal().GetPassword())
 			return err
 		}); txErr != nil {
 			return nil, txErr

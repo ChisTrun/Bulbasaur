@@ -175,7 +175,7 @@ message SignInRequest {
   optional string device_name = 4;
 
   message Local {
-      string username = 1;
+      string email = 1;
       string password = 2;
   }
 
