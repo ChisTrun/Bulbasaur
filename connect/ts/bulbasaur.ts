@@ -2472,6 +2472,163 @@ export namespace bulbasaur {
             return ChangePasswordRequest.deserialize(bytes);
         }
     }
+    export class FindUserByNameRequest extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            name?: string;
+            roles?: Role[];
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [2], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("name" in data && data.name != undefined) {
+                    this.name = data.name;
+                }
+                if ("roles" in data && data.roles != undefined) {
+                    this.roles = data.roles;
+                }
+            }
+        }
+        get name() {
+            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        }
+        set name(value: string) {
+            pb_1.Message.setField(this, 1, value);
+        }
+        get roles() {
+            return pb_1.Message.getFieldWithDefault(this, 2, []) as Role[];
+        }
+        set roles(value: Role[]) {
+            pb_1.Message.setField(this, 2, value);
+        }
+        static fromObject(data: {
+            name?: string;
+            roles?: Role[];
+        }): FindUserByNameRequest {
+            const message = new FindUserByNameRequest({});
+            if (data.name != null) {
+                message.name = data.name;
+            }
+            if (data.roles != null) {
+                message.roles = data.roles;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                name?: string;
+                roles?: Role[];
+            } = {};
+            if (this.name != null) {
+                data.name = this.name;
+            }
+            if (this.roles != null) {
+                data.roles = this.roles;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.name.length)
+                writer.writeString(1, this.name);
+            if (this.roles.length)
+                writer.writePackedEnum(2, this.roles);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): FindUserByNameRequest {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new FindUserByNameRequest();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        message.name = reader.readString();
+                        break;
+                    case 2:
+                        message.roles = reader.readPackedEnum();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): FindUserByNameRequest {
+            return FindUserByNameRequest.deserialize(bytes);
+        }
+    }
+    export class FindUserByNameResponse extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            ids?: number[];
+        }) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("ids" in data && data.ids != undefined) {
+                    this.ids = data.ids;
+                }
+            }
+        }
+        get ids() {
+            return pb_1.Message.getFieldWithDefault(this, 1, []) as number[];
+        }
+        set ids(value: number[]) {
+            pb_1.Message.setField(this, 1, value);
+        }
+        static fromObject(data: {
+            ids?: number[];
+        }): FindUserByNameResponse {
+            const message = new FindUserByNameResponse({});
+            if (data.ids != null) {
+                message.ids = data.ids;
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                ids?: number[];
+            } = {};
+            if (this.ids != null) {
+                data.ids = this.ids;
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.ids.length)
+                writer.writePackedUint64(1, this.ids);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): FindUserByNameResponse {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new FindUserByNameResponse();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        message.ids = reader.readPackedUint64();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): FindUserByNameResponse {
+            return FindUserByNameResponse.deserialize(bytes);
+        }
+    }
     export abstract class UnimplementedBulbasaurService {
         static definition = {
             SignUp: {
@@ -2545,6 +2702,15 @@ export namespace bulbasaur {
                 requestDeserialize: (bytes: Buffer) => ResetPasswordRequest.deserialize(new Uint8Array(bytes)),
                 responseSerialize: (message: dependency_1.google.protobuf.Empty) => Buffer.from(message.serialize()),
                 responseDeserialize: (bytes: Buffer) => dependency_1.google.protobuf.Empty.deserialize(new Uint8Array(bytes))
+            },
+            FindUserByName: {
+                path: "/bulbasaur.Bulbasaur/FindUserByName",
+                requestStream: false,
+                responseStream: false,
+                requestSerialize: (message: FindUserByNameRequest) => Buffer.from(message.serialize()),
+                requestDeserialize: (bytes: Buffer) => FindUserByNameRequest.deserialize(new Uint8Array(bytes)),
+                responseSerialize: (message: FindUserByNameResponse) => Buffer.from(message.serialize()),
+                responseDeserialize: (bytes: Buffer) => FindUserByNameResponse.deserialize(new Uint8Array(bytes))
             }
         };
         [method: string]: grpc_1.UntypedHandleCall;
@@ -2556,6 +2722,7 @@ export namespace bulbasaur {
         abstract ResetCodeVerification(call: grpc_1.ServerUnaryCall<ResetCodeVerificationRequest, ResetCodeVerificationResponse>, callback: grpc_1.sendUnaryData<ResetCodeVerificationResponse>): void;
         abstract GenerateResetCode(call: grpc_1.ServerUnaryCall<GenerateResetCodeRequest, dependency_1.google.protobuf.Empty>, callback: grpc_1.sendUnaryData<dependency_1.google.protobuf.Empty>): void;
         abstract ResetPassword(call: grpc_1.ServerUnaryCall<ResetPasswordRequest, dependency_1.google.protobuf.Empty>, callback: grpc_1.sendUnaryData<dependency_1.google.protobuf.Empty>): void;
+        abstract FindUserByName(call: grpc_1.ServerUnaryCall<FindUserByNameRequest, FindUserByNameResponse>, callback: grpc_1.sendUnaryData<FindUserByNameResponse>): void;
     }
     export class BulbasaurClient {
         private _address: string;
@@ -2598,6 +2765,10 @@ export namespace bulbasaur {
         private static ResetPassword = new grpc_web_1.MethodDescriptor<ResetPasswordRequest, dependency_1.google.protobuf.Empty>("/bulbasaur.Bulbasaur/ResetPassword", grpc_web_1.MethodType.UNARY, ResetPasswordRequest, dependency_1.google.protobuf.Empty, (message: ResetPasswordRequest) => message.serialize(), dependency_1.google.protobuf.Empty.deserialize);
         ResetPassword(message: ResetPasswordRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: dependency_1.google.protobuf.Empty) => void) {
             return this._client.rpcCall<ResetPasswordRequest, dependency_1.google.protobuf.Empty>(this._address + "/bulbasaur.Bulbasaur/ResetPassword", message, metadata || {}, BulbasaurClient.ResetPassword, callback);
+        }
+        private static FindUserByName = new grpc_web_1.MethodDescriptor<FindUserByNameRequest, FindUserByNameResponse>("/bulbasaur.Bulbasaur/FindUserByName", grpc_web_1.MethodType.UNARY, FindUserByNameRequest, FindUserByNameResponse, (message: FindUserByNameRequest) => message.serialize(), FindUserByNameResponse.deserialize);
+        FindUserByName(message: FindUserByNameRequest, metadata: grpc_web_1.Metadata | null, callback: (error: grpc_web_1.RpcError, response: FindUserByNameResponse) => void) {
+            return this._client.rpcCall<FindUserByNameRequest, FindUserByNameResponse>(this._address + "/bulbasaur.Bulbasaur/FindUserByName", message, metadata || {}, BulbasaurClient.FindUserByName, callback);
         }
     }
     export abstract class UnimplementedIvysaurService {
