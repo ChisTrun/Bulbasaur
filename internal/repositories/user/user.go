@@ -111,7 +111,12 @@ func (u *userRepository) GetLocalByEmail(ctx context.Context, tx tx.Tx, tenantId
 	user, err := tx.Client().User.Query().
 		Where(
 			user.TenantID(tenantId),
-			user.Email(email),
+			user.Or(
+				user.Email(email),
+				user.HasLocalWith(
+					local.Username(email),
+				),
+			),
 			user.HasLocalWith(
 				local.TenantID(tenantId),
 			),
