@@ -330,7 +330,7 @@ func RegisterBulbasaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, 
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/SignUp", runtime.WithHTTPPathPattern("/bulbasaur/account/register"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/SignUp", runtime.WithHTTPPathPattern("/bulbasaur/register"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -350,7 +350,7 @@ func RegisterBulbasaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, 
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/SignIn", runtime.WithHTTPPathPattern("/bulbasaur/account/login"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/SignIn", runtime.WithHTTPPathPattern("/bulbasaur/login"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -370,7 +370,7 @@ func RegisterBulbasaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, 
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/RefreshToken", runtime.WithHTTPPathPattern("/bulbasaur/account/refresh"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/RefreshToken", runtime.WithHTTPPathPattern("/bulbasaur/refresh"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -390,7 +390,7 @@ func RegisterBulbasaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, 
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/ListUsers", runtime.WithHTTPPathPattern("/bulbasaur/account/list"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/ListUsers", runtime.WithHTTPPathPattern("/bulbasaur/list"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -410,7 +410,7 @@ func RegisterBulbasaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, 
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/EmailVerification", runtime.WithHTTPPathPattern("/bulbasaur/account/verify/email"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/EmailVerification", runtime.WithHTTPPathPattern("/bulbasaur/verify/email"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -430,7 +430,7 @@ func RegisterBulbasaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, 
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/ResetCodeVerification", runtime.WithHTTPPathPattern("/bulbasaur/account/verify/resetcode"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/ResetCodeVerification", runtime.WithHTTPPathPattern("/bulbasaur/verify/resetcode"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -450,7 +450,7 @@ func RegisterBulbasaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, 
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/GenerateResetCode", runtime.WithHTTPPathPattern("/bulbasaur/account/generate/resetcode"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/GenerateResetCode", runtime.WithHTTPPathPattern("/bulbasaur/generate/resetcode"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -470,7 +470,7 @@ func RegisterBulbasaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, 
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/ResetPassword", runtime.WithHTTPPathPattern("/bulbasaur/account/resetpassword"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/ResetPassword", runtime.WithHTTPPathPattern("/bulbasaur/resetpassword"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -490,7 +490,7 @@ func RegisterBulbasaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, 
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/FindUserByName", runtime.WithHTTPPathPattern("/bulbasaur/account/finduserbyname"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/FindUserByName", runtime.WithHTTPPathPattern("/bulbasaur/finduserbyname"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -520,7 +520,7 @@ func RegisterIvysaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Ivysaur/UpdateMetadata", runtime.WithHTTPPathPattern("/ivysaur/account/update"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Ivysaur/UpdateMetadata", runtime.WithHTTPPathPattern("/ivysaur/update"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -540,7 +540,7 @@ func RegisterIvysaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Ivysaur/Me", runtime.WithHTTPPathPattern("/ivysaur/account/me"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Ivysaur/Me", runtime.WithHTTPPathPattern("/ivysaur/me"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -560,7 +560,7 @@ func RegisterIvysaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Ivysaur/ChangePassword", runtime.WithHTTPPathPattern("/ivysaur/account/changepassword"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Ivysaur/ChangePassword", runtime.WithHTTPPathPattern("/ivysaur/changepassword"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -618,7 +618,7 @@ func RegisterBulbasaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, 
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/SignUp", runtime.WithHTTPPathPattern("/bulbasaur/account/register"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/SignUp", runtime.WithHTTPPathPattern("/bulbasaur/register"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -635,7 +635,7 @@ func RegisterBulbasaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, 
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/SignIn", runtime.WithHTTPPathPattern("/bulbasaur/account/login"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/SignIn", runtime.WithHTTPPathPattern("/bulbasaur/login"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -652,7 +652,7 @@ func RegisterBulbasaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, 
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/RefreshToken", runtime.WithHTTPPathPattern("/bulbasaur/account/refresh"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/RefreshToken", runtime.WithHTTPPathPattern("/bulbasaur/refresh"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -669,7 +669,7 @@ func RegisterBulbasaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, 
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/ListUsers", runtime.WithHTTPPathPattern("/bulbasaur/account/list"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/ListUsers", runtime.WithHTTPPathPattern("/bulbasaur/list"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -686,7 +686,7 @@ func RegisterBulbasaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, 
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/EmailVerification", runtime.WithHTTPPathPattern("/bulbasaur/account/verify/email"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/EmailVerification", runtime.WithHTTPPathPattern("/bulbasaur/verify/email"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -703,7 +703,7 @@ func RegisterBulbasaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, 
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/ResetCodeVerification", runtime.WithHTTPPathPattern("/bulbasaur/account/verify/resetcode"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/ResetCodeVerification", runtime.WithHTTPPathPattern("/bulbasaur/verify/resetcode"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -720,7 +720,7 @@ func RegisterBulbasaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, 
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/GenerateResetCode", runtime.WithHTTPPathPattern("/bulbasaur/account/generate/resetcode"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/GenerateResetCode", runtime.WithHTTPPathPattern("/bulbasaur/generate/resetcode"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -737,7 +737,7 @@ func RegisterBulbasaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, 
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/ResetPassword", runtime.WithHTTPPathPattern("/bulbasaur/account/resetpassword"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/ResetPassword", runtime.WithHTTPPathPattern("/bulbasaur/resetpassword"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -754,7 +754,7 @@ func RegisterBulbasaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, 
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/FindUserByName", runtime.WithHTTPPathPattern("/bulbasaur/account/finduserbyname"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/FindUserByName", runtime.WithHTTPPathPattern("/bulbasaur/finduserbyname"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -771,15 +771,15 @@ func RegisterBulbasaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, 
 }
 
 var (
-	pattern_Bulbasaur_SignUp_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"bulbasaur", "account", "register"}, ""))
-	pattern_Bulbasaur_SignIn_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"bulbasaur", "account", "login"}, ""))
-	pattern_Bulbasaur_RefreshToken_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"bulbasaur", "account", "refresh"}, ""))
-	pattern_Bulbasaur_ListUsers_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"bulbasaur", "account", "list"}, ""))
-	pattern_Bulbasaur_EmailVerification_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"bulbasaur", "account", "verify", "email"}, ""))
-	pattern_Bulbasaur_ResetCodeVerification_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"bulbasaur", "account", "verify", "resetcode"}, ""))
-	pattern_Bulbasaur_GenerateResetCode_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"bulbasaur", "account", "generate", "resetcode"}, ""))
-	pattern_Bulbasaur_ResetPassword_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"bulbasaur", "account", "resetpassword"}, ""))
-	pattern_Bulbasaur_FindUserByName_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"bulbasaur", "account", "finduserbyname"}, ""))
+	pattern_Bulbasaur_SignUp_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"bulbasaur", "register"}, ""))
+	pattern_Bulbasaur_SignIn_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"bulbasaur", "login"}, ""))
+	pattern_Bulbasaur_RefreshToken_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"bulbasaur", "refresh"}, ""))
+	pattern_Bulbasaur_ListUsers_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"bulbasaur", "list"}, ""))
+	pattern_Bulbasaur_EmailVerification_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"bulbasaur", "verify", "email"}, ""))
+	pattern_Bulbasaur_ResetCodeVerification_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"bulbasaur", "verify", "resetcode"}, ""))
+	pattern_Bulbasaur_GenerateResetCode_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"bulbasaur", "generate", "resetcode"}, ""))
+	pattern_Bulbasaur_ResetPassword_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"bulbasaur", "resetpassword"}, ""))
+	pattern_Bulbasaur_FindUserByName_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"bulbasaur", "finduserbyname"}, ""))
 )
 
 var (
@@ -834,7 +834,7 @@ func RegisterIvysaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Ivysaur/UpdateMetadata", runtime.WithHTTPPathPattern("/ivysaur/account/update"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Ivysaur/UpdateMetadata", runtime.WithHTTPPathPattern("/ivysaur/update"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -851,7 +851,7 @@ func RegisterIvysaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Ivysaur/Me", runtime.WithHTTPPathPattern("/ivysaur/account/me"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Ivysaur/Me", runtime.WithHTTPPathPattern("/ivysaur/me"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -868,7 +868,7 @@ func RegisterIvysaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Ivysaur/ChangePassword", runtime.WithHTTPPathPattern("/ivysaur/account/changepassword"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Ivysaur/ChangePassword", runtime.WithHTTPPathPattern("/ivysaur/changepassword"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -885,9 +885,9 @@ func RegisterIvysaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 }
 
 var (
-	pattern_Ivysaur_UpdateMetadata_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"ivysaur", "account", "update"}, ""))
-	pattern_Ivysaur_Me_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"ivysaur", "account", "me"}, ""))
-	pattern_Ivysaur_ChangePassword_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"ivysaur", "account", "changepassword"}, ""))
+	pattern_Ivysaur_UpdateMetadata_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "update"}, ""))
+	pattern_Ivysaur_Me_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "me"}, ""))
+	pattern_Ivysaur_ChangePassword_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "changepassword"}, ""))
 )
 
 var (

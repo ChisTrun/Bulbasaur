@@ -1294,24 +1294,24 @@ export namespace bulbasaur {
         export class Local extends pb_1.Message {
             #one_of_decls: number[][] = [];
             constructor(data?: any[] | {
-                username?: string;
+                email?: string;
                 password?: string;
             }) {
                 super();
                 pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
                 if (!Array.isArray(data) && typeof data == "object") {
-                    if ("username" in data && data.username != undefined) {
-                        this.username = data.username;
+                    if ("email" in data && data.email != undefined) {
+                        this.email = data.email;
                     }
                     if ("password" in data && data.password != undefined) {
                         this.password = data.password;
                     }
                 }
             }
-            get username() {
+            get email() {
                 return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
             }
-            set username(value: string) {
+            set email(value: string) {
                 pb_1.Message.setField(this, 1, value);
             }
             get password() {
@@ -1321,12 +1321,12 @@ export namespace bulbasaur {
                 pb_1.Message.setField(this, 2, value);
             }
             static fromObject(data: {
-                username?: string;
+                email?: string;
                 password?: string;
             }): Local {
                 const message = new Local({});
-                if (data.username != null) {
-                    message.username = data.username;
+                if (data.email != null) {
+                    message.email = data.email;
                 }
                 if (data.password != null) {
                     message.password = data.password;
@@ -1335,11 +1335,11 @@ export namespace bulbasaur {
             }
             toObject() {
                 const data: {
-                    username?: string;
+                    email?: string;
                     password?: string;
                 } = {};
-                if (this.username != null) {
-                    data.username = this.username;
+                if (this.email != null) {
+                    data.email = this.email;
                 }
                 if (this.password != null) {
                     data.password = this.password;
@@ -1350,8 +1350,8 @@ export namespace bulbasaur {
             serialize(w: pb_1.BinaryWriter): void;
             serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
                 const writer = w || new pb_1.BinaryWriter();
-                if (this.username.length)
-                    writer.writeString(1, this.username);
+                if (this.email.length)
+                    writer.writeString(1, this.email);
                 if (this.password.length)
                     writer.writeString(2, this.password);
                 if (!w)
@@ -1364,7 +1364,7 @@ export namespace bulbasaur {
                         break;
                     switch (reader.getFieldNumber()) {
                         case 1:
-                            message.username = reader.readString();
+                            message.email = reader.readString();
                             break;
                         case 2:
                             message.password = reader.readString();

@@ -10,63 +10,63 @@ import "google/api/annotations.proto";
 service Bulbasaur {
   rpc SignUp (SignUpRequest) returns (SignUpResponse) {
     option (google.api.http) = {
-      post: "/bulbasaur/account/register"
+      post: "/bulbasaur/register"
       body: "*"
     };
   };
 
   rpc SignIn (SignInRequest) returns (SignInResponse) {
     option (google.api.http) = {
-      post: "/bulbasaur/account/login"
+      post: "/bulbasaur/login"
       body: "*"
     };
   };
 
   rpc RefreshToken (RefreshTokenRequest) returns (RefreshTokenResponse) {
     option (google.api.http) = {
-      post: "/bulbasaur/account/refresh"
+      post: "/bulbasaur/refresh"
       body: "*"
     };
   };
 
   rpc ListUsers (ListUsersRequest) returns (ListUsersResponse) {
     option (google.api.http) = {
-      post: "/bulbasaur/account/list"
+      post: "/bulbasaur/list"
       body: "*"
     };
   };
 
   rpc EmailVerification (EmailVerificationRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/bulbasaur/account/verify/email"
+      post: "/bulbasaur/verify/email"
       body: "*"
     };
   };
 
   rpc ResetCodeVerification (ResetCodeVerificationRequest) returns (ResetCodeVerificationResponse) {
     option (google.api.http) = {
-      post: "/bulbasaur/account/verify/resetcode"
+      post: "/bulbasaur/verify/resetcode"
       body: "*"
     };
   };
 
   rpc GenerateResetCode (GenerateResetCodeRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/bulbasaur/account/generate/resetcode"
+      post: "/bulbasaur/generate/resetcode"
       body: "*"
     };
   };
 
   rpc ResetPassword (ResetPasswordRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/bulbasaur/account/resetpassword"
+      post: "/bulbasaur/resetpassword"
       body: "*"
     };
   };
 
   rpc FindUserByName (FindUserByNameRequest) returns (FindUserByNameResponse) {
     option (google.api.http) = {
-      post: "/bulbasaur/account/finduserbyname"
+      post: "/bulbasaur/finduserbyname"
       body: "*"
     };
   };
@@ -75,20 +75,20 @@ service Bulbasaur {
 service Ivysaur {
   rpc UpdateMetadata (UpdateMetadataRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/ivysaur/account/update"
+      post: "/ivysaur/update"
       body: "*"
     };
   };
 
   rpc Me (google.protobuf.Empty) returns (MeResponse) {
     option (google.api.http) = {
-      get: "/ivysaur/account/me"
+      get: "/ivysaur/me"
     };
   };
 
   rpc ChangePassword (ChangePasswordRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/ivysaur/account/changepassword"
+      post: "/ivysaur/changepassword"
       body: "*"
     };
   };
