@@ -318,6 +318,24 @@ func local_request_Ivysaur_ChangePassword_0(ctx context.Context, marshaler runti
 	return msg, metadata, err
 }
 
+func request_Ivysaur_LogOut_0(ctx context.Context, marshaler runtime.Marshaler, client IvysaurClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq emptypb.Empty
+		metadata runtime.ServerMetadata
+	)
+	msg, err := client.LogOut(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_Ivysaur_LogOut_0(ctx context.Context, marshaler runtime.Marshaler, server IvysaurServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq emptypb.Empty
+		metadata runtime.ServerMetadata
+	)
+	msg, err := server.LogOut(ctx, &protoReq)
+	return msg, metadata, err
+}
+
 // RegisterBulbasaurHandlerServer registers the http handlers for service Bulbasaur to "mux".
 // UnaryRPC     :call BulbasaurServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
@@ -573,6 +591,26 @@ func RegisterIvysaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 			return
 		}
 		forward_Ivysaur_ChangePassword_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_Ivysaur_LogOut_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Ivysaur/LogOut", runtime.WithHTTPPathPattern("/ivysaur/logout"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_Ivysaur_LogOut_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Ivysaur_LogOut_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 
 	return nil
@@ -881,6 +919,23 @@ func RegisterIvysaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		}
 		forward_Ivysaur_ChangePassword_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodGet, pattern_Ivysaur_LogOut_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Ivysaur/LogOut", runtime.WithHTTPPathPattern("/ivysaur/logout"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Ivysaur_LogOut_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Ivysaur_LogOut_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	return nil
 }
 
@@ -888,10 +943,12 @@ var (
 	pattern_Ivysaur_UpdateMetadata_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "update"}, ""))
 	pattern_Ivysaur_Me_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "me"}, ""))
 	pattern_Ivysaur_ChangePassword_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "changepassword"}, ""))
+	pattern_Ivysaur_LogOut_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "logout"}, ""))
 )
 
 var (
 	forward_Ivysaur_UpdateMetadata_0 = runtime.ForwardResponseMessage
 	forward_Ivysaur_Me_0             = runtime.ForwardResponseMessage
 	forward_Ivysaur_ChangePassword_0 = runtime.ForwardResponseMessage
+	forward_Ivysaur_LogOut_0         = runtime.ForwardResponseMessage
 )

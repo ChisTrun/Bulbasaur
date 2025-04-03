@@ -92,6 +92,12 @@ service Ivysaur {
       body: "*"
     };
   };
+
+  rpc LogOut (google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get: "/ivysaur/logout"
+    };
+  };
 }
 
 //======================================== ENUM =======================================

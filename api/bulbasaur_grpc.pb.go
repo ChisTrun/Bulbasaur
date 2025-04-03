@@ -429,6 +429,7 @@ const (
 	Ivysaur_UpdateMetadata_FullMethodName = "/bulbasaur.Ivysaur/UpdateMetadata"
 	Ivysaur_Me_FullMethodName             = "/bulbasaur.Ivysaur/Me"
 	Ivysaur_ChangePassword_FullMethodName = "/bulbasaur.Ivysaur/ChangePassword"
+	Ivysaur_LogOut_FullMethodName         = "/bulbasaur.Ivysaur/LogOut"
 )
 
 // IvysaurClient is the client API for Ivysaur service.
@@ -438,6 +439,7 @@ type IvysaurClient interface {
 	UpdateMetadata(ctx context.Context, in *UpdateMetadataRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	Me(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeResponse, error)
 	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	LogOut(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type ivysaurClient struct {
@@ -478,6 +480,16 @@ func (c *ivysaurClient) ChangePassword(ctx context.Context, in *ChangePasswordRe
 	return out, nil
 }
 
+func (c *ivysaurClient) LogOut(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Ivysaur_LogOut_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // IvysaurServer is the server API for Ivysaur service.
 // All implementations must embed UnimplementedIvysaurServer
 // for forward compatibility.
@@ -485,6 +497,7 @@ type IvysaurServer interface {
 	UpdateMetadata(context.Context, *UpdateMetadataRequest) (*emptypb.Empty, error)
 	Me(context.Context, *emptypb.Empty) (*MeResponse, error)
 	ChangePassword(context.Context, *ChangePasswordRequest) (*emptypb.Empty, error)
+	LogOut(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	mustEmbedUnimplementedIvysaurServer()
 }
 
@@ -503,6 +516,9 @@ func (UnimplementedIvysaurServer) Me(context.Context, *emptypb.Empty) (*MeRespon
 }
 func (UnimplementedIvysaurServer) ChangePassword(context.Context, *ChangePasswordRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangePassword not implemented")
+}
+func (UnimplementedIvysaurServer) LogOut(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LogOut not implemented")
 }
 func (UnimplementedIvysaurServer) mustEmbedUnimplementedIvysaurServer() {}
 func (UnimplementedIvysaurServer) testEmbeddedByValue()                 {}
@@ -579,6 +595,24 @@ func _Ivysaur_ChangePassword_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Ivysaur_LogOut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IvysaurServer).LogOut(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ivysaur_LogOut_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IvysaurServer).LogOut(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Ivysaur_ServiceDesc is the grpc.ServiceDesc for Ivysaur service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -597,6 +631,10 @@ var Ivysaur_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ChangePassword",
 			Handler:    _Ivysaur_ChangePassword_Handler,
+		},
+		{
+			MethodName: "LogOut",
+			Handler:    _Ivysaur_LogOut_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

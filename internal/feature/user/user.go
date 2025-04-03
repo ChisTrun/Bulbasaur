@@ -32,6 +32,7 @@ type UserFeature interface {
 	Me(ctx context.Context) (*bulbasaur.MeResponse, error)
 	ListUser(ctx context.Context, request *bulbasaur.ListUsersRequest) (*bulbasaur.ListUsersResponse, error)
 	ChangePassword(ctx context.Context, request *bulbasaur.ChangePasswordRequest) error
+	LogOut(ctx context.Context) error
 
 	EmailVerification(ctx context.Context, request *bulbasaur.EmailVerificationRequest) error
 	ResetCodeVerification(ctx context.Context, request *bulbasaur.ResetCodeVerificationRequest) (*bulbasaur.ResetCodeVerificationResponse, error)
@@ -402,6 +403,23 @@ func (u *userFeature) EmailVerification(ctx context.Context, request *bulbasaur.
 	}
 
 	fmt.Printf("OTP %s sent to %s\n", otp, email)
+	return nil
+}
+
+func (u *userFeature) LogOut(ctx context.Context) error {
+	safeId, ok := u.extractor.GetSafeID(ctx)
+	if !ok {
+		return fmt.Errorf("safe id not found")
+	}
+
+	if err := u.redis.Delete(ctx, fmt.Sprintf("%v-at", safeId)); err != nil {
+		return fmt.Errorf("failed to delete access token: %w", err)
+	}
+
+	if err := u.redis.Delete(ctx, fmt.Sprintf("%v-rt", safeId)); err != nil {
+		return fmt.Errorf("failed to delete refresh token: %w", err)
+	}
+
 	return nil
 }
 
