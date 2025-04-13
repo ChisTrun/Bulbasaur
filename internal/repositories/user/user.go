@@ -25,7 +25,7 @@ type UserRepository interface {
 	GetLocalByEmail(ctx context.Context, tx tx.Tx, tenantId, email, password string) (*ent.User, error)
 
 	// user google
-	CreateGoogle(ctx context.Context, tx tx.Tx, tenantId, email, fullname, avatarPath string, role bulbasaur.Role) (*ent.User, error)
+	CreateGoogle(ctx context.Context, tx tx.Tx, tenantId, email, fullname, avatarPath string, role bulbasaur.Role, metadata *bulbasaur.Metadata) (*ent.User, error)
 	GetGoogle(ctx context.Context, tx tx.Tx, tenantId, email string) (*ent.User, error)
 
 	// general
@@ -138,12 +138,19 @@ func (u *userRepository) UpdateMetadata(ctx context.Context, tx tx.Tx, id uint64
 	return tx.Client().User.UpdateOneID(id).SetMetadata(metadata).Exec(ctx)
 }
 
-func (u *userRepository) CreateGoogle(ctx context.Context, tx tx.Tx, tenantId, email, fullname, avatarPath string, role bulbasaur.Role) (*ent.User, error) {
+func (u *userRepository) CreateGoogle(ctx context.Context, tx tx.Tx, tenantId, email, fullname, avatarPath string, role bulbasaur.Role, metadata *bulbasaur.Metadata) (*ent.User, error) {
+	if metadata == nil {
+		metadata = &bulbasaur.Metadata{}
+	}
+	metadata.Fullname = &fullname
+	metadata.AvatarPath = &avatarPath
 
 	user, err := tx.Client().User.Create().
 		SetTenantID(tenantId).
 		SetSafeID(uuid.NewString()).
 		SetRole(role).
+		SetEmail(email).
+		SetMetadata(metadata).
 		Save(ctx)
 	if err != nil {
 		return nil, err

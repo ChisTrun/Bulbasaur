@@ -161,6 +161,10 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 			return nil, fmt.Errorf("invalid OTP")
 		}
 
+		if request.GetLocal().GetUsername() == "google" {
+			return nil, fmt.Errorf("username is reserved")
+		}
+
 		if err := validation.ValidatePassword(request.GetLocal().GetPassword()); err != nil {
 			return nil, err
 		}
@@ -195,7 +199,7 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 		}
 
 		if txErr := tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
-			user, err = u.repo.UserRepository.CreateGoogle(ctx, tx, tenantId, email, fullname, avatarPath, request.GetRole())
+			user, err = u.repo.UserRepository.CreateGoogle(ctx, tx, tenantId, email, fullname, avatarPath, request.GetRole(), request.GetMetadata())
 			return err
 		}); txErr != nil {
 			return nil, txErr
@@ -227,7 +231,12 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 
 	return &bulbasaur.SignUpResponse{
 		User: &bulbasaur.User{
-			Username: user.Edges.Local.Username,
+			Username: func() string {
+				if user.Edges.Local != nil {
+					return user.Edges.Local.Username
+				}
+				return "google"
+			}(),
 			Email:    user.Email,
 			Metadata: user.Metadata,
 			Role:     user.Role,
