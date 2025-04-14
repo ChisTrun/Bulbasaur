@@ -127,7 +127,12 @@ func (u *userFeature) SignIn(ctx context.Context, request *bulbasaur.SignInReque
 
 	return &bulbasaur.SignInResponse{
 		User: &bulbasaur.User{
-			Username: user.Edges.Local.Username,
+			Username: func() string {
+				if user.Edges.Local != nil {
+					return user.Edges.Local.Username
+				}
+				return "google"
+			}(),
 			Email:    user.Email,
 			Metadata: user.Metadata,
 			Role:     user.Role,
