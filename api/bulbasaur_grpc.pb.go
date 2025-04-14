@@ -28,7 +28,6 @@ const (
 	Bulbasaur_ResetCodeVerification_FullMethodName = "/bulbasaur.Bulbasaur/ResetCodeVerification"
 	Bulbasaur_GenerateResetCode_FullMethodName     = "/bulbasaur.Bulbasaur/GenerateResetCode"
 	Bulbasaur_ResetPassword_FullMethodName         = "/bulbasaur.Bulbasaur/ResetPassword"
-	Bulbasaur_FindUserByName_FullMethodName        = "/bulbasaur.Bulbasaur/FindUserByName"
 )
 
 // BulbasaurClient is the client API for Bulbasaur service.
@@ -43,7 +42,6 @@ type BulbasaurClient interface {
 	ResetCodeVerification(ctx context.Context, in *ResetCodeVerificationRequest, opts ...grpc.CallOption) (*ResetCodeVerificationResponse, error)
 	GenerateResetCode(ctx context.Context, in *GenerateResetCodeRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	FindUserByName(ctx context.Context, in *FindUserByNameRequest, opts ...grpc.CallOption) (*FindUserByNameResponse, error)
 }
 
 type bulbasaurClient struct {
@@ -134,16 +132,6 @@ func (c *bulbasaurClient) ResetPassword(ctx context.Context, in *ResetPasswordRe
 	return out, nil
 }
 
-func (c *bulbasaurClient) FindUserByName(ctx context.Context, in *FindUserByNameRequest, opts ...grpc.CallOption) (*FindUserByNameResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FindUserByNameResponse)
-	err := c.cc.Invoke(ctx, Bulbasaur_FindUserByName_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // BulbasaurServer is the server API for Bulbasaur service.
 // All implementations must embed UnimplementedBulbasaurServer
 // for forward compatibility.
@@ -156,7 +144,6 @@ type BulbasaurServer interface {
 	ResetCodeVerification(context.Context, *ResetCodeVerificationRequest) (*ResetCodeVerificationResponse, error)
 	GenerateResetCode(context.Context, *GenerateResetCodeRequest) (*emptypb.Empty, error)
 	ResetPassword(context.Context, *ResetPasswordRequest) (*emptypb.Empty, error)
-	FindUserByName(context.Context, *FindUserByNameRequest) (*FindUserByNameResponse, error)
 	mustEmbedUnimplementedBulbasaurServer()
 }
 
@@ -190,9 +177,6 @@ func (UnimplementedBulbasaurServer) GenerateResetCode(context.Context, *Generate
 }
 func (UnimplementedBulbasaurServer) ResetPassword(context.Context, *ResetPasswordRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetPassword not implemented")
-}
-func (UnimplementedBulbasaurServer) FindUserByName(context.Context, *FindUserByNameRequest) (*FindUserByNameResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FindUserByName not implemented")
 }
 func (UnimplementedBulbasaurServer) mustEmbedUnimplementedBulbasaurServer() {}
 func (UnimplementedBulbasaurServer) testEmbeddedByValue()                   {}
@@ -359,24 +343,6 @@ func _Bulbasaur_ResetPassword_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Bulbasaur_FindUserByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FindUserByNameRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BulbasaurServer).FindUserByName(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Bulbasaur_FindUserByName_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BulbasaurServer).FindUserByName(ctx, req.(*FindUserByNameRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // Bulbasaur_ServiceDesc is the grpc.ServiceDesc for Bulbasaur service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -415,10 +381,6 @@ var Bulbasaur_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ResetPassword",
 			Handler:    _Bulbasaur_ResetPassword_Handler,
-		},
-		{
-			MethodName: "FindUserByName",
-			Handler:    _Bulbasaur_FindUserByName_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -635,6 +597,108 @@ var Ivysaur_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LogOut",
 			Handler:    _Ivysaur_LogOut_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "bulbasaur/api/bulbasaur.proto",
+}
+
+const (
+	Venusaur_FindUserByName_FullMethodName = "/bulbasaur.Venusaur/FindUserByName"
+)
+
+// VenusaurClient is the client API for Venusaur service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type VenusaurClient interface {
+	FindUserByName(ctx context.Context, in *FindUserByNameRequest, opts ...grpc.CallOption) (*FindUserByNameResponse, error)
+}
+
+type venusaurClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewVenusaurClient(cc grpc.ClientConnInterface) VenusaurClient {
+	return &venusaurClient{cc}
+}
+
+func (c *venusaurClient) FindUserByName(ctx context.Context, in *FindUserByNameRequest, opts ...grpc.CallOption) (*FindUserByNameResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FindUserByNameResponse)
+	err := c.cc.Invoke(ctx, Venusaur_FindUserByName_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// VenusaurServer is the server API for Venusaur service.
+// All implementations must embed UnimplementedVenusaurServer
+// for forward compatibility.
+type VenusaurServer interface {
+	FindUserByName(context.Context, *FindUserByNameRequest) (*FindUserByNameResponse, error)
+	mustEmbedUnimplementedVenusaurServer()
+}
+
+// UnimplementedVenusaurServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedVenusaurServer struct{}
+
+func (UnimplementedVenusaurServer) FindUserByName(context.Context, *FindUserByNameRequest) (*FindUserByNameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindUserByName not implemented")
+}
+func (UnimplementedVenusaurServer) mustEmbedUnimplementedVenusaurServer() {}
+func (UnimplementedVenusaurServer) testEmbeddedByValue()                  {}
+
+// UnsafeVenusaurServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to VenusaurServer will
+// result in compilation errors.
+type UnsafeVenusaurServer interface {
+	mustEmbedUnimplementedVenusaurServer()
+}
+
+func RegisterVenusaurServer(s grpc.ServiceRegistrar, srv VenusaurServer) {
+	// If the following call pancis, it indicates UnimplementedVenusaurServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&Venusaur_ServiceDesc, srv)
+}
+
+func _Venusaur_FindUserByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindUserByNameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VenusaurServer).FindUserByName(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Venusaur_FindUserByName_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VenusaurServer).FindUserByName(ctx, req.(*FindUserByNameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Venusaur_ServiceDesc is the grpc.ServiceDesc for Venusaur service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Venusaur_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "bulbasaur.Venusaur",
+	HandlerType: (*VenusaurServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "FindUserByName",
+			Handler:    _Venusaur_FindUserByName_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

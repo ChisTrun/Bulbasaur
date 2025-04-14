@@ -63,13 +63,6 @@ service Bulbasaur {
       body: "*"
     };
   };
-
-  rpc FindUserByName (FindUserByNameRequest) returns (FindUserByNameResponse) {
-    option (google.api.http) = {
-      post: "/bulbasaur/finduserbyname"
-      body: "*"
-    };
-  };
 }
 
 service Ivysaur {
@@ -96,6 +89,15 @@ service Ivysaur {
   rpc LogOut (google.protobuf.Empty) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       get: "/ivysaur/logout"
+    };
+  };
+}
+
+service Venusaur {
+  rpc FindUserByName (FindUserByNameRequest) returns (FindUserByNameResponse) {
+    option (google.api.http) = {
+      post: "/venusaur/finduserbyname"
+      body: "*"
     };
   };
 }
