@@ -22,6 +22,7 @@ import (
 	"bulbasaur/internal/server/authz"
 	"bulbasaur/internal/server/bulbasaur"
 	"bulbasaur/internal/server/ivysaur"
+	"bulbasaur/internal/server/venusaur"
 	"bulbasaur/internal/utils/extractor"
 	"bulbasaur/internal/utils/mailer"
 	"bulbasaur/internal/utils/redis"
@@ -81,6 +82,7 @@ func Serve(cfg *config.Config) {
 
 	bulbasaurServer := bulbasaur.NewServer(feature)
 	ivysaurServer := ivysaur.NewServer(feature)
+	venusaurServer := venusaur.NewServer(feature)
 
 	grpcGatewayMux := runtime.NewServeMux(
 		runtime.WithMetadata(customMetadataAnnotator),
@@ -95,6 +97,7 @@ func Serve(cfg *config.Config) {
 
 	service.HttpServeMux().Handle("/bulbasaur/", grpcGatewayMux)
 	service.HttpServeMux().Handle("/ivysaur/", grpcGatewayMux)
+	service.HttpServeMux().Handle("/venusaur/", grpcGatewayMux)
 
 	err = pb0.RegisterBulbasaurHandlerServer(context.Background(), grpcGatewayMux, bulbasaurServer)
 	if err != nil {
@@ -106,8 +109,14 @@ func Serve(cfg *config.Config) {
 		logger.Fatal("can not register http sibel server", zap.Error(err))
 	}
 
+	err = pb0.RegisterVenusaurHandlerServer(context.Background(), grpcGatewayMux, venusaurServer)
+	if err != nil {
+		logger.Fatal("can not register http sibel server", zap.Error(err))
+	}
+
 	pb0.RegisterBulbasaurServer(server, bulbasaurServer)
 	pb0.RegisterIvysaurServer(server, ivysaurServer)
+	pb0.RegisterVenusaurServer(server, venusaurServer)
 	// Register reflection service on gRPC server.
 	// Please remove if you it's not necessary for your service
 	reflection.Register(server)
