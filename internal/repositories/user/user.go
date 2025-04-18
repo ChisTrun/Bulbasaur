@@ -18,6 +18,7 @@ import (
 type UserRepository interface {
 	GetUserBySafeID(ctx context.Context, safeId string) (*ent.User, error)
 	GetUserByName(ctx context.Context, name string, roles []bulbasaur.Role) ([]*ent.User, error)
+	GetUserByMetadata(ctx context.Context, field, value string, roles []bulbasaur.Role) ([]*ent.User, error)
 
 	// user local
 	CreateLocal(ctx context.Context, tx tx.Tx, tenantId, username, password, confirmPassword, email string, metadata *bulbasaur.Metadata, role bulbasaur.Role) (*ent.User, error)
@@ -250,6 +251,32 @@ func (u *userRepository) GetUserByName(ctx context.Context, name string, roles [
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to get users by name: %w", err)
+	}
+
+	return users, nil
+}
+
+func (u *userRepository) GetUserByMetadata(ctx context.Context, field, value string, roles []bulbasaur.Role) ([]*ent.User, error) {
+	predicate := func(s *sql.Selector) {
+		query := fmt.Sprintf("LOWER(JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.%s'))) LIKE LOWER(?)", field)
+		s.Where(sql.ExprP(query, "%"+value+"%"))
+
+		if len(roles) > 0 {
+			roleValues := make([]interface{}, len(roles))
+			for i, role := range roles {
+				roleValues[i] = role
+			}
+			s.Where(sql.In("role", roleValues...))
+		}
+	}
+
+	users, err := u.ent.User.Query().
+		Where().
+		Modify(predicate).
+		All(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to get users by %s: %w", field, err)
 	}
 
 	return users, nil

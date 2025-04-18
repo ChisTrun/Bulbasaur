@@ -100,6 +100,13 @@ service Venusaur {
       body: "*"
     };
   };
+
+  rpc FindUserByMetadata (FindUserByMetadataRequest) returns (FindUserByMetadataResponse) {
+    option (google.api.http) = {
+      post: "/venusaur/find"
+      body: "*"
+    };
+  };
 }
 
 //======================================== ENUM =======================================
@@ -251,5 +258,19 @@ message FindUserByNameRequest {
 }
 
 message FindUserByNameResponse {
+  repeated uint64 ids = 1;
+}
+
+message FindUserByMetadataRequest {
+  oneof metadata {
+    string name = 1;
+    string company = 2;
+    string country = 3;
+    string jobTitle = 4;
+  }
+  repeated Role roles = 5;
+}
+
+message FindUserByMetadataResponse {
   repeated uint64 ids = 1;
 }

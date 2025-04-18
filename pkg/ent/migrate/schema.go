@@ -75,7 +75,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "tenant_id", Type: field.TypeString},
-		{Name: "safe_id", Type: field.TypeString, Default: "6b763dd1-e59f-4f6a-9874-fb2d697b5573"},
+		{Name: "safe_id", Type: field.TypeString, Default: "776cba57-5c5e-4495-9d0a-ca1b905883b1"},
 		{Name: "email", Type: field.TypeString, Nullable: true},
 		{Name: "metadata", Type: field.TypeJSON, Nullable: true},
 		{Name: "last_signed_in", Type: field.TypeTime, Nullable: true},

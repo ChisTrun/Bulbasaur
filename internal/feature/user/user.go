@@ -39,6 +39,7 @@ type UserFeature interface {
 	GenerateResetCode(ctx context.Context, request *bulbasaur.GenerateResetCodeRequest) error
 	ResetPassword(ctx context.Context, request *bulbasaur.ResetPasswordRequest) error
 	FindUserByName(ctx context.Context, request *bulbasaur.FindUserByNameRequest) (*bulbasaur.FindUserByNameResponse, error)
+	FindUserByMetadata(ctx context.Context, request *bulbasaur.FindUserByMetadataRequest) (*bulbasaur.FindUserByMetadataResponse, error)
 }
 
 type userFeature struct {
@@ -574,6 +575,42 @@ func (u *userFeature) FindUserByName(ctx context.Context, request *bulbasaur.Fin
 	}
 
 	return &bulbasaur.FindUserByNameResponse{
+		Ids: userIDs,
+	}, nil
+}
+
+func (u *userFeature) FindUserByMetadata(ctx context.Context, request *bulbasaur.FindUserByMetadataRequest) (*bulbasaur.FindUserByMetadataResponse, error) {
+	var field string
+	var value string
+
+	switch meta := request.Metadata.(type) {
+	case *bulbasaur.FindUserByMetadataRequest_Name:
+		field, value = "fullname", meta.Name
+	case *bulbasaur.FindUserByMetadataRequest_Company:
+		field, value = "company", meta.Company
+	case *bulbasaur.FindUserByMetadataRequest_Country:
+		field, value = "country", meta.Country
+	case *bulbasaur.FindUserByMetadataRequest_JobTitle:
+		field, value = "jobTitle", meta.JobTitle
+	default:
+		return nil, fmt.Errorf("no metadata field provided")
+	}
+
+	if value == "" {
+		return nil, fmt.Errorf("%s cannot be empty", field)
+	}
+
+	users, err := u.repo.UserRepository.GetUserByMetadata(ctx, field, value, request.GetRoles())
+	if err != nil {
+		return nil, fmt.Errorf("failed to find users: %w", err)
+	}
+
+	var userIDs []uint64
+	for _, user := range users {
+		userIDs = append(userIDs, uint64(user.ID))
+	}
+
+	return &bulbasaur.FindUserByMetadataResponse{
 		Ids: userIDs,
 	}, nil
 }

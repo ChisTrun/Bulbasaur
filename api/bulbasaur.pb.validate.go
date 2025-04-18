@@ -2736,6 +2736,263 @@ var _ interface {
 	ErrorName() string
 } = FindUserByNameResponseValidationError{}
 
+// Validate checks the field values on FindUserByMetadataRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *FindUserByMetadataRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on FindUserByMetadataRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// FindUserByMetadataRequestMultiError, or nil if none found.
+func (m *FindUserByMetadataRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FindUserByMetadataRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	switch v := m.Metadata.(type) {
+	case *FindUserByMetadataRequest_Name:
+		if v == nil {
+			err := FindUserByMetadataRequestValidationError{
+				field:  "Metadata",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for Name
+	case *FindUserByMetadataRequest_Company:
+		if v == nil {
+			err := FindUserByMetadataRequestValidationError{
+				field:  "Metadata",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for Company
+	case *FindUserByMetadataRequest_Country:
+		if v == nil {
+			err := FindUserByMetadataRequestValidationError{
+				field:  "Metadata",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for Country
+	case *FindUserByMetadataRequest_JobTitle:
+		if v == nil {
+			err := FindUserByMetadataRequestValidationError{
+				field:  "Metadata",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for JobTitle
+	default:
+		_ = v // ensures v is used
+	}
+
+	if len(errors) > 0 {
+		return FindUserByMetadataRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// FindUserByMetadataRequestMultiError is an error wrapping multiple validation
+// errors returned by FindUserByMetadataRequest.ValidateAll() if the
+// designated constraints aren't met.
+type FindUserByMetadataRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FindUserByMetadataRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FindUserByMetadataRequestMultiError) AllErrors() []error { return m }
+
+// FindUserByMetadataRequestValidationError is the validation error returned by
+// FindUserByMetadataRequest.Validate if the designated constraints aren't met.
+type FindUserByMetadataRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FindUserByMetadataRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e FindUserByMetadataRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e FindUserByMetadataRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e FindUserByMetadataRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e FindUserByMetadataRequestValidationError) ErrorName() string {
+	return "FindUserByMetadataRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e FindUserByMetadataRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFindUserByMetadataRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FindUserByMetadataRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FindUserByMetadataRequestValidationError{}
+
+// Validate checks the field values on FindUserByMetadataResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *FindUserByMetadataResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on FindUserByMetadataResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// FindUserByMetadataResponseMultiError, or nil if none found.
+func (m *FindUserByMetadataResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FindUserByMetadataResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return FindUserByMetadataResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// FindUserByMetadataResponseMultiError is an error wrapping multiple
+// validation errors returned by FindUserByMetadataResponse.ValidateAll() if
+// the designated constraints aren't met.
+type FindUserByMetadataResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FindUserByMetadataResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FindUserByMetadataResponseMultiError) AllErrors() []error { return m }
+
+// FindUserByMetadataResponseValidationError is the validation error returned
+// by FindUserByMetadataResponse.Validate if the designated constraints aren't met.
+type FindUserByMetadataResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FindUserByMetadataResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e FindUserByMetadataResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e FindUserByMetadataResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e FindUserByMetadataResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e FindUserByMetadataResponseValidationError) ErrorName() string {
+	return "FindUserByMetadataResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e FindUserByMetadataResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFindUserByMetadataResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FindUserByMetadataResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FindUserByMetadataResponseValidationError{}
+
 // Validate checks the field values on SignUpRequest_Local with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
