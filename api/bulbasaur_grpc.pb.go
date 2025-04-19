@@ -24,6 +24,7 @@ const (
 	Bulbasaur_SignIn_FullMethodName                = "/bulbasaur.Bulbasaur/SignIn"
 	Bulbasaur_RefreshToken_FullMethodName          = "/bulbasaur.Bulbasaur/RefreshToken"
 	Bulbasaur_ListUsers_FullMethodName             = "/bulbasaur.Bulbasaur/ListUsers"
+	Bulbasaur_FindUserByMetadata_FullMethodName    = "/bulbasaur.Bulbasaur/FindUserByMetadata"
 	Bulbasaur_EmailVerification_FullMethodName     = "/bulbasaur.Bulbasaur/EmailVerification"
 	Bulbasaur_ResetCodeVerification_FullMethodName = "/bulbasaur.Bulbasaur/ResetCodeVerification"
 	Bulbasaur_GenerateResetCode_FullMethodName     = "/bulbasaur.Bulbasaur/GenerateResetCode"
@@ -38,6 +39,7 @@ type BulbasaurClient interface {
 	SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error)
 	RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*RefreshTokenResponse, error)
 	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error)
+	FindUserByMetadata(ctx context.Context, in *FindUserByMetadataRequest, opts ...grpc.CallOption) (*FindUserByMetadataResponse, error)
 	EmailVerification(ctx context.Context, in *EmailVerificationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ResetCodeVerification(ctx context.Context, in *ResetCodeVerificationRequest, opts ...grpc.CallOption) (*ResetCodeVerificationResponse, error)
 	GenerateResetCode(ctx context.Context, in *GenerateResetCodeRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -92,6 +94,16 @@ func (c *bulbasaurClient) ListUsers(ctx context.Context, in *ListUsersRequest, o
 	return out, nil
 }
 
+func (c *bulbasaurClient) FindUserByMetadata(ctx context.Context, in *FindUserByMetadataRequest, opts ...grpc.CallOption) (*FindUserByMetadataResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FindUserByMetadataResponse)
+	err := c.cc.Invoke(ctx, Bulbasaur_FindUserByMetadata_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *bulbasaurClient) EmailVerification(ctx context.Context, in *EmailVerificationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
@@ -140,6 +152,7 @@ type BulbasaurServer interface {
 	SignIn(context.Context, *SignInRequest) (*SignInResponse, error)
 	RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error)
 	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
+	FindUserByMetadata(context.Context, *FindUserByMetadataRequest) (*FindUserByMetadataResponse, error)
 	EmailVerification(context.Context, *EmailVerificationRequest) (*emptypb.Empty, error)
 	ResetCodeVerification(context.Context, *ResetCodeVerificationRequest) (*ResetCodeVerificationResponse, error)
 	GenerateResetCode(context.Context, *GenerateResetCodeRequest) (*emptypb.Empty, error)
@@ -165,6 +178,9 @@ func (UnimplementedBulbasaurServer) RefreshToken(context.Context, *RefreshTokenR
 }
 func (UnimplementedBulbasaurServer) ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
+}
+func (UnimplementedBulbasaurServer) FindUserByMetadata(context.Context, *FindUserByMetadataRequest) (*FindUserByMetadataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindUserByMetadata not implemented")
 }
 func (UnimplementedBulbasaurServer) EmailVerification(context.Context, *EmailVerificationRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EmailVerification not implemented")
@@ -271,6 +287,24 @@ func _Bulbasaur_ListUsers_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Bulbasaur_FindUserByMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindUserByMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BulbasaurServer).FindUserByMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Bulbasaur_FindUserByMetadata_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BulbasaurServer).FindUserByMetadata(ctx, req.(*FindUserByMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Bulbasaur_EmailVerification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(EmailVerificationRequest)
 	if err := dec(in); err != nil {
@@ -365,6 +399,10 @@ var Bulbasaur_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListUsers",
 			Handler:    _Bulbasaur_ListUsers_Handler,
+		},
+		{
+			MethodName: "FindUserByMetadata",
+			Handler:    _Bulbasaur_FindUserByMetadata_Handler,
 		},
 		{
 			MethodName: "EmailVerification",
@@ -604,8 +642,7 @@ var Ivysaur_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	Venusaur_FindUserByName_FullMethodName     = "/bulbasaur.Venusaur/FindUserByName"
-	Venusaur_FindUserByMetadata_FullMethodName = "/bulbasaur.Venusaur/FindUserByMetadata"
+	Venusaur_FindUserByName_FullMethodName = "/bulbasaur.Venusaur/FindUserByName"
 )
 
 // VenusaurClient is the client API for Venusaur service.
@@ -613,7 +650,6 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type VenusaurClient interface {
 	FindUserByName(ctx context.Context, in *FindUserByNameRequest, opts ...grpc.CallOption) (*FindUserByNameResponse, error)
-	FindUserByMetadata(ctx context.Context, in *FindUserByMetadataRequest, opts ...grpc.CallOption) (*FindUserByMetadataResponse, error)
 }
 
 type venusaurClient struct {
@@ -634,22 +670,11 @@ func (c *venusaurClient) FindUserByName(ctx context.Context, in *FindUserByNameR
 	return out, nil
 }
 
-func (c *venusaurClient) FindUserByMetadata(ctx context.Context, in *FindUserByMetadataRequest, opts ...grpc.CallOption) (*FindUserByMetadataResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FindUserByMetadataResponse)
-	err := c.cc.Invoke(ctx, Venusaur_FindUserByMetadata_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // VenusaurServer is the server API for Venusaur service.
 // All implementations must embed UnimplementedVenusaurServer
 // for forward compatibility.
 type VenusaurServer interface {
 	FindUserByName(context.Context, *FindUserByNameRequest) (*FindUserByNameResponse, error)
-	FindUserByMetadata(context.Context, *FindUserByMetadataRequest) (*FindUserByMetadataResponse, error)
 	mustEmbedUnimplementedVenusaurServer()
 }
 
@@ -662,9 +687,6 @@ type UnimplementedVenusaurServer struct{}
 
 func (UnimplementedVenusaurServer) FindUserByName(context.Context, *FindUserByNameRequest) (*FindUserByNameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindUserByName not implemented")
-}
-func (UnimplementedVenusaurServer) FindUserByMetadata(context.Context, *FindUserByMetadataRequest) (*FindUserByMetadataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FindUserByMetadata not implemented")
 }
 func (UnimplementedVenusaurServer) mustEmbedUnimplementedVenusaurServer() {}
 func (UnimplementedVenusaurServer) testEmbeddedByValue()                  {}
@@ -705,24 +727,6 @@ func _Venusaur_FindUserByName_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Venusaur_FindUserByMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FindUserByMetadataRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VenusaurServer).FindUserByMetadata(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Venusaur_FindUserByMetadata_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VenusaurServer).FindUserByMetadata(ctx, req.(*FindUserByMetadataRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // Venusaur_ServiceDesc is the grpc.ServiceDesc for Venusaur service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -733,10 +737,6 @@ var Venusaur_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FindUserByName",
 			Handler:    _Venusaur_FindUserByName_Handler,
-		},
-		{
-			MethodName: "FindUserByMetadata",
-			Handler:    _Venusaur_FindUserByMetadata_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

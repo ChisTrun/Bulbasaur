@@ -132,6 +132,30 @@ func local_request_Bulbasaur_ListUsers_0(ctx context.Context, marshaler runtime.
 	return msg, metadata, err
 }
 
+func request_Bulbasaur_FindUserByMetadata_0(ctx context.Context, marshaler runtime.Marshaler, client BulbasaurClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq FindUserByMetadataRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := client.FindUserByMetadata(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_Bulbasaur_FindUserByMetadata_0(ctx context.Context, marshaler runtime.Marshaler, server BulbasaurServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq FindUserByMetadataRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.FindUserByMetadata(ctx, &protoReq)
+	return msg, metadata, err
+}
+
 func request_Bulbasaur_EmailVerification_0(ctx context.Context, marshaler runtime.Marshaler, client BulbasaurClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq EmailVerificationRequest
@@ -336,30 +360,6 @@ func local_request_Venusaur_FindUserByName_0(ctx context.Context, marshaler runt
 	return msg, metadata, err
 }
 
-func request_Venusaur_FindUserByMetadata_0(ctx context.Context, marshaler runtime.Marshaler, client VenusaurClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq FindUserByMetadataRequest
-		metadata runtime.ServerMetadata
-	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	msg, err := client.FindUserByMetadata(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-}
-
-func local_request_Venusaur_FindUserByMetadata_0(ctx context.Context, marshaler runtime.Marshaler, server VenusaurServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var (
-		protoReq FindUserByMetadataRequest
-		metadata runtime.ServerMetadata
-	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	msg, err := server.FindUserByMetadata(ctx, &protoReq)
-	return msg, metadata, err
-}
-
 // RegisterBulbasaurHandlerServer registers the http handlers for service Bulbasaur to "mux".
 // UnaryRPC     :call BulbasaurServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
@@ -445,6 +445,26 @@ func RegisterBulbasaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, 
 			return
 		}
 		forward_Bulbasaur_ListUsers_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_Bulbasaur_FindUserByMetadata_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/FindUserByMetadata", runtime.WithHTTPPathPattern("/bulbasaur/find"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_Bulbasaur_FindUserByMetadata_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Bulbasaur_FindUserByMetadata_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	mux.Handle(http.MethodPost, pattern_Bulbasaur_EmailVerification_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
@@ -646,26 +666,6 @@ func RegisterVenusaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, s
 		}
 		forward_Venusaur_FindUserByName_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_Venusaur_FindUserByMetadata_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Venusaur/FindUserByMetadata", runtime.WithHTTPPathPattern("/venusaur/find"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_Venusaur_FindUserByMetadata_0(annotatedContext, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		forward_Venusaur_FindUserByMetadata_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-	})
 
 	return nil
 }
@@ -774,6 +774,23 @@ func RegisterBulbasaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, 
 		}
 		forward_Bulbasaur_ListUsers_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPost, pattern_Bulbasaur_FindUserByMetadata_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/FindUserByMetadata", runtime.WithHTTPPathPattern("/bulbasaur/find"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Bulbasaur_FindUserByMetadata_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Bulbasaur_FindUserByMetadata_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	mux.Handle(http.MethodPost, pattern_Bulbasaur_EmailVerification_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -850,6 +867,7 @@ var (
 	pattern_Bulbasaur_SignIn_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"bulbasaur", "login"}, ""))
 	pattern_Bulbasaur_RefreshToken_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"bulbasaur", "refresh"}, ""))
 	pattern_Bulbasaur_ListUsers_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"bulbasaur", "list"}, ""))
+	pattern_Bulbasaur_FindUserByMetadata_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"bulbasaur", "find"}, ""))
 	pattern_Bulbasaur_EmailVerification_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"bulbasaur", "verify", "email"}, ""))
 	pattern_Bulbasaur_ResetCodeVerification_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"bulbasaur", "verify", "resetcode"}, ""))
 	pattern_Bulbasaur_GenerateResetCode_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"bulbasaur", "generate", "resetcode"}, ""))
@@ -861,6 +879,7 @@ var (
 	forward_Bulbasaur_SignIn_0                = runtime.ForwardResponseMessage
 	forward_Bulbasaur_RefreshToken_0          = runtime.ForwardResponseMessage
 	forward_Bulbasaur_ListUsers_0             = runtime.ForwardResponseMessage
+	forward_Bulbasaur_FindUserByMetadata_0    = runtime.ForwardResponseMessage
 	forward_Bulbasaur_EmailVerification_0     = runtime.ForwardResponseMessage
 	forward_Bulbasaur_ResetCodeVerification_0 = runtime.ForwardResponseMessage
 	forward_Bulbasaur_GenerateResetCode_0     = runtime.ForwardResponseMessage
@@ -1041,32 +1060,13 @@ func RegisterVenusaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, c
 		}
 		forward_Venusaur_FindUserByName_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_Venusaur_FindUserByMetadata_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Venusaur/FindUserByMetadata", runtime.WithHTTPPathPattern("/venusaur/find"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_Venusaur_FindUserByMetadata_0(annotatedContext, inboundMarshaler, client, req, pathParams)
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		forward_Venusaur_FindUserByMetadata_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-	})
 	return nil
 }
 
 var (
-	pattern_Venusaur_FindUserByName_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"venusaur", "finduserbyname"}, ""))
-	pattern_Venusaur_FindUserByMetadata_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"venusaur", "find"}, ""))
+	pattern_Venusaur_FindUserByName_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"venusaur", "finduserbyname"}, ""))
 )
 
 var (
-	forward_Venusaur_FindUserByName_0     = runtime.ForwardResponseMessage
-	forward_Venusaur_FindUserByMetadata_0 = runtime.ForwardResponseMessage
+	forward_Venusaur_FindUserByName_0 = runtime.ForwardResponseMessage
 )

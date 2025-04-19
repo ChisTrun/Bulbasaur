@@ -36,6 +36,13 @@ service Bulbasaur {
     };
   };
 
+  rpc FindUserByMetadata (FindUserByMetadataRequest) returns (FindUserByMetadataResponse) {
+    option (google.api.http) = {
+      post: "/bulbasaur/find"
+      body: "*"
+    };
+  };
+
   rpc EmailVerification (EmailVerificationRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/bulbasaur/verify/email"
@@ -97,13 +104,6 @@ service Venusaur {
   rpc FindUserByName (FindUserByNameRequest) returns (FindUserByNameResponse) {
     option (google.api.http) = {
       post: "/venusaur/finduserbyname"
-      body: "*"
-    };
-  };
-
-  rpc FindUserByMetadata (FindUserByMetadataRequest) returns (FindUserByMetadataResponse) {
-    option (google.api.http) = {
-      post: "/venusaur/find"
       body: "*"
     };
   };
