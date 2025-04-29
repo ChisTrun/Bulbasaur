@@ -2345,6 +2345,30 @@ func (m *Metadata) validate(all bool) error {
 		// no validation rules for AvatarPath
 	}
 
+	if m.Gender != nil {
+		// no validation rules for Gender
+	}
+
+	if m.Birthday != nil {
+		// no validation rules for Birthday
+	}
+
+	if m.Summary != nil {
+		// no validation rules for Summary
+	}
+
+	if m.Website != nil {
+		// no validation rules for Website
+	}
+
+	if m.LinkedIn != nil {
+		// no validation rules for LinkedIn
+	}
+
+	if m.Education != nil {
+		// no validation rules for Education
+	}
+
 	if len(errors) > 0 {
 		return MetadataMultiError(errors)
 	}

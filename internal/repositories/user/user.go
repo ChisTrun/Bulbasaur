@@ -34,6 +34,7 @@ type UserRepository interface {
 	List(ctx context.Context, userIds []uint64) ([]*ent.User, error)
 	IsEmailExists(ctx context.Context, tx tx.Tx, email string) (bool, error)
 	UpdatePassword(ctx context.Context, tx tx.Tx, tenantId, email, newPassword string) error
+	mergeMetadata(oldMeta, newMeta *bulbasaur.Metadata) *bulbasaur.Metadata
 }
 
 type userRepository struct {
@@ -136,7 +137,13 @@ func (u *userRepository) GetLocalByEmail(ctx context.Context, tx tx.Tx, tenantId
 }
 
 func (u *userRepository) UpdateMetadata(ctx context.Context, tx tx.Tx, id uint64, metadata *bulbasaur.Metadata) error {
-	return tx.Client().User.UpdateOneID(id).SetMetadata(metadata).Exec(ctx)
+	existingUser, err := tx.Client().User.Get(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	merged := u.mergeMetadata(existingUser.Metadata, metadata)
+	return tx.Client().User.UpdateOneID(id).SetMetadata(merged).Exec(ctx)
 }
 
 func (u *userRepository) CreateGoogle(ctx context.Context, tx tx.Tx, tenantId, email, fullname, avatarPath string, role bulbasaur.Role, metadata *bulbasaur.Metadata) (*ent.User, error) {
@@ -280,4 +287,46 @@ func (u *userRepository) GetUserByMetadata(ctx context.Context, field, value str
 	}
 
 	return users, nil
+}
+
+func (u *userRepository) mergeMetadata(oldMeta, newMeta *bulbasaur.Metadata) *bulbasaur.Metadata {
+	if oldMeta == nil {
+		oldMeta = &bulbasaur.Metadata{}
+	}
+
+	if newMeta.Fullname != nil {
+		oldMeta.Fullname = newMeta.Fullname
+	}
+	if newMeta.Company != nil {
+		oldMeta.Company = newMeta.Company
+	}
+	if newMeta.Country != nil {
+		oldMeta.Country = newMeta.Country
+	}
+	if newMeta.JobTitle != nil {
+		oldMeta.JobTitle = newMeta.JobTitle
+	}
+	if newMeta.AvatarPath != nil {
+		oldMeta.AvatarPath = newMeta.AvatarPath
+	}
+	if newMeta.Gender != nil {
+		oldMeta.Gender = newMeta.Gender
+	}
+	if newMeta.Birthday != nil {
+		oldMeta.Birthday = newMeta.Birthday
+	}
+	if newMeta.Summary != nil {
+		oldMeta.Summary = newMeta.Summary
+	}
+	if newMeta.Website != nil {
+		oldMeta.Website = newMeta.Website
+	}
+	if newMeta.LinkedIn != nil {
+		oldMeta.LinkedIn = newMeta.LinkedIn
+	}
+	if newMeta.Education != nil {
+		oldMeta.Education = newMeta.Education
+	}
+
+	return oldMeta
 }

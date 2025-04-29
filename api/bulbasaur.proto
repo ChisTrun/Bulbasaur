@@ -244,6 +244,12 @@ message metadata {
   optional string country = 3;
   optional string jobTitle = 4; 
   optional string avatarPath = 5;
+  optional string gender = 6;
+  optional string birthday = 7;
+  optional string summary = 8;
+  optional string website = 9;
+  optional string linkedIn = 10;
+  optional string education = 11;
 }
 
 message ChangePasswordRequest {
