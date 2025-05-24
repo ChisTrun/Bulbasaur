@@ -271,7 +271,7 @@ func (u *userFeature) RefreshToken(ctx context.Context, request *bulbasaur.Refre
 	}
 
 	if !u.redis.Check(ctx, fmt.Sprintf("%v-rt", claims["safe_id"]), request.GetTokenInfo().GetRefreshToken()) {
-		log.Printf("@@@@@@@@@@@@@@@@@@@@@@@@@ Error: %v", "refresh token is invalid or expired")
+		log.Printf("@@@@@@@@@@@@@@@@@@@@@@@@@ Error: %v, %v", "refresh token is invalid or expired", request.GetTokenInfo().GetRefreshToken())
 		return nil, fmt.Errorf("refresh token is invalid or expired")
 	}
 
