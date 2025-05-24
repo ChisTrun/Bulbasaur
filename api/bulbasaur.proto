@@ -127,6 +127,13 @@ service Venusaur {
       body: "*"
     };
   };
+
+  rpc IncreaseBalance (IncreaseBalanceRequest) returns (IncreaseBalanceResponse) {
+    option (google.api.http) = {
+      post: "/venusaur/increase-balance"
+      body: "*"
+    };
+  };
 }
 
 //======================================== ENUM =======================================

@@ -426,6 +426,30 @@ func local_request_Venusaur_FindUserByName_0(ctx context.Context, marshaler runt
 	return msg, metadata, err
 }
 
+func request_Venusaur_IncreaseBalance_0(ctx context.Context, marshaler runtime.Marshaler, client VenusaurClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq IncreaseBalanceRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := client.IncreaseBalance(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_Venusaur_IncreaseBalance_0(ctx context.Context, marshaler runtime.Marshaler, server VenusaurServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq IncreaseBalanceRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.IncreaseBalance(ctx, &protoReq)
+	return msg, metadata, err
+}
+
 // RegisterBulbasaurHandlerServer registers the http handlers for service Bulbasaur to "mux".
 // UnaryRPC     :call BulbasaurServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
@@ -791,6 +815,26 @@ func RegisterVenusaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, s
 			return
 		}
 		forward_Venusaur_FindUserByName_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_Venusaur_IncreaseBalance_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Venusaur/IncreaseBalance", runtime.WithHTTPPathPattern("/venusaur/increase-balance"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_Venusaur_IncreaseBalance_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Venusaur_IncreaseBalance_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 
 	return nil
@@ -1243,13 +1287,32 @@ func RegisterVenusaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, c
 		}
 		forward_Venusaur_FindUserByName_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPost, pattern_Venusaur_IncreaseBalance_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Venusaur/IncreaseBalance", runtime.WithHTTPPathPattern("/venusaur/increase-balance"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Venusaur_IncreaseBalance_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Venusaur_IncreaseBalance_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	return nil
 }
 
 var (
-	pattern_Venusaur_FindUserByName_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"venusaur", "finduserbyname"}, ""))
+	pattern_Venusaur_FindUserByName_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"venusaur", "finduserbyname"}, ""))
+	pattern_Venusaur_IncreaseBalance_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"venusaur", "increase-balance"}, ""))
 )
 
 var (
-	forward_Venusaur_FindUserByName_0 = runtime.ForwardResponseMessage
+	forward_Venusaur_FindUserByName_0  = runtime.ForwardResponseMessage
+	forward_Venusaur_IncreaseBalance_0 = runtime.ForwardResponseMessage
 )
