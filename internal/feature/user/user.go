@@ -264,39 +264,45 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 }
 
 func (u *userFeature) RefreshToken(ctx context.Context, request *bulbasaur.RefreshTokenRequest) (_ *bulbasaur.RefreshTokenResponse, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Printf("@@@@@@@@@@@@@@@@@@@@@@@@@ Error: %v", r)
-			err = fmt.Errorf("internal server error")
-		}
-	}()
-
 	claims, err := u.signer.VerifyToken(request.GetTokenInfo().GetRefreshToken(), bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN)
 	if err != nil {
+		log.Printf("@@@@@@@@@@@@@@@@@@@@@@@@@ Error: %v", err)
 		return nil, err
 	}
 
 	if !u.redis.Check(ctx, fmt.Sprintf("%v-rt", claims["safe_id"]), request.GetTokenInfo().GetRefreshToken()) {
+		log.Printf("@@@@@@@@@@@@@@@@@@@@@@@@@ Error: %v", "refresh token is invalid or expired")
 		return nil, fmt.Errorf("refresh token is invalid or expired")
 	}
 
 	user, err := u.repo.UserRepository.GetUserBySafeID(ctx, claims["safe_id"].(string))
 	if err != nil {
+		log.Printf("@@@@@@@@@@@@@@@@@@@@@@@@@ Error: %v", err)
 		return nil, fmt.Errorf("user not found")
 	}
 
 	accessToken, err := u.signer.CreateToken(user.ID, user.SafeID, user.Role, bulbasaur.TokenType_TOKEN_TYPE_ACCESS_TOKEN)
 	if err != nil {
+		log.Printf("@@@@@@@@@@@@@@@@@@@@@@@@@ Error: %v", err)
 		return nil, err
 	}
 
 	refreshToken, err := u.signer.CreateToken(user.ID, user.SafeID, user.Role, bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN)
 	if err != nil {
+		log.Printf("@@@@@@@@@@@@@@@@@@@@@@@@@ Error: %v", err)
 		return nil, err
 	}
 
-	u.redis.Set(ctx, fmt.Sprintf("%v-at", claims["safe_id"]), accessToken, time.Minute*time.Duration(u.cfg.Auth.AccessExp))
-	u.redis.Set(ctx, fmt.Sprintf("%v-rt", claims["safe_id"]), refreshToken, time.Minute*time.Duration(u.cfg.Auth.RefreshExp))
+	ok, err := u.redis.Set(ctx, fmt.Sprintf("%v-at", claims["safe_id"]), accessToken, time.Minute*time.Duration(u.cfg.Auth.AccessExp))
+	if err != nil || !ok {
+		log.Printf("@@@@@@@@@@@@@@@@@@@@@@@@@ Error: %v", err)
+		return nil, fmt.Errorf("failed to set access token in Redis: %w", err)
+	}
+	ok, err = u.redis.Set(ctx, fmt.Sprintf("%v-rt", claims["safe_id"]), refreshToken, time.Minute*time.Duration(u.cfg.Auth.RefreshExp))
+	if err != nil || !ok {
+		log.Printf("@@@@@@@@@@@@@@@@@@@@@@@@@ Error: %v", err)
+		return nil, fmt.Errorf("failed to set access token in Redis: %w", err)
+	}
 
 	return &bulbasaur.RefreshTokenResponse{
 		TokenInfo: &bulbasaur.TokenInfo{
