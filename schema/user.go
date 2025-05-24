@@ -31,6 +31,9 @@ func (User) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 		field.Int32("role").GoType(bulbasaur.Role(0)),
+		field.Float("balance").Default(0),
+		field.Bool("is_premium").Default(false),
+		field.Time("premium_expires").Optional().Nillable(),
 	}
 }
 

@@ -113,6 +113,48 @@ func (uc *UserCreate) SetRole(b bulbasaur.Role) *UserCreate {
 	return uc
 }
 
+// SetBalance sets the "balance" field.
+func (uc *UserCreate) SetBalance(f float64) *UserCreate {
+	uc.mutation.SetBalance(f)
+	return uc
+}
+
+// SetNillableBalance sets the "balance" field if the given value is not nil.
+func (uc *UserCreate) SetNillableBalance(f *float64) *UserCreate {
+	if f != nil {
+		uc.SetBalance(*f)
+	}
+	return uc
+}
+
+// SetIsPremium sets the "is_premium" field.
+func (uc *UserCreate) SetIsPremium(b bool) *UserCreate {
+	uc.mutation.SetIsPremium(b)
+	return uc
+}
+
+// SetNillableIsPremium sets the "is_premium" field if the given value is not nil.
+func (uc *UserCreate) SetNillableIsPremium(b *bool) *UserCreate {
+	if b != nil {
+		uc.SetIsPremium(*b)
+	}
+	return uc
+}
+
+// SetPremiumExpires sets the "premium_expires" field.
+func (uc *UserCreate) SetPremiumExpires(t time.Time) *UserCreate {
+	uc.mutation.SetPremiumExpires(t)
+	return uc
+}
+
+// SetNillablePremiumExpires sets the "premium_expires" field if the given value is not nil.
+func (uc *UserCreate) SetNillablePremiumExpires(t *time.Time) *UserCreate {
+	if t != nil {
+		uc.SetPremiumExpires(*t)
+	}
+	return uc
+}
+
 // SetID sets the "id" field.
 func (uc *UserCreate) SetID(u uint64) *UserCreate {
 	uc.mutation.SetID(u)
@@ -204,6 +246,14 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultSafeID
 		uc.mutation.SetSafeID(v)
 	}
+	if _, ok := uc.mutation.Balance(); !ok {
+		v := user.DefaultBalance
+		uc.mutation.SetBalance(v)
+	}
+	if _, ok := uc.mutation.IsPremium(); !ok {
+		v := user.DefaultIsPremium
+		uc.mutation.SetIsPremium(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -227,6 +277,12 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.Role(); !ok {
 		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "User.role"`)}
+	}
+	if _, ok := uc.mutation.Balance(); !ok {
+		return &ValidationError{Name: "balance", err: errors.New(`ent: missing required field "User.balance"`)}
+	}
+	if _, ok := uc.mutation.IsPremium(); !ok {
+		return &ValidationError{Name: "is_premium", err: errors.New(`ent: missing required field "User.is_premium"`)}
 	}
 	return nil
 }
@@ -292,6 +348,18 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Role(); ok {
 		_spec.SetField(user.FieldRole, field.TypeInt32, value)
 		_node.Role = value
+	}
+	if value, ok := uc.mutation.Balance(); ok {
+		_spec.SetField(user.FieldBalance, field.TypeFloat64, value)
+		_node.Balance = value
+	}
+	if value, ok := uc.mutation.IsPremium(); ok {
+		_spec.SetField(user.FieldIsPremium, field.TypeBool, value)
+		_node.IsPremium = value
+	}
+	if value, ok := uc.mutation.PremiumExpires(); ok {
+		_spec.SetField(user.FieldPremiumExpires, field.TypeTime, value)
+		_node.PremiumExpires = &value
 	}
 	if nodes := uc.mutation.LocalIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -485,6 +553,54 @@ func (u *UserUpsert) AddRole(v bulbasaur.Role) *UserUpsert {
 	return u
 }
 
+// SetBalance sets the "balance" field.
+func (u *UserUpsert) SetBalance(v float64) *UserUpsert {
+	u.Set(user.FieldBalance, v)
+	return u
+}
+
+// UpdateBalance sets the "balance" field to the value that was provided on create.
+func (u *UserUpsert) UpdateBalance() *UserUpsert {
+	u.SetExcluded(user.FieldBalance)
+	return u
+}
+
+// AddBalance adds v to the "balance" field.
+func (u *UserUpsert) AddBalance(v float64) *UserUpsert {
+	u.Add(user.FieldBalance, v)
+	return u
+}
+
+// SetIsPremium sets the "is_premium" field.
+func (u *UserUpsert) SetIsPremium(v bool) *UserUpsert {
+	u.Set(user.FieldIsPremium, v)
+	return u
+}
+
+// UpdateIsPremium sets the "is_premium" field to the value that was provided on create.
+func (u *UserUpsert) UpdateIsPremium() *UserUpsert {
+	u.SetExcluded(user.FieldIsPremium)
+	return u
+}
+
+// SetPremiumExpires sets the "premium_expires" field.
+func (u *UserUpsert) SetPremiumExpires(v time.Time) *UserUpsert {
+	u.Set(user.FieldPremiumExpires, v)
+	return u
+}
+
+// UpdatePremiumExpires sets the "premium_expires" field to the value that was provided on create.
+func (u *UserUpsert) UpdatePremiumExpires() *UserUpsert {
+	u.SetExcluded(user.FieldPremiumExpires)
+	return u
+}
+
+// ClearPremiumExpires clears the value of the "premium_expires" field.
+func (u *UserUpsert) ClearPremiumExpires() *UserUpsert {
+	u.SetNull(user.FieldPremiumExpires)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -659,6 +775,62 @@ func (u *UserUpsertOne) AddRole(v bulbasaur.Role) *UserUpsertOne {
 func (u *UserUpsertOne) UpdateRole() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateRole()
+	})
+}
+
+// SetBalance sets the "balance" field.
+func (u *UserUpsertOne) SetBalance(v float64) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetBalance(v)
+	})
+}
+
+// AddBalance adds v to the "balance" field.
+func (u *UserUpsertOne) AddBalance(v float64) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.AddBalance(v)
+	})
+}
+
+// UpdateBalance sets the "balance" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateBalance() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateBalance()
+	})
+}
+
+// SetIsPremium sets the "is_premium" field.
+func (u *UserUpsertOne) SetIsPremium(v bool) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetIsPremium(v)
+	})
+}
+
+// UpdateIsPremium sets the "is_premium" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateIsPremium() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateIsPremium()
+	})
+}
+
+// SetPremiumExpires sets the "premium_expires" field.
+func (u *UserUpsertOne) SetPremiumExpires(v time.Time) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetPremiumExpires(v)
+	})
+}
+
+// UpdatePremiumExpires sets the "premium_expires" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdatePremiumExpires() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdatePremiumExpires()
+	})
+}
+
+// ClearPremiumExpires clears the value of the "premium_expires" field.
+func (u *UserUpsertOne) ClearPremiumExpires() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearPremiumExpires()
 	})
 }
 
@@ -1002,6 +1174,62 @@ func (u *UserUpsertBulk) AddRole(v bulbasaur.Role) *UserUpsertBulk {
 func (u *UserUpsertBulk) UpdateRole() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateRole()
+	})
+}
+
+// SetBalance sets the "balance" field.
+func (u *UserUpsertBulk) SetBalance(v float64) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetBalance(v)
+	})
+}
+
+// AddBalance adds v to the "balance" field.
+func (u *UserUpsertBulk) AddBalance(v float64) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.AddBalance(v)
+	})
+}
+
+// UpdateBalance sets the "balance" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateBalance() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateBalance()
+	})
+}
+
+// SetIsPremium sets the "is_premium" field.
+func (u *UserUpsertBulk) SetIsPremium(v bool) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetIsPremium(v)
+	})
+}
+
+// UpdateIsPremium sets the "is_premium" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateIsPremium() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateIsPremium()
+	})
+}
+
+// SetPremiumExpires sets the "premium_expires" field.
+func (u *UserUpsertBulk) SetPremiumExpires(v time.Time) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetPremiumExpires(v)
+	})
+}
+
+// UpdatePremiumExpires sets the "premium_expires" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdatePremiumExpires() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdatePremiumExpires()
+	})
+}
+
+// ClearPremiumExpires clears the value of the "premium_expires" field.
+func (u *UserUpsertBulk) ClearPremiumExpires() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearPremiumExpires()
 	})
 }
 

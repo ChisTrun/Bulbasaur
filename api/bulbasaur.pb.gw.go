@@ -252,6 +252,30 @@ func local_request_Bulbasaur_ResetPassword_0(ctx context.Context, marshaler runt
 	return msg, metadata, err
 }
 
+func request_Bulbasaur_IncreaseBalance_0(ctx context.Context, marshaler runtime.Marshaler, client BulbasaurClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq IncreaseBalanceRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := client.IncreaseBalance(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_Bulbasaur_IncreaseBalance_0(ctx context.Context, marshaler runtime.Marshaler, server BulbasaurServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq IncreaseBalanceRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.IncreaseBalance(ctx, &protoReq)
+	return msg, metadata, err
+}
+
 func request_Ivysaur_UpdateMetadata_0(ctx context.Context, marshaler runtime.Marshaler, client IvysaurClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq UpdateMetadataRequest
@@ -333,6 +357,48 @@ func local_request_Ivysaur_LogOut_0(ctx context.Context, marshaler runtime.Marsh
 		metadata runtime.ServerMetadata
 	)
 	msg, err := server.LogOut(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_Ivysaur_GetBalance_0(ctx context.Context, marshaler runtime.Marshaler, client IvysaurClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq emptypb.Empty
+		metadata runtime.ServerMetadata
+	)
+	msg, err := client.GetBalance(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_Ivysaur_GetBalance_0(ctx context.Context, marshaler runtime.Marshaler, server IvysaurServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq emptypb.Empty
+		metadata runtime.ServerMetadata
+	)
+	msg, err := server.GetBalance(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_Ivysaur_SetPremium_0(ctx context.Context, marshaler runtime.Marshaler, client IvysaurClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq SetPremiumRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := client.SetPremium(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_Ivysaur_SetPremium_0(ctx context.Context, marshaler runtime.Marshaler, server IvysaurServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq SetPremiumRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.SetPremium(ctx, &protoReq)
 	return msg, metadata, err
 }
 
@@ -546,6 +612,26 @@ func RegisterBulbasaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, 
 		}
 		forward_Bulbasaur_ResetPassword_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPost, pattern_Bulbasaur_IncreaseBalance_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Bulbasaur/IncreaseBalance", runtime.WithHTTPPathPattern("/bulbasaur/increase-balance"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_Bulbasaur_IncreaseBalance_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Bulbasaur_IncreaseBalance_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 
 	return nil
 }
@@ -635,6 +721,46 @@ func RegisterIvysaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 			return
 		}
 		forward_Ivysaur_LogOut_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodGet, pattern_Ivysaur_GetBalance_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Ivysaur/GetBalance", runtime.WithHTTPPathPattern("/ivysaur/balance"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_Ivysaur_GetBalance_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Ivysaur_GetBalance_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_Ivysaur_SetPremium_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Ivysaur/SetPremium", runtime.WithHTTPPathPattern("/ivysaur/premium"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_Ivysaur_SetPremium_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Ivysaur_SetPremium_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 
 	return nil
@@ -859,6 +985,23 @@ func RegisterBulbasaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, 
 		}
 		forward_Bulbasaur_ResetPassword_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPost, pattern_Bulbasaur_IncreaseBalance_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Bulbasaur/IncreaseBalance", runtime.WithHTTPPathPattern("/bulbasaur/increase-balance"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Bulbasaur_IncreaseBalance_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Bulbasaur_IncreaseBalance_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	return nil
 }
 
@@ -872,6 +1015,7 @@ var (
 	pattern_Bulbasaur_ResetCodeVerification_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"bulbasaur", "verify", "resetcode"}, ""))
 	pattern_Bulbasaur_GenerateResetCode_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"bulbasaur", "generate", "resetcode"}, ""))
 	pattern_Bulbasaur_ResetPassword_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"bulbasaur", "resetpassword"}, ""))
+	pattern_Bulbasaur_IncreaseBalance_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"bulbasaur", "increase-balance"}, ""))
 )
 
 var (
@@ -884,6 +1028,7 @@ var (
 	forward_Bulbasaur_ResetCodeVerification_0 = runtime.ForwardResponseMessage
 	forward_Bulbasaur_GenerateResetCode_0     = runtime.ForwardResponseMessage
 	forward_Bulbasaur_ResetPassword_0         = runtime.ForwardResponseMessage
+	forward_Bulbasaur_IncreaseBalance_0       = runtime.ForwardResponseMessage
 )
 
 // RegisterIvysaurHandlerFromEndpoint is same as RegisterIvysaurHandler but
@@ -990,6 +1135,40 @@ func RegisterIvysaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		}
 		forward_Ivysaur_LogOut_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodGet, pattern_Ivysaur_GetBalance_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Ivysaur/GetBalance", runtime.WithHTTPPathPattern("/ivysaur/balance"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Ivysaur_GetBalance_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Ivysaur_GetBalance_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_Ivysaur_SetPremium_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Ivysaur/SetPremium", runtime.WithHTTPPathPattern("/ivysaur/premium"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Ivysaur_SetPremium_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Ivysaur_SetPremium_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	return nil
 }
 
@@ -998,6 +1177,8 @@ var (
 	pattern_Ivysaur_Me_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "me"}, ""))
 	pattern_Ivysaur_ChangePassword_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "changepassword"}, ""))
 	pattern_Ivysaur_LogOut_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "logout"}, ""))
+	pattern_Ivysaur_GetBalance_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "balance"}, ""))
+	pattern_Ivysaur_SetPremium_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "premium"}, ""))
 )
 
 var (
@@ -1005,6 +1186,8 @@ var (
 	forward_Ivysaur_Me_0             = runtime.ForwardResponseMessage
 	forward_Ivysaur_ChangePassword_0 = runtime.ForwardResponseMessage
 	forward_Ivysaur_LogOut_0         = runtime.ForwardResponseMessage
+	forward_Ivysaur_GetBalance_0     = runtime.ForwardResponseMessage
+	forward_Ivysaur_SetPremium_0     = runtime.ForwardResponseMessage
 )
 
 // RegisterVenusaurHandlerFromEndpoint is same as RegisterVenusaurHandler but

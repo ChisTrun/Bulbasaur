@@ -10,12 +10,14 @@ import (
 	"bulbasaur/pkg/ent/user"
 	"context"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 )
 
 type UserRepository interface {
+	GetUserById(ctx context.Context, id uint64) (*ent.User, error)
 	GetUserBySafeID(ctx context.Context, safeId string) (*ent.User, error)
 	GetUserByName(ctx context.Context, name string, roles []bulbasaur.Role) ([]*ent.User, error)
 	GetUserByMetadata(ctx context.Context, field, value string, roles []bulbasaur.Role) ([]*ent.User, error)
@@ -35,6 +37,7 @@ type UserRepository interface {
 	IsEmailExists(ctx context.Context, tx tx.Tx, email string) (bool, error)
 	UpdatePassword(ctx context.Context, tx tx.Tx, tenantId, email, newPassword string) error
 	mergeMetadata(oldMeta, newMeta *bulbasaur.Metadata) *bulbasaur.Metadata
+	SetPremiumStatus(ctx context.Context, userID uint64, isPremium bool, expires *time.Time) error
 }
 
 type userRepository struct {
@@ -45,6 +48,13 @@ func NewUserRepository(ent *ent.Client) UserRepository {
 	return &userRepository{
 		ent: ent,
 	}
+}
+
+func (u *userRepository) GetUserById(ctx context.Context, id uint64) (*ent.User, error) {
+	return u.ent.User.Query().Where(user.ID(id)).
+		WithGoogle().
+		WithLocal().
+		Only(ctx)
 }
 
 func (u *userRepository) GetUserBySafeID(ctx context.Context, safeId string) (*ent.User, error) {
@@ -329,4 +339,11 @@ func (u *userRepository) mergeMetadata(oldMeta, newMeta *bulbasaur.Metadata) *bu
 	}
 
 	return oldMeta
+}
+
+func (r *userRepository) SetPremiumStatus(ctx context.Context, userID uint64, isPremium bool, expires *time.Time) error {
+	return r.ent.User.UpdateOneID(userID).
+		SetIsPremium(isPremium).
+		SetNillablePremiumExpires(expires).
+		Exec(ctx)
 }

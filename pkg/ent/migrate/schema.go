@@ -75,11 +75,14 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "tenant_id", Type: field.TypeString},
-		{Name: "safe_id", Type: field.TypeString, Default: "ae67a84c-380f-4923-ac1f-3ec43b72dbe7"},
+		{Name: "safe_id", Type: field.TypeString, Default: "1b261cc3-b61f-4fc2-8791-45236ed84eae"},
 		{Name: "email", Type: field.TypeString, Nullable: true},
 		{Name: "metadata", Type: field.TypeJSON, Nullable: true},
 		{Name: "last_signed_in", Type: field.TypeTime, Nullable: true},
 		{Name: "role", Type: field.TypeInt32},
+		{Name: "balance", Type: field.TypeFloat64, Default: 0},
+		{Name: "is_premium", Type: field.TypeBool, Default: false},
+		{Name: "premium_expires", Type: field.TypeTime, Nullable: true},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{

@@ -1340,26 +1340,30 @@ func (m *LocalMutation) ResetEdge(name string) error {
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op             Op
-	typ            string
-	id             *uint64
-	created_at     *time.Time
-	updated_at     *time.Time
-	tenant_id      *string
-	safe_id        *string
-	email          *string
-	metadata       **bulbasaur.Metadata
-	last_signed_in *time.Time
-	role           *bulbasaur.Role
-	addrole        *bulbasaur.Role
-	clearedFields  map[string]struct{}
-	local          *uint64
-	clearedlocal   bool
-	google         *uint64
-	clearedgoogle  bool
-	done           bool
-	oldValue       func(context.Context) (*User, error)
-	predicates     []predicate.User
+	op              Op
+	typ             string
+	id              *uint64
+	created_at      *time.Time
+	updated_at      *time.Time
+	tenant_id       *string
+	safe_id         *string
+	email           *string
+	metadata        **bulbasaur.Metadata
+	last_signed_in  *time.Time
+	role            *bulbasaur.Role
+	addrole         *bulbasaur.Role
+	balance         *float64
+	addbalance      *float64
+	is_premium      *bool
+	premium_expires *time.Time
+	clearedFields   map[string]struct{}
+	local           *uint64
+	clearedlocal    bool
+	google          *uint64
+	clearedgoogle   bool
+	done            bool
+	oldValue        func(context.Context) (*User, error)
+	predicates      []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -1813,6 +1817,147 @@ func (m *UserMutation) ResetRole() {
 	m.addrole = nil
 }
 
+// SetBalance sets the "balance" field.
+func (m *UserMutation) SetBalance(f float64) {
+	m.balance = &f
+	m.addbalance = nil
+}
+
+// Balance returns the value of the "balance" field in the mutation.
+func (m *UserMutation) Balance() (r float64, exists bool) {
+	v := m.balance
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBalance returns the old "balance" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldBalance(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBalance is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBalance requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBalance: %w", err)
+	}
+	return oldValue.Balance, nil
+}
+
+// AddBalance adds f to the "balance" field.
+func (m *UserMutation) AddBalance(f float64) {
+	if m.addbalance != nil {
+		*m.addbalance += f
+	} else {
+		m.addbalance = &f
+	}
+}
+
+// AddedBalance returns the value that was added to the "balance" field in this mutation.
+func (m *UserMutation) AddedBalance() (r float64, exists bool) {
+	v := m.addbalance
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBalance resets all changes to the "balance" field.
+func (m *UserMutation) ResetBalance() {
+	m.balance = nil
+	m.addbalance = nil
+}
+
+// SetIsPremium sets the "is_premium" field.
+func (m *UserMutation) SetIsPremium(b bool) {
+	m.is_premium = &b
+}
+
+// IsPremium returns the value of the "is_premium" field in the mutation.
+func (m *UserMutation) IsPremium() (r bool, exists bool) {
+	v := m.is_premium
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsPremium returns the old "is_premium" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldIsPremium(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsPremium is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsPremium requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsPremium: %w", err)
+	}
+	return oldValue.IsPremium, nil
+}
+
+// ResetIsPremium resets all changes to the "is_premium" field.
+func (m *UserMutation) ResetIsPremium() {
+	m.is_premium = nil
+}
+
+// SetPremiumExpires sets the "premium_expires" field.
+func (m *UserMutation) SetPremiumExpires(t time.Time) {
+	m.premium_expires = &t
+}
+
+// PremiumExpires returns the value of the "premium_expires" field in the mutation.
+func (m *UserMutation) PremiumExpires() (r time.Time, exists bool) {
+	v := m.premium_expires
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPremiumExpires returns the old "premium_expires" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldPremiumExpires(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPremiumExpires is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPremiumExpires requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPremiumExpires: %w", err)
+	}
+	return oldValue.PremiumExpires, nil
+}
+
+// ClearPremiumExpires clears the value of the "premium_expires" field.
+func (m *UserMutation) ClearPremiumExpires() {
+	m.premium_expires = nil
+	m.clearedFields[user.FieldPremiumExpires] = struct{}{}
+}
+
+// PremiumExpiresCleared returns if the "premium_expires" field was cleared in this mutation.
+func (m *UserMutation) PremiumExpiresCleared() bool {
+	_, ok := m.clearedFields[user.FieldPremiumExpires]
+	return ok
+}
+
+// ResetPremiumExpires resets all changes to the "premium_expires" field.
+func (m *UserMutation) ResetPremiumExpires() {
+	m.premium_expires = nil
+	delete(m.clearedFields, user.FieldPremiumExpires)
+}
+
 // SetLocalID sets the "local" edge to the Local entity by id.
 func (m *UserMutation) SetLocalID(id uint64) {
 	m.local = &id
@@ -1925,7 +2070,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
 	}
@@ -1949,6 +2094,15 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.role != nil {
 		fields = append(fields, user.FieldRole)
+	}
+	if m.balance != nil {
+		fields = append(fields, user.FieldBalance)
+	}
+	if m.is_premium != nil {
+		fields = append(fields, user.FieldIsPremium)
+	}
+	if m.premium_expires != nil {
+		fields = append(fields, user.FieldPremiumExpires)
 	}
 	return fields
 }
@@ -1974,6 +2128,12 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.LastSignedIn()
 	case user.FieldRole:
 		return m.Role()
+	case user.FieldBalance:
+		return m.Balance()
+	case user.FieldIsPremium:
+		return m.IsPremium()
+	case user.FieldPremiumExpires:
+		return m.PremiumExpires()
 	}
 	return nil, false
 }
@@ -1999,6 +2159,12 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldLastSignedIn(ctx)
 	case user.FieldRole:
 		return m.OldRole(ctx)
+	case user.FieldBalance:
+		return m.OldBalance(ctx)
+	case user.FieldIsPremium:
+		return m.OldIsPremium(ctx)
+	case user.FieldPremiumExpires:
+		return m.OldPremiumExpires(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -2064,6 +2230,27 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRole(v)
 		return nil
+	case user.FieldBalance:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBalance(v)
+		return nil
+	case user.FieldIsPremium:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsPremium(v)
+		return nil
+	case user.FieldPremiumExpires:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPremiumExpires(v)
+		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
 }
@@ -2075,6 +2262,9 @@ func (m *UserMutation) AddedFields() []string {
 	if m.addrole != nil {
 		fields = append(fields, user.FieldRole)
 	}
+	if m.addbalance != nil {
+		fields = append(fields, user.FieldBalance)
+	}
 	return fields
 }
 
@@ -2085,6 +2275,8 @@ func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case user.FieldRole:
 		return m.AddedRole()
+	case user.FieldBalance:
+		return m.AddedBalance()
 	}
 	return nil, false
 }
@@ -2100,6 +2292,13 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddRole(v)
+		return nil
+	case user.FieldBalance:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBalance(v)
 		return nil
 	}
 	return fmt.Errorf("unknown User numeric field %s", name)
@@ -2117,6 +2316,9 @@ func (m *UserMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(user.FieldLastSignedIn) {
 		fields = append(fields, user.FieldLastSignedIn)
+	}
+	if m.FieldCleared(user.FieldPremiumExpires) {
+		fields = append(fields, user.FieldPremiumExpires)
 	}
 	return fields
 }
@@ -2140,6 +2342,9 @@ func (m *UserMutation) ClearField(name string) error {
 		return nil
 	case user.FieldLastSignedIn:
 		m.ClearLastSignedIn()
+		return nil
+	case user.FieldPremiumExpires:
+		m.ClearPremiumExpires()
 		return nil
 	}
 	return fmt.Errorf("unknown User nullable field %s", name)
@@ -2172,6 +2377,15 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldRole:
 		m.ResetRole()
+		return nil
+	case user.FieldBalance:
+		m.ResetBalance()
+		return nil
+	case user.FieldIsPremium:
+		m.ResetIsPremium()
+		return nil
+	case user.FieldPremiumExpires:
+		m.ResetPremiumExpires()
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)

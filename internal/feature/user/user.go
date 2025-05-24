@@ -40,6 +40,10 @@ type UserFeature interface {
 	ResetPassword(ctx context.Context, request *bulbasaur.ResetPasswordRequest) error
 	FindUserByName(ctx context.Context, request *bulbasaur.FindUserByNameRequest) (*bulbasaur.FindUserByNameResponse, error)
 	FindUserByMetadata(ctx context.Context, request *bulbasaur.FindUserByMetadataRequest) (*bulbasaur.FindUserByMetadataResponse, error)
+
+	IncreaseBalance(ctx context.Context, request *bulbasaur.IncreaseBalanceRequest) (*bulbasaur.IncreaseBalanceResponse, error)
+	GetBalance(ctx context.Context) (*bulbasaur.GetBalanceResponse, error)
+	SetPremium(ctx context.Context, request *bulbasaur.SetPremiumRequest) (*bulbasaur.SetPremiumResponse, error)
 }
 
 type userFeature struct {
@@ -613,4 +617,121 @@ func (u *userFeature) FindUserByMetadata(ctx context.Context, request *bulbasaur
 	return &bulbasaur.FindUserByMetadataResponse{
 		Ids: userIDs,
 	}, nil
+}
+
+func (u *userFeature) IncreaseBalance(ctx context.Context, request *bulbasaur.IncreaseBalanceRequest) (*bulbasaur.IncreaseBalanceResponse, error) {
+	var newBalance float32
+
+	err := tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
+		user, err := tx.Client().User.Get(ctx, request.GetUserId())
+		if err != nil {
+			return fmt.Errorf("user not found: %w", err)
+		}
+
+		newBalance = float32(user.Balance + float64(request.GetAmount()))
+
+		err = tx.Client().User.UpdateOneID(user.ID).SetBalance(float64(newBalance)).Exec(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to update balance: %w", err)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &bulbasaur.IncreaseBalanceResponse{
+		NewBalance: newBalance,
+	}, nil
+}
+
+func (u *userFeature) GetBalance(ctx context.Context) (*bulbasaur.GetBalanceResponse, error) {
+	userId, err := u.extractor.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := u.repo.UserRepository.GetUserById(ctx, uint64(userId))
+	if err != nil {
+		return nil, fmt.Errorf("user not found: %w", err)
+	}
+
+	now := time.Now()
+
+	isPremium := user.IsPremium
+	premiumExpires := ""
+	if user.PremiumExpires != nil {
+		if user.PremiumExpires.Before(now) {
+			_ = u.repo.UserRepository.SetPremiumStatus(ctx, user.ID, false, nil)
+			isPremium = false
+		} else {
+			premiumExpires = user.PremiumExpires.Format(time.RFC3339)
+		}
+	}
+
+	return &bulbasaur.GetBalanceResponse{
+		Balance:        float32(user.Balance),
+		IsPremium:      isPremium,
+		PremiumExpires: premiumExpires,
+	}, nil
+}
+
+func (u *userFeature) SetPremium(ctx context.Context, request *bulbasaur.SetPremiumRequest) (*bulbasaur.SetPremiumResponse, error) {
+	err := tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
+		userId, err := u.extractor.GetUserID(ctx)
+		if err != nil {
+			return err
+		}
+
+		plan := request.GetPlan()
+
+		user, err := tx.Client().User.Get(ctx, uint64(userId))
+		if err != nil {
+			return fmt.Errorf("user not found: %w", err)
+		}
+
+		now := time.Now()
+		startFrom := now
+		if user.IsPremium && user.PremiumExpires.After(now) {
+			startFrom = *user.PremiumExpires
+		}
+
+		var newExpiry time.Time
+		var cost int
+
+		switch plan {
+		case bulbasaur.SubscriptionPlan_MONTHLY:
+			newExpiry = startFrom.AddDate(0, 1, 0)
+			cost = 120000
+		case bulbasaur.SubscriptionPlan_ANNUAL:
+			newExpiry = startFrom.AddDate(1, 0, 0)
+			cost = 120000 * 11
+		default:
+			return fmt.Errorf("invalid subscription plan")
+		}
+
+		if user.Balance < float64(cost) {
+			return fmt.Errorf("insufficient balance")
+		}
+
+		err = tx.Client().User.
+			UpdateOneID(uint64(userId)).
+			SetIsPremium(true).
+			SetPremiumExpires(newExpiry).
+			SetBalance(user.Balance - float64(cost)).
+			Exec(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to update premium fields: %w", err)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return &bulbasaur.SetPremiumResponse{Success: false}, err
+	}
+
+	return &bulbasaur.SetPremiumResponse{Success: true}, nil
 }

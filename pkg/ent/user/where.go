@@ -92,6 +92,21 @@ func Role(v bulbasaur.Role) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldRole, vc))
 }
 
+// Balance applies equality check predicate on the "balance" field. It's identical to BalanceEQ.
+func Balance(v float64) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldBalance, v))
+}
+
+// IsPremium applies equality check predicate on the "is_premium" field. It's identical to IsPremiumEQ.
+func IsPremium(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsPremium, v))
+}
+
+// PremiumExpires applies equality check predicate on the "premium_expires" field. It's identical to PremiumExpiresEQ.
+func PremiumExpires(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldPremiumExpires, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldCreatedAt, v))
@@ -489,6 +504,106 @@ func RoleLT(v bulbasaur.Role) predicate.User {
 func RoleLTE(v bulbasaur.Role) predicate.User {
 	vc := int32(v)
 	return predicate.User(sql.FieldLTE(FieldRole, vc))
+}
+
+// BalanceEQ applies the EQ predicate on the "balance" field.
+func BalanceEQ(v float64) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldBalance, v))
+}
+
+// BalanceNEQ applies the NEQ predicate on the "balance" field.
+func BalanceNEQ(v float64) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldBalance, v))
+}
+
+// BalanceIn applies the In predicate on the "balance" field.
+func BalanceIn(vs ...float64) predicate.User {
+	return predicate.User(sql.FieldIn(FieldBalance, vs...))
+}
+
+// BalanceNotIn applies the NotIn predicate on the "balance" field.
+func BalanceNotIn(vs ...float64) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldBalance, vs...))
+}
+
+// BalanceGT applies the GT predicate on the "balance" field.
+func BalanceGT(v float64) predicate.User {
+	return predicate.User(sql.FieldGT(FieldBalance, v))
+}
+
+// BalanceGTE applies the GTE predicate on the "balance" field.
+func BalanceGTE(v float64) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldBalance, v))
+}
+
+// BalanceLT applies the LT predicate on the "balance" field.
+func BalanceLT(v float64) predicate.User {
+	return predicate.User(sql.FieldLT(FieldBalance, v))
+}
+
+// BalanceLTE applies the LTE predicate on the "balance" field.
+func BalanceLTE(v float64) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldBalance, v))
+}
+
+// IsPremiumEQ applies the EQ predicate on the "is_premium" field.
+func IsPremiumEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsPremium, v))
+}
+
+// IsPremiumNEQ applies the NEQ predicate on the "is_premium" field.
+func IsPremiumNEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldIsPremium, v))
+}
+
+// PremiumExpiresEQ applies the EQ predicate on the "premium_expires" field.
+func PremiumExpiresEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldPremiumExpires, v))
+}
+
+// PremiumExpiresNEQ applies the NEQ predicate on the "premium_expires" field.
+func PremiumExpiresNEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldPremiumExpires, v))
+}
+
+// PremiumExpiresIn applies the In predicate on the "premium_expires" field.
+func PremiumExpiresIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldIn(FieldPremiumExpires, vs...))
+}
+
+// PremiumExpiresNotIn applies the NotIn predicate on the "premium_expires" field.
+func PremiumExpiresNotIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldPremiumExpires, vs...))
+}
+
+// PremiumExpiresGT applies the GT predicate on the "premium_expires" field.
+func PremiumExpiresGT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGT(FieldPremiumExpires, v))
+}
+
+// PremiumExpiresGTE applies the GTE predicate on the "premium_expires" field.
+func PremiumExpiresGTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldPremiumExpires, v))
+}
+
+// PremiumExpiresLT applies the LT predicate on the "premium_expires" field.
+func PremiumExpiresLT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLT(FieldPremiumExpires, v))
+}
+
+// PremiumExpiresLTE applies the LTE predicate on the "premium_expires" field.
+func PremiumExpiresLTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldPremiumExpires, v))
+}
+
+// PremiumExpiresIsNil applies the IsNil predicate on the "premium_expires" field.
+func PremiumExpiresIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldPremiumExpires))
+}
+
+// PremiumExpiresNotNil applies the NotNil predicate on the "premium_expires" field.
+func PremiumExpiresNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldPremiumExpires))
 }
 
 // HasLocal applies the HasEdge predicate on the "local" edge.

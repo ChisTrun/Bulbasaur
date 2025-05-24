@@ -37,6 +37,12 @@ type User struct {
 	LastSignedIn *time.Time `json:"last_signed_in,omitempty"`
 	// Role holds the value of the "role" field.
 	Role bulbasaur.Role `json:"role,omitempty"`
+	// Balance holds the value of the "balance" field.
+	Balance float64 `json:"balance,omitempty"`
+	// IsPremium holds the value of the "is_premium" field.
+	IsPremium bool `json:"is_premium,omitempty"`
+	// PremiumExpires holds the value of the "premium_expires" field.
+	PremiumExpires *time.Time `json:"premium_expires,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges        UserEdges `json:"edges"`
@@ -83,11 +89,15 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldMetadata:
 			values[i] = new([]byte)
+		case user.FieldIsPremium:
+			values[i] = new(sql.NullBool)
+		case user.FieldBalance:
+			values[i] = new(sql.NullFloat64)
 		case user.FieldID, user.FieldRole:
 			values[i] = new(sql.NullInt64)
 		case user.FieldTenantID, user.FieldSafeID, user.FieldEmail:
 			values[i] = new(sql.NullString)
-		case user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldLastSignedIn:
+		case user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldLastSignedIn, user.FieldPremiumExpires:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -161,6 +171,25 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.Role = bulbasaur.Role(value.Int64)
 			}
+		case user.FieldBalance:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field balance", values[i])
+			} else if value.Valid {
+				u.Balance = value.Float64
+			}
+		case user.FieldIsPremium:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_premium", values[i])
+			} else if value.Valid {
+				u.IsPremium = value.Bool
+			}
+		case user.FieldPremiumExpires:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field premium_expires", values[i])
+			} else if value.Valid {
+				u.PremiumExpires = new(time.Time)
+				*u.PremiumExpires = value.Time
+			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
 		}
@@ -232,6 +261,17 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("role=")
 	builder.WriteString(fmt.Sprintf("%v", u.Role))
+	builder.WriteString(", ")
+	builder.WriteString("balance=")
+	builder.WriteString(fmt.Sprintf("%v", u.Balance))
+	builder.WriteString(", ")
+	builder.WriteString("is_premium=")
+	builder.WriteString(fmt.Sprintf("%v", u.IsPremium))
+	builder.WriteString(", ")
+	if v := u.PremiumExpires; v != nil {
+		builder.WriteString("premium_expires=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

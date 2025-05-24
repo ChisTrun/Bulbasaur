@@ -30,6 +30,12 @@ const (
 	FieldLastSignedIn = "last_signed_in"
 	// FieldRole holds the string denoting the role field in the database.
 	FieldRole = "role"
+	// FieldBalance holds the string denoting the balance field in the database.
+	FieldBalance = "balance"
+	// FieldIsPremium holds the string denoting the is_premium field in the database.
+	FieldIsPremium = "is_premium"
+	// FieldPremiumExpires holds the string denoting the premium_expires field in the database.
+	FieldPremiumExpires = "premium_expires"
 	// EdgeLocal holds the string denoting the local edge name in mutations.
 	EdgeLocal = "local"
 	// EdgeGoogle holds the string denoting the google edge name in mutations.
@@ -63,6 +69,9 @@ var Columns = []string{
 	FieldMetadata,
 	FieldLastSignedIn,
 	FieldRole,
+	FieldBalance,
+	FieldIsPremium,
+	FieldPremiumExpires,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -84,6 +93,10 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultSafeID holds the default value on creation for the "safe_id" field.
 	DefaultSafeID string
+	// DefaultBalance holds the default value on creation for the "balance" field.
+	DefaultBalance float64
+	// DefaultIsPremium holds the default value on creation for the "is_premium" field.
+	DefaultIsPremium bool
 )
 
 // OrderOption defines the ordering options for the User queries.
@@ -127,6 +140,21 @@ func ByLastSignedIn(opts ...sql.OrderTermOption) OrderOption {
 // ByRole orders the results by the role field.
 func ByRole(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRole, opts...).ToFunc()
+}
+
+// ByBalance orders the results by the balance field.
+func ByBalance(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBalance, opts...).ToFunc()
+}
+
+// ByIsPremium orders the results by the is_premium field.
+func ByIsPremium(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsPremium, opts...).ToFunc()
+}
+
+// ByPremiumExpires orders the results by the premium_expires field.
+func ByPremiumExpires(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPremiumExpires, opts...).ToFunc()
 }
 
 // ByLocalField orders the results by local field.

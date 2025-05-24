@@ -29,6 +29,7 @@ const (
 	Bulbasaur_ResetCodeVerification_FullMethodName = "/bulbasaur.Bulbasaur/ResetCodeVerification"
 	Bulbasaur_GenerateResetCode_FullMethodName     = "/bulbasaur.Bulbasaur/GenerateResetCode"
 	Bulbasaur_ResetPassword_FullMethodName         = "/bulbasaur.Bulbasaur/ResetPassword"
+	Bulbasaur_IncreaseBalance_FullMethodName       = "/bulbasaur.Bulbasaur/IncreaseBalance"
 )
 
 // BulbasaurClient is the client API for Bulbasaur service.
@@ -44,6 +45,7 @@ type BulbasaurClient interface {
 	ResetCodeVerification(ctx context.Context, in *ResetCodeVerificationRequest, opts ...grpc.CallOption) (*ResetCodeVerificationResponse, error)
 	GenerateResetCode(ctx context.Context, in *GenerateResetCodeRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	IncreaseBalance(ctx context.Context, in *IncreaseBalanceRequest, opts ...grpc.CallOption) (*IncreaseBalanceResponse, error)
 }
 
 type bulbasaurClient struct {
@@ -144,6 +146,16 @@ func (c *bulbasaurClient) ResetPassword(ctx context.Context, in *ResetPasswordRe
 	return out, nil
 }
 
+func (c *bulbasaurClient) IncreaseBalance(ctx context.Context, in *IncreaseBalanceRequest, opts ...grpc.CallOption) (*IncreaseBalanceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(IncreaseBalanceResponse)
+	err := c.cc.Invoke(ctx, Bulbasaur_IncreaseBalance_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BulbasaurServer is the server API for Bulbasaur service.
 // All implementations must embed UnimplementedBulbasaurServer
 // for forward compatibility.
@@ -157,6 +169,7 @@ type BulbasaurServer interface {
 	ResetCodeVerification(context.Context, *ResetCodeVerificationRequest) (*ResetCodeVerificationResponse, error)
 	GenerateResetCode(context.Context, *GenerateResetCodeRequest) (*emptypb.Empty, error)
 	ResetPassword(context.Context, *ResetPasswordRequest) (*emptypb.Empty, error)
+	IncreaseBalance(context.Context, *IncreaseBalanceRequest) (*IncreaseBalanceResponse, error)
 	mustEmbedUnimplementedBulbasaurServer()
 }
 
@@ -193,6 +206,9 @@ func (UnimplementedBulbasaurServer) GenerateResetCode(context.Context, *Generate
 }
 func (UnimplementedBulbasaurServer) ResetPassword(context.Context, *ResetPasswordRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetPassword not implemented")
+}
+func (UnimplementedBulbasaurServer) IncreaseBalance(context.Context, *IncreaseBalanceRequest) (*IncreaseBalanceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IncreaseBalance not implemented")
 }
 func (UnimplementedBulbasaurServer) mustEmbedUnimplementedBulbasaurServer() {}
 func (UnimplementedBulbasaurServer) testEmbeddedByValue()                   {}
@@ -377,6 +393,24 @@ func _Bulbasaur_ResetPassword_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Bulbasaur_IncreaseBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IncreaseBalanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BulbasaurServer).IncreaseBalance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Bulbasaur_IncreaseBalance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BulbasaurServer).IncreaseBalance(ctx, req.(*IncreaseBalanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Bulbasaur_ServiceDesc is the grpc.ServiceDesc for Bulbasaur service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -420,6 +454,10 @@ var Bulbasaur_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "ResetPassword",
 			Handler:    _Bulbasaur_ResetPassword_Handler,
 		},
+		{
+			MethodName: "IncreaseBalance",
+			Handler:    _Bulbasaur_IncreaseBalance_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "bulbasaur/api/bulbasaur.proto",
@@ -430,6 +468,8 @@ const (
 	Ivysaur_Me_FullMethodName             = "/bulbasaur.Ivysaur/Me"
 	Ivysaur_ChangePassword_FullMethodName = "/bulbasaur.Ivysaur/ChangePassword"
 	Ivysaur_LogOut_FullMethodName         = "/bulbasaur.Ivysaur/LogOut"
+	Ivysaur_GetBalance_FullMethodName     = "/bulbasaur.Ivysaur/GetBalance"
+	Ivysaur_SetPremium_FullMethodName     = "/bulbasaur.Ivysaur/SetPremium"
 )
 
 // IvysaurClient is the client API for Ivysaur service.
@@ -440,6 +480,8 @@ type IvysaurClient interface {
 	Me(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*MeResponse, error)
 	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	LogOut(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetBalance(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetBalanceResponse, error)
+	SetPremium(ctx context.Context, in *SetPremiumRequest, opts ...grpc.CallOption) (*SetPremiumResponse, error)
 }
 
 type ivysaurClient struct {
@@ -490,6 +532,26 @@ func (c *ivysaurClient) LogOut(ctx context.Context, in *emptypb.Empty, opts ...g
 	return out, nil
 }
 
+func (c *ivysaurClient) GetBalance(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetBalanceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetBalanceResponse)
+	err := c.cc.Invoke(ctx, Ivysaur_GetBalance_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ivysaurClient) SetPremium(ctx context.Context, in *SetPremiumRequest, opts ...grpc.CallOption) (*SetPremiumResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SetPremiumResponse)
+	err := c.cc.Invoke(ctx, Ivysaur_SetPremium_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // IvysaurServer is the server API for Ivysaur service.
 // All implementations must embed UnimplementedIvysaurServer
 // for forward compatibility.
@@ -498,6 +560,8 @@ type IvysaurServer interface {
 	Me(context.Context, *emptypb.Empty) (*MeResponse, error)
 	ChangePassword(context.Context, *ChangePasswordRequest) (*emptypb.Empty, error)
 	LogOut(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
+	GetBalance(context.Context, *emptypb.Empty) (*GetBalanceResponse, error)
+	SetPremium(context.Context, *SetPremiumRequest) (*SetPremiumResponse, error)
 	mustEmbedUnimplementedIvysaurServer()
 }
 
@@ -519,6 +583,12 @@ func (UnimplementedIvysaurServer) ChangePassword(context.Context, *ChangePasswor
 }
 func (UnimplementedIvysaurServer) LogOut(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LogOut not implemented")
+}
+func (UnimplementedIvysaurServer) GetBalance(context.Context, *emptypb.Empty) (*GetBalanceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBalance not implemented")
+}
+func (UnimplementedIvysaurServer) SetPremium(context.Context, *SetPremiumRequest) (*SetPremiumResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetPremium not implemented")
 }
 func (UnimplementedIvysaurServer) mustEmbedUnimplementedIvysaurServer() {}
 func (UnimplementedIvysaurServer) testEmbeddedByValue()                 {}
@@ -613,6 +683,42 @@ func _Ivysaur_LogOut_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Ivysaur_GetBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IvysaurServer).GetBalance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ivysaur_GetBalance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IvysaurServer).GetBalance(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Ivysaur_SetPremium_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetPremiumRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IvysaurServer).SetPremium(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ivysaur_SetPremium_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IvysaurServer).SetPremium(ctx, req.(*SetPremiumRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Ivysaur_ServiceDesc is the grpc.ServiceDesc for Ivysaur service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -635,6 +741,14 @@ var Ivysaur_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LogOut",
 			Handler:    _Ivysaur_LogOut_Handler,
+		},
+		{
+			MethodName: "GetBalance",
+			Handler:    _Ivysaur_GetBalance_Handler,
+		},
+		{
+			MethodName: "SetPremium",
+			Handler:    _Ivysaur_SetPremium_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

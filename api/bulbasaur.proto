@@ -70,6 +70,13 @@ service Bulbasaur {
       body: "*"
     };
   };
+
+  rpc IncreaseBalance (IncreaseBalanceRequest) returns (IncreaseBalanceResponse) {
+    option (google.api.http) = {
+      post: "/bulbasaur/increase-balance"
+      body: "*"
+    };
+  };
 }
 
 service Ivysaur {
@@ -98,6 +105,19 @@ service Ivysaur {
       get: "/ivysaur/logout"
     };
   };
+
+  rpc GetBalance (google.protobuf.Empty) returns (GetBalanceResponse) {
+    option (google.api.http) = {
+      get: "/ivysaur/balance"
+    };
+  }
+
+  rpc SetPremium (SetPremiumRequest) returns (SetPremiumResponse) {
+    option (google.api.http) = {
+      post: "/ivysaur/premium"
+      body: "*"
+    };
+  }
 }
 
 service Venusaur {
@@ -121,6 +141,12 @@ enum Role {
   ROLE_UNKNOWN = 0;
   ROLE_CANDIDATE = 1;
   ROLE_BUSINESS_MANAGER = 2; 
+}
+
+enum SubscriptionPlan {
+  SUBSCRIPTION_PLAN_UNSPECIFIED = 0;
+  MONTHLY = 1;
+  ANNUAL = 2;
 }
 
 //======================================== MESSAGE ========================================
@@ -279,4 +305,27 @@ message FindUserByMetadataRequest {
 
 message FindUserByMetadataResponse {
   repeated uint64 ids = 1;
+}
+
+message IncreaseBalanceRequest {
+  uint64 user_id = 1;
+  float amount = 2;
+}
+
+message IncreaseBalanceResponse {
+  float new_balance = 1;
+}
+
+message GetBalanceResponse {
+  float balance = 1;
+  bool is_premium = 2;
+  string premium_expires = 3;
+}
+
+message SetPremiumRequest {
+  SubscriptionPlan plan = 1;
+}
+
+message SetPremiumResponse {
+  bool success = 1;
 }

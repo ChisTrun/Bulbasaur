@@ -139,6 +139,61 @@ func (uu *UserUpdate) AddRole(b bulbasaur.Role) *UserUpdate {
 	return uu
 }
 
+// SetBalance sets the "balance" field.
+func (uu *UserUpdate) SetBalance(f float64) *UserUpdate {
+	uu.mutation.ResetBalance()
+	uu.mutation.SetBalance(f)
+	return uu
+}
+
+// SetNillableBalance sets the "balance" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableBalance(f *float64) *UserUpdate {
+	if f != nil {
+		uu.SetBalance(*f)
+	}
+	return uu
+}
+
+// AddBalance adds f to the "balance" field.
+func (uu *UserUpdate) AddBalance(f float64) *UserUpdate {
+	uu.mutation.AddBalance(f)
+	return uu
+}
+
+// SetIsPremium sets the "is_premium" field.
+func (uu *UserUpdate) SetIsPremium(b bool) *UserUpdate {
+	uu.mutation.SetIsPremium(b)
+	return uu
+}
+
+// SetNillableIsPremium sets the "is_premium" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableIsPremium(b *bool) *UserUpdate {
+	if b != nil {
+		uu.SetIsPremium(*b)
+	}
+	return uu
+}
+
+// SetPremiumExpires sets the "premium_expires" field.
+func (uu *UserUpdate) SetPremiumExpires(t time.Time) *UserUpdate {
+	uu.mutation.SetPremiumExpires(t)
+	return uu
+}
+
+// SetNillablePremiumExpires sets the "premium_expires" field if the given value is not nil.
+func (uu *UserUpdate) SetNillablePremiumExpires(t *time.Time) *UserUpdate {
+	if t != nil {
+		uu.SetPremiumExpires(*t)
+	}
+	return uu
+}
+
+// ClearPremiumExpires clears the value of the "premium_expires" field.
+func (uu *UserUpdate) ClearPremiumExpires() *UserUpdate {
+	uu.mutation.ClearPremiumExpires()
+	return uu
+}
+
 // SetLocalID sets the "local" edge to the Local entity by ID.
 func (uu *UserUpdate) SetLocalID(id uint64) *UserUpdate {
 	uu.mutation.SetLocalID(id)
@@ -277,6 +332,21 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.AddedRole(); ok {
 		_spec.AddField(user.FieldRole, field.TypeInt32, value)
+	}
+	if value, ok := uu.mutation.Balance(); ok {
+		_spec.SetField(user.FieldBalance, field.TypeFloat64, value)
+	}
+	if value, ok := uu.mutation.AddedBalance(); ok {
+		_spec.AddField(user.FieldBalance, field.TypeFloat64, value)
+	}
+	if value, ok := uu.mutation.IsPremium(); ok {
+		_spec.SetField(user.FieldIsPremium, field.TypeBool, value)
+	}
+	if value, ok := uu.mutation.PremiumExpires(); ok {
+		_spec.SetField(user.FieldPremiumExpires, field.TypeTime, value)
+	}
+	if uu.mutation.PremiumExpiresCleared() {
+		_spec.ClearField(user.FieldPremiumExpires, field.TypeTime)
 	}
 	if uu.mutation.LocalCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -465,6 +535,61 @@ func (uuo *UserUpdateOne) AddRole(b bulbasaur.Role) *UserUpdateOne {
 	return uuo
 }
 
+// SetBalance sets the "balance" field.
+func (uuo *UserUpdateOne) SetBalance(f float64) *UserUpdateOne {
+	uuo.mutation.ResetBalance()
+	uuo.mutation.SetBalance(f)
+	return uuo
+}
+
+// SetNillableBalance sets the "balance" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableBalance(f *float64) *UserUpdateOne {
+	if f != nil {
+		uuo.SetBalance(*f)
+	}
+	return uuo
+}
+
+// AddBalance adds f to the "balance" field.
+func (uuo *UserUpdateOne) AddBalance(f float64) *UserUpdateOne {
+	uuo.mutation.AddBalance(f)
+	return uuo
+}
+
+// SetIsPremium sets the "is_premium" field.
+func (uuo *UserUpdateOne) SetIsPremium(b bool) *UserUpdateOne {
+	uuo.mutation.SetIsPremium(b)
+	return uuo
+}
+
+// SetNillableIsPremium sets the "is_premium" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableIsPremium(b *bool) *UserUpdateOne {
+	if b != nil {
+		uuo.SetIsPremium(*b)
+	}
+	return uuo
+}
+
+// SetPremiumExpires sets the "premium_expires" field.
+func (uuo *UserUpdateOne) SetPremiumExpires(t time.Time) *UserUpdateOne {
+	uuo.mutation.SetPremiumExpires(t)
+	return uuo
+}
+
+// SetNillablePremiumExpires sets the "premium_expires" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillablePremiumExpires(t *time.Time) *UserUpdateOne {
+	if t != nil {
+		uuo.SetPremiumExpires(*t)
+	}
+	return uuo
+}
+
+// ClearPremiumExpires clears the value of the "premium_expires" field.
+func (uuo *UserUpdateOne) ClearPremiumExpires() *UserUpdateOne {
+	uuo.mutation.ClearPremiumExpires()
+	return uuo
+}
+
 // SetLocalID sets the "local" edge to the Local entity by ID.
 func (uuo *UserUpdateOne) SetLocalID(id uint64) *UserUpdateOne {
 	uuo.mutation.SetLocalID(id)
@@ -633,6 +758,21 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.AddedRole(); ok {
 		_spec.AddField(user.FieldRole, field.TypeInt32, value)
+	}
+	if value, ok := uuo.mutation.Balance(); ok {
+		_spec.SetField(user.FieldBalance, field.TypeFloat64, value)
+	}
+	if value, ok := uuo.mutation.AddedBalance(); ok {
+		_spec.AddField(user.FieldBalance, field.TypeFloat64, value)
+	}
+	if value, ok := uuo.mutation.IsPremium(); ok {
+		_spec.SetField(user.FieldIsPremium, field.TypeBool, value)
+	}
+	if value, ok := uuo.mutation.PremiumExpires(); ok {
+		_spec.SetField(user.FieldPremiumExpires, field.TypeTime, value)
+	}
+	if uuo.mutation.PremiumExpiresCleared() {
+		_spec.ClearField(user.FieldPremiumExpires, field.TypeTime)
 	}
 	if uuo.mutation.LocalCleared() {
 		edge := &sqlgraph.EdgeSpec{

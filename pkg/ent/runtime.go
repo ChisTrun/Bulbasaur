@@ -67,4 +67,12 @@ func init() {
 	userDescSafeID := userFields[1].Descriptor()
 	// user.DefaultSafeID holds the default value on creation for the safe_id field.
 	user.DefaultSafeID = userDescSafeID.Default.(string)
+	// userDescBalance is the schema descriptor for balance field.
+	userDescBalance := userFields[6].Descriptor()
+	// user.DefaultBalance holds the default value on creation for the balance field.
+	user.DefaultBalance = userDescBalance.Default.(float64)
+	// userDescIsPremium is the schema descriptor for is_premium field.
+	userDescIsPremium := userFields[7].Descriptor()
+	// user.DefaultIsPremium holds the default value on creation for the is_premium field.
+	user.DefaultIsPremium = userDescIsPremium.Default.(bool)
 }

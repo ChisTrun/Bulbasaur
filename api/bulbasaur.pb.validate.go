@@ -3017,6 +3017,532 @@ var _ interface {
 	ErrorName() string
 } = FindUserByMetadataResponseValidationError{}
 
+// Validate checks the field values on IncreaseBalanceRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *IncreaseBalanceRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on IncreaseBalanceRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// IncreaseBalanceRequestMultiError, or nil if none found.
+func (m *IncreaseBalanceRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *IncreaseBalanceRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for UserId
+
+	// no validation rules for Amount
+
+	if len(errors) > 0 {
+		return IncreaseBalanceRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// IncreaseBalanceRequestMultiError is an error wrapping multiple validation
+// errors returned by IncreaseBalanceRequest.ValidateAll() if the designated
+// constraints aren't met.
+type IncreaseBalanceRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m IncreaseBalanceRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m IncreaseBalanceRequestMultiError) AllErrors() []error { return m }
+
+// IncreaseBalanceRequestValidationError is the validation error returned by
+// IncreaseBalanceRequest.Validate if the designated constraints aren't met.
+type IncreaseBalanceRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e IncreaseBalanceRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e IncreaseBalanceRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e IncreaseBalanceRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e IncreaseBalanceRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e IncreaseBalanceRequestValidationError) ErrorName() string {
+	return "IncreaseBalanceRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e IncreaseBalanceRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sIncreaseBalanceRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = IncreaseBalanceRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = IncreaseBalanceRequestValidationError{}
+
+// Validate checks the field values on IncreaseBalanceResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *IncreaseBalanceResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on IncreaseBalanceResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// IncreaseBalanceResponseMultiError, or nil if none found.
+func (m *IncreaseBalanceResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *IncreaseBalanceResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for NewBalance
+
+	if len(errors) > 0 {
+		return IncreaseBalanceResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// IncreaseBalanceResponseMultiError is an error wrapping multiple validation
+// errors returned by IncreaseBalanceResponse.ValidateAll() if the designated
+// constraints aren't met.
+type IncreaseBalanceResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m IncreaseBalanceResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m IncreaseBalanceResponseMultiError) AllErrors() []error { return m }
+
+// IncreaseBalanceResponseValidationError is the validation error returned by
+// IncreaseBalanceResponse.Validate if the designated constraints aren't met.
+type IncreaseBalanceResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e IncreaseBalanceResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e IncreaseBalanceResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e IncreaseBalanceResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e IncreaseBalanceResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e IncreaseBalanceResponseValidationError) ErrorName() string {
+	return "IncreaseBalanceResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e IncreaseBalanceResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sIncreaseBalanceResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = IncreaseBalanceResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = IncreaseBalanceResponseValidationError{}
+
+// Validate checks the field values on GetBalanceResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetBalanceResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetBalanceResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetBalanceResponseMultiError, or nil if none found.
+func (m *GetBalanceResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetBalanceResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Balance
+
+	// no validation rules for IsPremium
+
+	// no validation rules for PremiumExpires
+
+	if len(errors) > 0 {
+		return GetBalanceResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetBalanceResponseMultiError is an error wrapping multiple validation errors
+// returned by GetBalanceResponse.ValidateAll() if the designated constraints
+// aren't met.
+type GetBalanceResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetBalanceResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetBalanceResponseMultiError) AllErrors() []error { return m }
+
+// GetBalanceResponseValidationError is the validation error returned by
+// GetBalanceResponse.Validate if the designated constraints aren't met.
+type GetBalanceResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetBalanceResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetBalanceResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetBalanceResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetBalanceResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetBalanceResponseValidationError) ErrorName() string {
+	return "GetBalanceResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetBalanceResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetBalanceResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetBalanceResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetBalanceResponseValidationError{}
+
+// Validate checks the field values on SetPremiumRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *SetPremiumRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on SetPremiumRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// SetPremiumRequestMultiError, or nil if none found.
+func (m *SetPremiumRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *SetPremiumRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Plan
+
+	if len(errors) > 0 {
+		return SetPremiumRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// SetPremiumRequestMultiError is an error wrapping multiple validation errors
+// returned by SetPremiumRequest.ValidateAll() if the designated constraints
+// aren't met.
+type SetPremiumRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m SetPremiumRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m SetPremiumRequestMultiError) AllErrors() []error { return m }
+
+// SetPremiumRequestValidationError is the validation error returned by
+// SetPremiumRequest.Validate if the designated constraints aren't met.
+type SetPremiumRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e SetPremiumRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e SetPremiumRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e SetPremiumRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e SetPremiumRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e SetPremiumRequestValidationError) ErrorName() string {
+	return "SetPremiumRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e SetPremiumRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSetPremiumRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = SetPremiumRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = SetPremiumRequestValidationError{}
+
+// Validate checks the field values on SetPremiumResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *SetPremiumResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on SetPremiumResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// SetPremiumResponseMultiError, or nil if none found.
+func (m *SetPremiumResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *SetPremiumResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Success
+
+	if len(errors) > 0 {
+		return SetPremiumResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// SetPremiumResponseMultiError is an error wrapping multiple validation errors
+// returned by SetPremiumResponse.ValidateAll() if the designated constraints
+// aren't met.
+type SetPremiumResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m SetPremiumResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m SetPremiumResponseMultiError) AllErrors() []error { return m }
+
+// SetPremiumResponseValidationError is the validation error returned by
+// SetPremiumResponse.Validate if the designated constraints aren't met.
+type SetPremiumResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e SetPremiumResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e SetPremiumResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e SetPremiumResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e SetPremiumResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e SetPremiumResponseValidationError) ErrorName() string {
+	return "SetPremiumResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e SetPremiumResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSetPremiumResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = SetPremiumResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = SetPremiumResponseValidationError{}
+
 // Validate checks the field values on SignUpRequest_Local with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
