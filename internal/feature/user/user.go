@@ -17,6 +17,7 @@ import (
 	crand "crypto/rand"
 	"encoding/hex"
 	"fmt"
+	"log"
 	"math/rand"
 	"time"
 
@@ -262,7 +263,14 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 	}, nil
 }
 
-func (u *userFeature) RefreshToken(ctx context.Context, request *bulbasaur.RefreshTokenRequest) (*bulbasaur.RefreshTokenResponse, error) {
+func (u *userFeature) RefreshToken(ctx context.Context, request *bulbasaur.RefreshTokenRequest) (_ *bulbasaur.RefreshTokenResponse, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("@@@@@@@@@@@@@@@@@@@@@@@@@ Error: %v", r)
+			err = fmt.Errorf("internal server error")
+		}
+	}()
+
 	claims, err := u.signer.VerifyToken(request.GetTokenInfo().GetRefreshToken(), bulbasaur.TokenType_TOKEN_TYPE_REFRESH_TOKEN)
 	if err != nil {
 		return nil, err
@@ -704,10 +712,10 @@ func (u *userFeature) SetPremium(ctx context.Context, request *bulbasaur.SetPrem
 		switch plan {
 		case bulbasaur.SubscriptionPlan_MONTHLY:
 			newExpiry = startFrom.AddDate(0, 1, 0)
-			cost = 120000
+			cost = 120
 		case bulbasaur.SubscriptionPlan_ANNUAL:
 			newExpiry = startFrom.AddDate(1, 0, 0)
-			cost = 120000 * 11
+			cost = 120 * 11
 		default:
 			return fmt.Errorf("invalid subscription plan")
 		}
