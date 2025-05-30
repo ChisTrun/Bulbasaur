@@ -636,13 +636,30 @@ func (u *userFeature) FindUserByMetadata(ctx context.Context, request *bulbasaur
 func (u *userFeature) IncreaseBalance(ctx context.Context, request *bulbasaur.IncreaseBalanceRequest) (*bulbasaur.IncreaseBalanceResponse, error) {
 	var newBalance float32
 
+	milestones := map[int]int{
+		60000:   60,
+		120000:  120,
+		170000:  180,
+		220000:  240,
+		1200000: 1440,
+	}
+
+	amount := int(request.GetAmount())
+
+	eligibleCoins := 1
+	for milestone, coins := range milestones {
+		if amount >= milestone && coins > eligibleCoins {
+			eligibleCoins = coins
+		}
+	}
+
 	err := tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
 		user, err := tx.Client().User.Get(ctx, request.GetUserId())
 		if err != nil {
 			return fmt.Errorf("user not found: %w", err)
 		}
 
-		newBalance = float32(user.Balance + float64(request.GetAmount()))
+		newBalance = float32(user.Balance + float64(eligibleCoins))
 
 		err = tx.Client().User.UpdateOneID(user.ID).SetBalance(float64(newBalance)).Exec(ctx)
 		if err != nil {
