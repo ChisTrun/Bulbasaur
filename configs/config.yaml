@@ -30,6 +30,7 @@ database:
 redis:
   address: ${REDIS_ADDRESS}
   namespace: ${REDIS_NAMESPACE}
+  password: ${REDIS_PASSWORD}
 
 auth:
   AccessKey: ${AUTH_ACCESS_KEY}

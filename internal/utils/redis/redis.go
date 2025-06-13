@@ -28,7 +28,8 @@ func New(enable bool, cfg *config.Config) Redis {
 
 	return &redis{
 		redis: re.NewClient(&re.Options{
-			Addr: cfg.Redis.Address,
+			Addr:     cfg.Redis.Address,
+			Password: cfg.Redis.Password,
 		}),
 		namespace: cfg.Redis.Namespace, // Assuming namespace is part of the config
 	}
