@@ -758,6 +758,8 @@ var Ivysaur_ServiceDesc = grpc.ServiceDesc{
 const (
 	Venusaur_FindUserByName_FullMethodName  = "/bulbasaur.Venusaur/FindUserByName"
 	Venusaur_IncreaseBalance_FullMethodName = "/bulbasaur.Venusaur/IncreaseBalance"
+	Venusaur_GetBalance_FullMethodName      = "/bulbasaur.Venusaur/GetBalance"
+	Venusaur_DecreaseBalance_FullMethodName = "/bulbasaur.Venusaur/DecreaseBalance"
 )
 
 // VenusaurClient is the client API for Venusaur service.
@@ -766,6 +768,8 @@ const (
 type VenusaurClient interface {
 	FindUserByName(ctx context.Context, in *FindUserByNameRequest, opts ...grpc.CallOption) (*FindUserByNameResponse, error)
 	IncreaseBalance(ctx context.Context, in *IncreaseBalanceRequest, opts ...grpc.CallOption) (*IncreaseBalanceResponse, error)
+	GetBalance(ctx context.Context, in *GetBalanceRequest, opts ...grpc.CallOption) (*GetBalanceResponse, error)
+	DecreaseBalance(ctx context.Context, in *DecreaseBalanceRequest, opts ...grpc.CallOption) (*DecreaseBalanceResponse, error)
 }
 
 type venusaurClient struct {
@@ -796,12 +800,34 @@ func (c *venusaurClient) IncreaseBalance(ctx context.Context, in *IncreaseBalanc
 	return out, nil
 }
 
+func (c *venusaurClient) GetBalance(ctx context.Context, in *GetBalanceRequest, opts ...grpc.CallOption) (*GetBalanceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetBalanceResponse)
+	err := c.cc.Invoke(ctx, Venusaur_GetBalance_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *venusaurClient) DecreaseBalance(ctx context.Context, in *DecreaseBalanceRequest, opts ...grpc.CallOption) (*DecreaseBalanceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DecreaseBalanceResponse)
+	err := c.cc.Invoke(ctx, Venusaur_DecreaseBalance_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VenusaurServer is the server API for Venusaur service.
 // All implementations must embed UnimplementedVenusaurServer
 // for forward compatibility.
 type VenusaurServer interface {
 	FindUserByName(context.Context, *FindUserByNameRequest) (*FindUserByNameResponse, error)
 	IncreaseBalance(context.Context, *IncreaseBalanceRequest) (*IncreaseBalanceResponse, error)
+	GetBalance(context.Context, *GetBalanceRequest) (*GetBalanceResponse, error)
+	DecreaseBalance(context.Context, *DecreaseBalanceRequest) (*DecreaseBalanceResponse, error)
 	mustEmbedUnimplementedVenusaurServer()
 }
 
@@ -817,6 +843,12 @@ func (UnimplementedVenusaurServer) FindUserByName(context.Context, *FindUserByNa
 }
 func (UnimplementedVenusaurServer) IncreaseBalance(context.Context, *IncreaseBalanceRequest) (*IncreaseBalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IncreaseBalance not implemented")
+}
+func (UnimplementedVenusaurServer) GetBalance(context.Context, *GetBalanceRequest) (*GetBalanceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBalance not implemented")
+}
+func (UnimplementedVenusaurServer) DecreaseBalance(context.Context, *DecreaseBalanceRequest) (*DecreaseBalanceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DecreaseBalance not implemented")
 }
 func (UnimplementedVenusaurServer) mustEmbedUnimplementedVenusaurServer() {}
 func (UnimplementedVenusaurServer) testEmbeddedByValue()                  {}
@@ -875,6 +907,42 @@ func _Venusaur_IncreaseBalance_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Venusaur_GetBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBalanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VenusaurServer).GetBalance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Venusaur_GetBalance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VenusaurServer).GetBalance(ctx, req.(*GetBalanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Venusaur_DecreaseBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DecreaseBalanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VenusaurServer).DecreaseBalance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Venusaur_DecreaseBalance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VenusaurServer).DecreaseBalance(ctx, req.(*DecreaseBalanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Venusaur_ServiceDesc is the grpc.ServiceDesc for Venusaur service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -889,6 +957,14 @@ var Venusaur_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "IncreaseBalance",
 			Handler:    _Venusaur_IncreaseBalance_Handler,
+		},
+		{
+			MethodName: "GetBalance",
+			Handler:    _Venusaur_GetBalance_Handler,
+		},
+		{
+			MethodName: "DecreaseBalance",
+			Handler:    _Venusaur_DecreaseBalance_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

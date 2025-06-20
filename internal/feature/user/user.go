@@ -45,6 +45,8 @@ type UserFeature interface {
 	IncreaseBalance(ctx context.Context, request *bulbasaur.IncreaseBalanceRequest) (*bulbasaur.IncreaseBalanceResponse, error)
 	GetBalance(ctx context.Context) (*bulbasaur.GetBalanceResponse, error)
 	SetPremium(ctx context.Context, request *bulbasaur.SetPremiumRequest) (*bulbasaur.SetPremiumResponse, error)
+	GetBalanceInternal(ctx context.Context, request *bulbasaur.GetBalanceRequest) (*bulbasaur.GetBalanceResponse, error)
+	DecreaseBalance(ctx context.Context, request *bulbasaur.DecreaseBalanceRequest) (*bulbasaur.DecreaseBalanceResponse, error)
 }
 
 type userFeature struct {
@@ -765,4 +767,44 @@ func (u *userFeature) SetPremium(ctx context.Context, request *bulbasaur.SetPrem
 	}
 
 	return &bulbasaur.SetPremiumResponse{Success: true}, nil
+}
+
+func (u *userFeature) GetBalanceInternal(ctx context.Context, request *bulbasaur.GetBalanceRequest) (*bulbasaur.GetBalanceResponse, error) {
+	user, err := u.repo.UserRepository.GetUserById(ctx, request.GetUserId())
+	if err != nil {
+		return nil, fmt.Errorf("user not found: %w", err)
+	}
+
+	return &bulbasaur.GetBalanceResponse{
+		Balance:        float32(user.Balance),
+		IsPremium:      user.IsPremium,
+		PremiumExpires: user.PremiumExpires.Format(time.RFC3339),
+	}, nil
+}
+
+func (u *userFeature) DecreaseBalance(ctx context.Context, request *bulbasaur.DecreaseBalanceRequest) (*bulbasaur.DecreaseBalanceResponse, error) {
+	err := tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
+		user, err := tx.Client().User.Get(ctx, request.GetUserId())
+		if err != nil {
+			return fmt.Errorf("user not found: %w", err)
+		}
+
+		if user.Balance < float64(request.GetAmount()) {
+			return fmt.Errorf("insufficient balance")
+		}
+
+		newBalance := user.Balance - float64(request.GetAmount())
+		err = tx.Client().User.UpdateOneID(user.ID).SetBalance(newBalance).Exec(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to decrease balance: %w", err)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return &bulbasaur.DecreaseBalanceResponse{Success: false}, err
+	}
+
+	return &bulbasaur.DecreaseBalanceResponse{Success: true}, nil
 }

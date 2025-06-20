@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@bufbuild/protoc-gen-connect-web": "^0.11.0"
+  }
+}

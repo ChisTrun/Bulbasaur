@@ -3543,6 +3543,320 @@ var _ interface {
 	ErrorName() string
 } = SetPremiumResponseValidationError{}
 
+// Validate checks the field values on GetBalanceRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *GetBalanceRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetBalanceRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetBalanceRequestMultiError, or nil if none found.
+func (m *GetBalanceRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetBalanceRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for UserId
+
+	if len(errors) > 0 {
+		return GetBalanceRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetBalanceRequestMultiError is an error wrapping multiple validation errors
+// returned by GetBalanceRequest.ValidateAll() if the designated constraints
+// aren't met.
+type GetBalanceRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetBalanceRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetBalanceRequestMultiError) AllErrors() []error { return m }
+
+// GetBalanceRequestValidationError is the validation error returned by
+// GetBalanceRequest.Validate if the designated constraints aren't met.
+type GetBalanceRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetBalanceRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetBalanceRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetBalanceRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetBalanceRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetBalanceRequestValidationError) ErrorName() string {
+	return "GetBalanceRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetBalanceRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetBalanceRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetBalanceRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetBalanceRequestValidationError{}
+
+// Validate checks the field values on DecreaseBalanceRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DecreaseBalanceRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DecreaseBalanceRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DecreaseBalanceRequestMultiError, or nil if none found.
+func (m *DecreaseBalanceRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DecreaseBalanceRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for UserId
+
+	// no validation rules for Amount
+
+	if len(errors) > 0 {
+		return DecreaseBalanceRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// DecreaseBalanceRequestMultiError is an error wrapping multiple validation
+// errors returned by DecreaseBalanceRequest.ValidateAll() if the designated
+// constraints aren't met.
+type DecreaseBalanceRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DecreaseBalanceRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DecreaseBalanceRequestMultiError) AllErrors() []error { return m }
+
+// DecreaseBalanceRequestValidationError is the validation error returned by
+// DecreaseBalanceRequest.Validate if the designated constraints aren't met.
+type DecreaseBalanceRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DecreaseBalanceRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DecreaseBalanceRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DecreaseBalanceRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DecreaseBalanceRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DecreaseBalanceRequestValidationError) ErrorName() string {
+	return "DecreaseBalanceRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DecreaseBalanceRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDecreaseBalanceRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DecreaseBalanceRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DecreaseBalanceRequestValidationError{}
+
+// Validate checks the field values on DecreaseBalanceResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DecreaseBalanceResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DecreaseBalanceResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DecreaseBalanceResponseMultiError, or nil if none found.
+func (m *DecreaseBalanceResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DecreaseBalanceResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Success
+
+	if len(errors) > 0 {
+		return DecreaseBalanceResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// DecreaseBalanceResponseMultiError is an error wrapping multiple validation
+// errors returned by DecreaseBalanceResponse.ValidateAll() if the designated
+// constraints aren't met.
+type DecreaseBalanceResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DecreaseBalanceResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DecreaseBalanceResponseMultiError) AllErrors() []error { return m }
+
+// DecreaseBalanceResponseValidationError is the validation error returned by
+// DecreaseBalanceResponse.Validate if the designated constraints aren't met.
+type DecreaseBalanceResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DecreaseBalanceResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DecreaseBalanceResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DecreaseBalanceResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DecreaseBalanceResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DecreaseBalanceResponseValidationError) ErrorName() string {
+	return "DecreaseBalanceResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DecreaseBalanceResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDecreaseBalanceResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DecreaseBalanceResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DecreaseBalanceResponseValidationError{}
+
 // Validate checks the field values on SignUpRequest_Local with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.

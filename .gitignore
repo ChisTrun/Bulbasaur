@@ -31,3 +31,5 @@ vendor/
 /Dockerfile
 tmp
 tmp/
+
+/node_modules/

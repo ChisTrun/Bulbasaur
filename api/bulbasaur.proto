@@ -134,6 +134,19 @@ service Venusaur {
       body: "*"
     };
   };
+
+  rpc GetBalance (GetBalanceRequest) returns (GetBalanceResponse) {
+    option (google.api.http) = {
+      get: "/venusaur/balance/{user_id}"
+    };
+  }
+
+  rpc DecreaseBalance (DecreaseBalanceRequest) returns (DecreaseBalanceResponse) {
+    option (google.api.http) = {
+      post: "/venusaur/decrease-balance/{user_id}"
+      body: "*"
+    };
+  }
 }
 
 //======================================== ENUM =======================================
@@ -334,5 +347,18 @@ message SetPremiumRequest {
 }
 
 message SetPremiumResponse {
+  bool success = 1;
+}
+
+message GetBalanceRequest {
+  uint64 user_id = 1;
+}
+
+message DecreaseBalanceRequest {
+  uint64 user_id = 1;
+  float amount = 2;
+}
+
+message DecreaseBalanceResponse {
   bool success = 1;
 }
