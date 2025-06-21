@@ -5,6 +5,7 @@ package ent
 import (
 	"bulbasaur/pkg/ent/google"
 	"bulbasaur/pkg/ent/local"
+	"bulbasaur/pkg/ent/transactionhistory"
 	"bulbasaur/pkg/ent/user"
 	"bulbasaur/schema"
 	"time"
@@ -48,6 +49,21 @@ func init() {
 	local.DefaultUpdatedAt = localDescUpdatedAt.Default.(func() time.Time)
 	// local.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	local.UpdateDefaultUpdatedAt = localDescUpdatedAt.UpdateDefault.(func() time.Time)
+	transactionhistoryMixin := schema.TransactionHistory{}.Mixin()
+	transactionhistoryMixinFields0 := transactionhistoryMixin[0].Fields()
+	_ = transactionhistoryMixinFields0
+	transactionhistoryFields := schema.TransactionHistory{}.Fields()
+	_ = transactionhistoryFields
+	// transactionhistoryDescCreatedAt is the schema descriptor for created_at field.
+	transactionhistoryDescCreatedAt := transactionhistoryMixinFields0[1].Descriptor()
+	// transactionhistory.DefaultCreatedAt holds the default value on creation for the created_at field.
+	transactionhistory.DefaultCreatedAt = transactionhistoryDescCreatedAt.Default.(func() time.Time)
+	// transactionhistoryDescUpdatedAt is the schema descriptor for updated_at field.
+	transactionhistoryDescUpdatedAt := transactionhistoryMixinFields0[2].Descriptor()
+	// transactionhistory.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	transactionhistory.DefaultUpdatedAt = transactionhistoryDescUpdatedAt.Default.(func() time.Time)
+	// transactionhistory.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	transactionhistory.UpdateDefaultUpdatedAt = transactionhistoryDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0

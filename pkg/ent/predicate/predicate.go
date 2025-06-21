@@ -12,5 +12,8 @@ type Google func(*sql.Selector)
 // Local is the predicate function for local builders.
 type Local func(*sql.Selector)
 
+// TransactionHistory is the predicate function for transactionhistory builders.
+type TransactionHistory func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

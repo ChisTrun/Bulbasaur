@@ -69,13 +69,28 @@ var (
 			},
 		},
 	}
+	// TransactionHistoriesColumns holds the columns for the "transaction_histories" table.
+	TransactionHistoriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "user_id", Type: field.TypeUint64},
+		{Name: "amount", Type: field.TypeFloat64},
+		{Name: "note", Type: field.TypeString},
+	}
+	// TransactionHistoriesTable holds the schema information for the "transaction_histories" table.
+	TransactionHistoriesTable = &schema.Table{
+		Name:       "transaction_histories",
+		Columns:    TransactionHistoriesColumns,
+		PrimaryKey: []*schema.Column{TransactionHistoriesColumns[0]},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "tenant_id", Type: field.TypeString},
-		{Name: "safe_id", Type: field.TypeString, Default: "2511f44c-6185-451a-94d0-4b4f2605cf9a"},
+		{Name: "safe_id", Type: field.TypeString, Default: "104fbe04-4684-4e99-832b-58f64e90650c"},
 		{Name: "email", Type: field.TypeString, Nullable: true},
 		{Name: "metadata", Type: field.TypeJSON, Nullable: true},
 		{Name: "last_signed_in", Type: field.TypeTime, Nullable: true},
@@ -106,6 +121,7 @@ var (
 	Tables = []*schema.Table{
 		GooglesTable,
 		LocalsTable,
+		TransactionHistoriesTable,
 		UsersTable,
 	}
 )

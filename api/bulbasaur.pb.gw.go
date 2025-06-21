@@ -402,6 +402,24 @@ func local_request_Ivysaur_SetPremium_0(ctx context.Context, marshaler runtime.M
 	return msg, metadata, err
 }
 
+func request_Ivysaur_GetTransactionHistory_0(ctx context.Context, marshaler runtime.Marshaler, client IvysaurClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq emptypb.Empty
+		metadata runtime.ServerMetadata
+	)
+	msg, err := client.GetTransactionHistory(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_Ivysaur_GetTransactionHistory_0(ctx context.Context, marshaler runtime.Marshaler, server IvysaurServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq emptypb.Empty
+		metadata runtime.ServerMetadata
+	)
+	msg, err := server.GetTransactionHistory(ctx, &protoReq)
+	return msg, metadata, err
+}
+
 func request_Venusaur_FindUserByName_0(ctx context.Context, marshaler runtime.Marshaler, client VenusaurClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq FindUserByNameRequest
@@ -525,6 +543,54 @@ func local_request_Venusaur_DecreaseBalance_0(ctx context.Context, marshaler run
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
 	}
 	msg, err := server.DecreaseBalance(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_Venusaur_StartTransaction_0(ctx context.Context, marshaler runtime.Marshaler, client VenusaurClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq StartTransactionRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := client.StartTransaction(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_Venusaur_StartTransaction_0(ctx context.Context, marshaler runtime.Marshaler, server VenusaurServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq StartTransactionRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.StartTransaction(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_Venusaur_CommitTransaction_0(ctx context.Context, marshaler runtime.Marshaler, client VenusaurClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq CommitTransactionRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := client.CommitTransaction(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_Venusaur_CommitTransaction_0(ctx context.Context, marshaler runtime.Marshaler, server VenusaurServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq CommitTransactionRequest
+		metadata runtime.ServerMetadata
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	msg, err := server.CommitTransaction(ctx, &protoReq)
 	return msg, metadata, err
 }
 
@@ -864,6 +930,26 @@ func RegisterIvysaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		}
 		forward_Ivysaur_SetPremium_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodGet, pattern_Ivysaur_GetTransactionHistory_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Ivysaur/GetTransactionHistory", runtime.WithHTTPPathPattern("/ivysaur/transactions"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_Ivysaur_GetTransactionHistory_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Ivysaur_GetTransactionHistory_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 
 	return nil
 }
@@ -953,6 +1039,46 @@ func RegisterVenusaurHandlerServer(ctx context.Context, mux *runtime.ServeMux, s
 			return
 		}
 		forward_Venusaur_DecreaseBalance_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_Venusaur_StartTransaction_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Venusaur/StartTransaction", runtime.WithHTTPPathPattern("/venusaur/transactions/start"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_Venusaur_StartTransaction_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Venusaur_StartTransaction_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_Venusaur_CommitTransaction_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/bulbasaur.Venusaur/CommitTransaction", runtime.WithHTTPPathPattern("/venusaur/transactions/commit"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_Venusaur_CommitTransaction_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Venusaur_CommitTransaction_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 
 	return nil
@@ -1331,25 +1457,44 @@ func RegisterIvysaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		}
 		forward_Ivysaur_SetPremium_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodGet, pattern_Ivysaur_GetTransactionHistory_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Ivysaur/GetTransactionHistory", runtime.WithHTTPPathPattern("/ivysaur/transactions"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Ivysaur_GetTransactionHistory_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Ivysaur_GetTransactionHistory_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	return nil
 }
 
 var (
-	pattern_Ivysaur_UpdateMetadata_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "update"}, ""))
-	pattern_Ivysaur_Me_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "me"}, ""))
-	pattern_Ivysaur_ChangePassword_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "changepassword"}, ""))
-	pattern_Ivysaur_LogOut_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "logout"}, ""))
-	pattern_Ivysaur_GetBalance_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "balance"}, ""))
-	pattern_Ivysaur_SetPremium_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "premium"}, ""))
+	pattern_Ivysaur_UpdateMetadata_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "update"}, ""))
+	pattern_Ivysaur_Me_0                    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "me"}, ""))
+	pattern_Ivysaur_ChangePassword_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "changepassword"}, ""))
+	pattern_Ivysaur_LogOut_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "logout"}, ""))
+	pattern_Ivysaur_GetBalance_0            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "balance"}, ""))
+	pattern_Ivysaur_SetPremium_0            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "premium"}, ""))
+	pattern_Ivysaur_GetTransactionHistory_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ivysaur", "transactions"}, ""))
 )
 
 var (
-	forward_Ivysaur_UpdateMetadata_0 = runtime.ForwardResponseMessage
-	forward_Ivysaur_Me_0             = runtime.ForwardResponseMessage
-	forward_Ivysaur_ChangePassword_0 = runtime.ForwardResponseMessage
-	forward_Ivysaur_LogOut_0         = runtime.ForwardResponseMessage
-	forward_Ivysaur_GetBalance_0     = runtime.ForwardResponseMessage
-	forward_Ivysaur_SetPremium_0     = runtime.ForwardResponseMessage
+	forward_Ivysaur_UpdateMetadata_0        = runtime.ForwardResponseMessage
+	forward_Ivysaur_Me_0                    = runtime.ForwardResponseMessage
+	forward_Ivysaur_ChangePassword_0        = runtime.ForwardResponseMessage
+	forward_Ivysaur_LogOut_0                = runtime.ForwardResponseMessage
+	forward_Ivysaur_GetBalance_0            = runtime.ForwardResponseMessage
+	forward_Ivysaur_SetPremium_0            = runtime.ForwardResponseMessage
+	forward_Ivysaur_GetTransactionHistory_0 = runtime.ForwardResponseMessage
 )
 
 // RegisterVenusaurHandlerFromEndpoint is same as RegisterVenusaurHandler but
@@ -1456,19 +1601,57 @@ func RegisterVenusaurHandlerClient(ctx context.Context, mux *runtime.ServeMux, c
 		}
 		forward_Venusaur_DecreaseBalance_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPost, pattern_Venusaur_StartTransaction_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Venusaur/StartTransaction", runtime.WithHTTPPathPattern("/venusaur/transactions/start"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Venusaur_StartTransaction_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Venusaur_StartTransaction_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_Venusaur_CommitTransaction_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/bulbasaur.Venusaur/CommitTransaction", runtime.WithHTTPPathPattern("/venusaur/transactions/commit"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Venusaur_CommitTransaction_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_Venusaur_CommitTransaction_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	return nil
 }
 
 var (
-	pattern_Venusaur_FindUserByName_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"venusaur", "finduserbyname"}, ""))
-	pattern_Venusaur_IncreaseBalance_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"venusaur", "increase-balance"}, ""))
-	pattern_Venusaur_GetBalance_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"venusaur", "balance", "user_id"}, ""))
-	pattern_Venusaur_DecreaseBalance_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"venusaur", "decrease-balance", "user_id"}, ""))
+	pattern_Venusaur_FindUserByName_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"venusaur", "finduserbyname"}, ""))
+	pattern_Venusaur_IncreaseBalance_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"venusaur", "increase-balance"}, ""))
+	pattern_Venusaur_GetBalance_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"venusaur", "balance", "user_id"}, ""))
+	pattern_Venusaur_DecreaseBalance_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"venusaur", "decrease-balance", "user_id"}, ""))
+	pattern_Venusaur_StartTransaction_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"venusaur", "transactions", "start"}, ""))
+	pattern_Venusaur_CommitTransaction_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"venusaur", "transactions", "commit"}, ""))
 )
 
 var (
-	forward_Venusaur_FindUserByName_0  = runtime.ForwardResponseMessage
-	forward_Venusaur_IncreaseBalance_0 = runtime.ForwardResponseMessage
-	forward_Venusaur_GetBalance_0      = runtime.ForwardResponseMessage
-	forward_Venusaur_DecreaseBalance_0 = runtime.ForwardResponseMessage
+	forward_Venusaur_FindUserByName_0    = runtime.ForwardResponseMessage
+	forward_Venusaur_IncreaseBalance_0   = runtime.ForwardResponseMessage
+	forward_Venusaur_GetBalance_0        = runtime.ForwardResponseMessage
+	forward_Venusaur_DecreaseBalance_0   = runtime.ForwardResponseMessage
+	forward_Venusaur_StartTransaction_0  = runtime.ForwardResponseMessage
+	forward_Venusaur_CommitTransaction_0 = runtime.ForwardResponseMessage
 )

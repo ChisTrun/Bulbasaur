@@ -13,12 +13,15 @@ import (
 	"bulbasaur/internal/utils/validation"
 	config "bulbasaur/pkg/config"
 	"bulbasaur/pkg/ent"
+	"bulbasaur/pkg/ent/transactionhistory"
 	"context"
 	crand "crypto/rand"
 	"encoding/hex"
 	"fmt"
 	"log"
 	"math/rand"
+	"strconv"
+	"strings"
 	"time"
 
 	re "github.com/redis/go-redis/v9"
@@ -41,12 +44,15 @@ type UserFeature interface {
 	ResetPassword(ctx context.Context, request *bulbasaur.ResetPasswordRequest) error
 	FindUserByName(ctx context.Context, request *bulbasaur.FindUserByNameRequest) (*bulbasaur.FindUserByNameResponse, error)
 	FindUserByMetadata(ctx context.Context, request *bulbasaur.FindUserByMetadataRequest) (*bulbasaur.FindUserByMetadataResponse, error)
+	GetTransactionHistory(ctx context.Context) (*bulbasaur.GetTransactionHistoryResponse, error)
 
 	IncreaseBalance(ctx context.Context, request *bulbasaur.IncreaseBalanceRequest) (*bulbasaur.IncreaseBalanceResponse, error)
 	GetBalance(ctx context.Context) (*bulbasaur.GetBalanceResponse, error)
 	SetPremium(ctx context.Context, request *bulbasaur.SetPremiumRequest) (*bulbasaur.SetPremiumResponse, error)
 	GetBalanceInternal(ctx context.Context, request *bulbasaur.GetBalanceRequest) (*bulbasaur.GetBalanceResponse, error)
 	DecreaseBalance(ctx context.Context, request *bulbasaur.DecreaseBalanceRequest) (*bulbasaur.DecreaseBalanceResponse, error)
+	StartTransaction(ctx context.Context, request *bulbasaur.StartTransactionRequest) (*bulbasaur.StartTransactionResponse, error)
+	CommitTransaction(ctx context.Context, request *bulbasaur.CommitTransactionRequest) (*bulbasaur.CommitTransactionResponse, error)
 }
 
 type userFeature struct {
@@ -670,9 +676,23 @@ func (u *userFeature) IncreaseBalance(ctx context.Context, request *bulbasaur.In
 
 		return nil
 	})
-
 	if err != nil {
 		return nil, err
+	}
+
+	err = tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
+		err = tx.Client().TransactionHistory.Create().
+			SetUserID(request.GetUserId()).
+			SetAmount(float64(eligibleCoins)).
+			SetNote("Top up").
+			Exec(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to store top-up transaction: %w", err)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to store transaction history: %w", err)
 	}
 
 	return &bulbasaur.IncreaseBalanceResponse{
@@ -704,8 +724,13 @@ func (u *userFeature) GetBalance(ctx context.Context) (*bulbasaur.GetBalanceResp
 		}
 	}
 
+	availableBalance, err := GetUsableBalance(ctx, u.redis, user.ID, user.Balance)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get usable balance: %w", err)
+	}
+
 	return &bulbasaur.GetBalanceResponse{
-		Balance:        float32(user.Balance),
+		Balance:        float32(availableBalance),
 		IsPremium:      isPremium,
 		PremiumExpires: premiumExpires,
 	}, nil
@@ -745,8 +770,13 @@ func (u *userFeature) SetPremium(ctx context.Context, request *bulbasaur.SetPrem
 			return fmt.Errorf("invalid subscription plan")
 		}
 
-		if user.Balance < float64(cost) {
-			return fmt.Errorf("insufficient balance")
+		availableBalance, err := GetUsableBalance(ctx, u.redis, user.ID, user.Balance)
+		if err != nil {
+			return fmt.Errorf("failed to get usable balance: %w", err)
+		}
+
+		if availableBalance < float64(cost) {
+			return fmt.Errorf("insufficient balance for premium subscription")
 		}
 
 		err = tx.Client().User.
@@ -757,6 +787,15 @@ func (u *userFeature) SetPremium(ctx context.Context, request *bulbasaur.SetPrem
 			Exec(ctx)
 		if err != nil {
 			return fmt.Errorf("failed to update premium fields: %w", err)
+		}
+
+		err = tx.Client().TransactionHistory.Create().
+			SetUserID(uint64(userId)).
+			SetAmount(float64(-cost)).
+			SetNote("Premium purchased").
+			Exec(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to store premium purchase transaction: %w", err)
 		}
 
 		return nil
@@ -775,8 +814,13 @@ func (u *userFeature) GetBalanceInternal(ctx context.Context, request *bulbasaur
 		return nil, fmt.Errorf("user not found: %w", err)
 	}
 
+	availableBalance, err := GetUsableBalance(ctx, u.redis, user.ID, user.Balance)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get usable balance: %w", err)
+	}
+
 	return &bulbasaur.GetBalanceResponse{
-		Balance:        float32(user.Balance),
+		Balance:        float32(availableBalance),
 		IsPremium:      user.IsPremium,
 		PremiumExpires: user.PremiumExpires.Format(time.RFC3339),
 	}, nil
@@ -789,7 +833,12 @@ func (u *userFeature) DecreaseBalance(ctx context.Context, request *bulbasaur.De
 			return fmt.Errorf("user not found: %w", err)
 		}
 
-		if user.Balance < float64(request.GetAmount()) {
+		availableBalance, err := GetUsableBalance(ctx, u.redis, user.ID, user.Balance)
+		if err != nil {
+			return fmt.Errorf("failed to get usable balance: %w", err)
+		}
+
+		if availableBalance < float64(request.GetAmount()) {
 			return fmt.Errorf("insufficient balance")
 		}
 
@@ -807,4 +856,179 @@ func (u *userFeature) DecreaseBalance(ctx context.Context, request *bulbasaur.De
 	}
 
 	return &bulbasaur.DecreaseBalanceResponse{Success: true}, nil
+}
+
+func (u *userFeature) StartTransaction(ctx context.Context, request *bulbasaur.StartTransactionRequest) (*bulbasaur.StartTransactionResponse, error) {
+	userId := request.GetUserId()
+	amount := request.GetAmount()
+	note := request.GetNote()
+
+	user, err := u.repo.UserRepository.GetUserById(ctx, userId)
+	if err != nil {
+		return nil, fmt.Errorf("user not found: %w", err)
+	}
+
+	availableBalance, err := GetUsableBalance(ctx, u.redis, userId, user.Balance)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get usable balance: %w", err)
+	}
+
+	if availableBalance < float64(amount) {
+		return nil, fmt.Errorf("insufficient balance for transaction")
+	}
+
+	var code string
+	for {
+		code, err = generateRandomCode(10)
+		if err != nil {
+			return nil, fmt.Errorf("failed to generate transaction code: %w", err)
+		}
+		exists, err := u.redis.Exists(ctx, fmt.Sprintf("txn:%d:%s", userId, code))
+		if err != nil {
+			return nil, err
+		}
+		if !exists {
+			break
+		}
+	}
+
+	key := fmt.Sprintf("txn:%d:%s", userId, code)
+	value := map[string]interface{}{
+		"amount": amount,
+		"note":   note,
+	}
+	if err := u.redis.SetJSON(ctx, key, value, time.Minute*10); err != nil {
+		return nil, fmt.Errorf("failed to cache transaction: %w", err)
+	}
+
+	return &bulbasaur.StartTransactionResponse{
+		TransactionCode: code,
+	}, nil
+}
+
+func (u *userFeature) CommitTransaction(ctx context.Context, request *bulbasaur.CommitTransactionRequest) (*bulbasaur.CommitTransactionResponse, error) {
+	code := request.GetTransactionCode()
+
+	keys, err := u.redis.Keys(ctx, fmt.Sprintf("txn:*:%s", code))
+	if err != nil || len(keys) == 0 {
+		return nil, fmt.Errorf("transaction not found")
+	}
+	key := keys[0]
+
+	parts := strings.Split(key, ":")
+	fmt.Printf("Transaction key parts: %v\n", parts)
+	if len(parts) != 5 {
+		return nil, fmt.Errorf("invalid transaction key format")
+	}
+	userId, _ := strconv.ParseUint(parts[3], 10, 64)
+
+	var data struct {
+		Amount float32 `json:"amount"`
+		Note   string  `json:"note"`
+	}
+	if err := u.redis.GetJSON(ctx, key, &data); err != nil {
+		return nil, fmt.Errorf("failed to fetch transaction data: %w", err)
+	}
+
+	err = tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
+		user, err := tx.Client().User.Get(ctx, userId)
+		if err != nil {
+			return fmt.Errorf("user not found: %w", err)
+		}
+
+		if user.Balance < float64(data.Amount) {
+			return fmt.Errorf("insufficient balance")
+		}
+
+		if err := tx.Client().User.UpdateOneID(userId).
+			SetBalance(user.Balance - float64(data.Amount)).
+			Exec(ctx); err != nil {
+			return fmt.Errorf("failed to update balance: %w", err)
+		}
+
+		if err := tx.Client().TransactionHistory.Create().
+			SetUserID(userId).
+			SetAmount(float64(-data.Amount)).
+			SetNote(data.Note).
+			Exec(ctx); err != nil {
+			return fmt.Errorf("failed to store transaction: %w", err)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return &bulbasaur.CommitTransactionResponse{Success: false}, err
+	}
+
+	_ = u.redis.Delete(ctx, key)
+
+	return &bulbasaur.CommitTransactionResponse{Success: true}, nil
+}
+
+func (u *userFeature) GetTransactionHistory(ctx context.Context) (*bulbasaur.GetTransactionHistoryResponse, error) {
+	userId, err := u.extractor.GetUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = u.repo.UserRepository.GetUserById(ctx, uint64(userId))
+	if err != nil {
+		return nil, fmt.Errorf("user not found: %w", err)
+	}
+
+	history, err := u.ent.TransactionHistory.
+		Query().
+		Where(transactionhistory.UserID(uint64(userId))).
+		Order(ent.Desc("created_at")).
+		All(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to query transaction history: %w", err)
+	}
+
+	var records []*bulbasaur.TransactionHistory
+	for _, h := range history {
+		records = append(records, &bulbasaur.TransactionHistory{
+			Id:        h.ID,
+			Amount:    float32(h.Amount),
+			Note:      h.Note,
+			CreatedAt: h.CreatedAt.Format(time.RFC3339),
+		})
+	}
+
+	return &bulbasaur.GetTransactionHistoryResponse{
+		History: records,
+	}, nil
+}
+
+func GetUsableBalance(ctx context.Context, redis redis.Redis, userId uint64, actualBalance float64) (float64, error) {
+	pattern := fmt.Sprintf("txn:%d:*", userId)
+	keys, err := redis.Keys(ctx, pattern)
+	if err != nil {
+		return 0, fmt.Errorf("failed to fetch transaction keys: %w", err)
+	}
+
+	fmt.Println("Redis txn keys:", keys)
+
+	totalHeld := 0.0
+	for _, key := range keys {
+		var data struct {
+			Amount float64 `json:"amount"`
+		}
+		err := redis.GetJSON(ctx, key, &data)
+		if err != nil {
+			fmt.Printf("failed to read txn from key %s: %v\n", key, err)
+			continue
+		}
+		fmt.Printf("txn key %s -> held: %v\n", key, data.Amount)
+		totalHeld += data.Amount
+	}
+	fmt.Printf("Total held: %v\n", totalHeld)
+
+	usable := actualBalance - totalHeld
+	if usable < 0 {
+		usable = 0
+	}
+	return usable, nil
 }

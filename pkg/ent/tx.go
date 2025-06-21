@@ -16,6 +16,8 @@ type Tx struct {
 	Google *GoogleClient
 	// Local is the client for interacting with the Local builders.
 	Local *LocalClient
+	// TransactionHistory is the client for interacting with the TransactionHistory builders.
+	TransactionHistory *TransactionHistoryClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -151,6 +153,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Google = NewGoogleClient(tx.config)
 	tx.Local = NewLocalClient(tx.config)
+	tx.TransactionHistory = NewTransactionHistoryClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

@@ -464,12 +464,13 @@ var Bulbasaur_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	Ivysaur_UpdateMetadata_FullMethodName = "/bulbasaur.Ivysaur/UpdateMetadata"
-	Ivysaur_Me_FullMethodName             = "/bulbasaur.Ivysaur/Me"
-	Ivysaur_ChangePassword_FullMethodName = "/bulbasaur.Ivysaur/ChangePassword"
-	Ivysaur_LogOut_FullMethodName         = "/bulbasaur.Ivysaur/LogOut"
-	Ivysaur_GetBalance_FullMethodName     = "/bulbasaur.Ivysaur/GetBalance"
-	Ivysaur_SetPremium_FullMethodName     = "/bulbasaur.Ivysaur/SetPremium"
+	Ivysaur_UpdateMetadata_FullMethodName        = "/bulbasaur.Ivysaur/UpdateMetadata"
+	Ivysaur_Me_FullMethodName                    = "/bulbasaur.Ivysaur/Me"
+	Ivysaur_ChangePassword_FullMethodName        = "/bulbasaur.Ivysaur/ChangePassword"
+	Ivysaur_LogOut_FullMethodName                = "/bulbasaur.Ivysaur/LogOut"
+	Ivysaur_GetBalance_FullMethodName            = "/bulbasaur.Ivysaur/GetBalance"
+	Ivysaur_SetPremium_FullMethodName            = "/bulbasaur.Ivysaur/SetPremium"
+	Ivysaur_GetTransactionHistory_FullMethodName = "/bulbasaur.Ivysaur/GetTransactionHistory"
 )
 
 // IvysaurClient is the client API for Ivysaur service.
@@ -482,6 +483,7 @@ type IvysaurClient interface {
 	LogOut(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetBalance(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetBalanceResponse, error)
 	SetPremium(ctx context.Context, in *SetPremiumRequest, opts ...grpc.CallOption) (*SetPremiumResponse, error)
+	GetTransactionHistory(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetTransactionHistoryResponse, error)
 }
 
 type ivysaurClient struct {
@@ -552,6 +554,16 @@ func (c *ivysaurClient) SetPremium(ctx context.Context, in *SetPremiumRequest, o
 	return out, nil
 }
 
+func (c *ivysaurClient) GetTransactionHistory(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetTransactionHistoryResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetTransactionHistoryResponse)
+	err := c.cc.Invoke(ctx, Ivysaur_GetTransactionHistory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // IvysaurServer is the server API for Ivysaur service.
 // All implementations must embed UnimplementedIvysaurServer
 // for forward compatibility.
@@ -562,6 +574,7 @@ type IvysaurServer interface {
 	LogOut(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	GetBalance(context.Context, *emptypb.Empty) (*GetBalanceResponse, error)
 	SetPremium(context.Context, *SetPremiumRequest) (*SetPremiumResponse, error)
+	GetTransactionHistory(context.Context, *emptypb.Empty) (*GetTransactionHistoryResponse, error)
 	mustEmbedUnimplementedIvysaurServer()
 }
 
@@ -589,6 +602,9 @@ func (UnimplementedIvysaurServer) GetBalance(context.Context, *emptypb.Empty) (*
 }
 func (UnimplementedIvysaurServer) SetPremium(context.Context, *SetPremiumRequest) (*SetPremiumResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetPremium not implemented")
+}
+func (UnimplementedIvysaurServer) GetTransactionHistory(context.Context, *emptypb.Empty) (*GetTransactionHistoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTransactionHistory not implemented")
 }
 func (UnimplementedIvysaurServer) mustEmbedUnimplementedIvysaurServer() {}
 func (UnimplementedIvysaurServer) testEmbeddedByValue()                 {}
@@ -719,6 +735,24 @@ func _Ivysaur_SetPremium_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Ivysaur_GetTransactionHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IvysaurServer).GetTransactionHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ivysaur_GetTransactionHistory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IvysaurServer).GetTransactionHistory(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Ivysaur_ServiceDesc is the grpc.ServiceDesc for Ivysaur service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -750,16 +784,22 @@ var Ivysaur_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "SetPremium",
 			Handler:    _Ivysaur_SetPremium_Handler,
 		},
+		{
+			MethodName: "GetTransactionHistory",
+			Handler:    _Ivysaur_GetTransactionHistory_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "bulbasaur/api/bulbasaur.proto",
 }
 
 const (
-	Venusaur_FindUserByName_FullMethodName  = "/bulbasaur.Venusaur/FindUserByName"
-	Venusaur_IncreaseBalance_FullMethodName = "/bulbasaur.Venusaur/IncreaseBalance"
-	Venusaur_GetBalance_FullMethodName      = "/bulbasaur.Venusaur/GetBalance"
-	Venusaur_DecreaseBalance_FullMethodName = "/bulbasaur.Venusaur/DecreaseBalance"
+	Venusaur_FindUserByName_FullMethodName    = "/bulbasaur.Venusaur/FindUserByName"
+	Venusaur_IncreaseBalance_FullMethodName   = "/bulbasaur.Venusaur/IncreaseBalance"
+	Venusaur_GetBalance_FullMethodName        = "/bulbasaur.Venusaur/GetBalance"
+	Venusaur_DecreaseBalance_FullMethodName   = "/bulbasaur.Venusaur/DecreaseBalance"
+	Venusaur_StartTransaction_FullMethodName  = "/bulbasaur.Venusaur/StartTransaction"
+	Venusaur_CommitTransaction_FullMethodName = "/bulbasaur.Venusaur/CommitTransaction"
 )
 
 // VenusaurClient is the client API for Venusaur service.
@@ -770,6 +810,8 @@ type VenusaurClient interface {
 	IncreaseBalance(ctx context.Context, in *IncreaseBalanceRequest, opts ...grpc.CallOption) (*IncreaseBalanceResponse, error)
 	GetBalance(ctx context.Context, in *GetBalanceRequest, opts ...grpc.CallOption) (*GetBalanceResponse, error)
 	DecreaseBalance(ctx context.Context, in *DecreaseBalanceRequest, opts ...grpc.CallOption) (*DecreaseBalanceResponse, error)
+	StartTransaction(ctx context.Context, in *StartTransactionRequest, opts ...grpc.CallOption) (*StartTransactionResponse, error)
+	CommitTransaction(ctx context.Context, in *CommitTransactionRequest, opts ...grpc.CallOption) (*CommitTransactionResponse, error)
 }
 
 type venusaurClient struct {
@@ -820,6 +862,26 @@ func (c *venusaurClient) DecreaseBalance(ctx context.Context, in *DecreaseBalanc
 	return out, nil
 }
 
+func (c *venusaurClient) StartTransaction(ctx context.Context, in *StartTransactionRequest, opts ...grpc.CallOption) (*StartTransactionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StartTransactionResponse)
+	err := c.cc.Invoke(ctx, Venusaur_StartTransaction_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *venusaurClient) CommitTransaction(ctx context.Context, in *CommitTransactionRequest, opts ...grpc.CallOption) (*CommitTransactionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CommitTransactionResponse)
+	err := c.cc.Invoke(ctx, Venusaur_CommitTransaction_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // VenusaurServer is the server API for Venusaur service.
 // All implementations must embed UnimplementedVenusaurServer
 // for forward compatibility.
@@ -828,6 +890,8 @@ type VenusaurServer interface {
 	IncreaseBalance(context.Context, *IncreaseBalanceRequest) (*IncreaseBalanceResponse, error)
 	GetBalance(context.Context, *GetBalanceRequest) (*GetBalanceResponse, error)
 	DecreaseBalance(context.Context, *DecreaseBalanceRequest) (*DecreaseBalanceResponse, error)
+	StartTransaction(context.Context, *StartTransactionRequest) (*StartTransactionResponse, error)
+	CommitTransaction(context.Context, *CommitTransactionRequest) (*CommitTransactionResponse, error)
 	mustEmbedUnimplementedVenusaurServer()
 }
 
@@ -849,6 +913,12 @@ func (UnimplementedVenusaurServer) GetBalance(context.Context, *GetBalanceReques
 }
 func (UnimplementedVenusaurServer) DecreaseBalance(context.Context, *DecreaseBalanceRequest) (*DecreaseBalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DecreaseBalance not implemented")
+}
+func (UnimplementedVenusaurServer) StartTransaction(context.Context, *StartTransactionRequest) (*StartTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartTransaction not implemented")
+}
+func (UnimplementedVenusaurServer) CommitTransaction(context.Context, *CommitTransactionRequest) (*CommitTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CommitTransaction not implemented")
 }
 func (UnimplementedVenusaurServer) mustEmbedUnimplementedVenusaurServer() {}
 func (UnimplementedVenusaurServer) testEmbeddedByValue()                  {}
@@ -943,6 +1013,42 @@ func _Venusaur_DecreaseBalance_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Venusaur_StartTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartTransactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VenusaurServer).StartTransaction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Venusaur_StartTransaction_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VenusaurServer).StartTransaction(ctx, req.(*StartTransactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Venusaur_CommitTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CommitTransactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VenusaurServer).CommitTransaction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Venusaur_CommitTransaction_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VenusaurServer).CommitTransaction(ctx, req.(*CommitTransactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Venusaur_ServiceDesc is the grpc.ServiceDesc for Venusaur service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -965,6 +1071,14 @@ var Venusaur_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DecreaseBalance",
 			Handler:    _Venusaur_DecreaseBalance_Handler,
+		},
+		{
+			MethodName: "StartTransaction",
+			Handler:    _Venusaur_StartTransaction_Handler,
+		},
+		{
+			MethodName: "CommitTransaction",
+			Handler:    _Venusaur_CommitTransaction_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

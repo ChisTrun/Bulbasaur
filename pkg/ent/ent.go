@@ -5,6 +5,7 @@ package ent
 import (
 	"bulbasaur/pkg/ent/google"
 	"bulbasaur/pkg/ent/local"
+	"bulbasaur/pkg/ent/transactionhistory"
 	"bulbasaur/pkg/ent/user"
 	"context"
 	"errors"
@@ -75,9 +76,10 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			google.Table: google.ValidColumn,
-			local.Table:  local.ValidColumn,
-			user.Table:   user.ValidColumn,
+			google.Table:             google.ValidColumn,
+			local.Table:              local.ValidColumn,
+			transactionhistory.Table: transactionhistory.ValidColumn,
+			user.Table:               user.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

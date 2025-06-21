@@ -13,6 +13,7 @@ import (
 
 	"bulbasaur/pkg/ent/google"
 	"bulbasaur/pkg/ent/local"
+	"bulbasaur/pkg/ent/transactionhistory"
 	"bulbasaur/pkg/ent/user"
 
 	"entgo.io/ent"
@@ -30,6 +31,8 @@ type Client struct {
 	Google *GoogleClient
 	// Local is the client for interacting with the Local builders.
 	Local *LocalClient
+	// TransactionHistory is the client for interacting with the TransactionHistory builders.
+	TransactionHistory *TransactionHistoryClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -45,6 +48,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Google = NewGoogleClient(c.config)
 	c.Local = NewLocalClient(c.config)
+	c.TransactionHistory = NewTransactionHistoryClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -136,11 +140,12 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Google: NewGoogleClient(cfg),
-		Local:  NewLocalClient(cfg),
-		User:   NewUserClient(cfg),
+		ctx:                ctx,
+		config:             cfg,
+		Google:             NewGoogleClient(cfg),
+		Local:              NewLocalClient(cfg),
+		TransactionHistory: NewTransactionHistoryClient(cfg),
+		User:               NewUserClient(cfg),
 	}, nil
 }
 
@@ -158,11 +163,12 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Google: NewGoogleClient(cfg),
-		Local:  NewLocalClient(cfg),
-		User:   NewUserClient(cfg),
+		ctx:                ctx,
+		config:             cfg,
+		Google:             NewGoogleClient(cfg),
+		Local:              NewLocalClient(cfg),
+		TransactionHistory: NewTransactionHistoryClient(cfg),
+		User:               NewUserClient(cfg),
 	}, nil
 }
 
@@ -193,6 +199,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.Google.Use(hooks...)
 	c.Local.Use(hooks...)
+	c.TransactionHistory.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
@@ -201,6 +208,7 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Google.Intercept(interceptors...)
 	c.Local.Intercept(interceptors...)
+	c.TransactionHistory.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
 }
 
@@ -211,6 +219,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Google.mutate(ctx, m)
 	case *LocalMutation:
 		return c.Local.mutate(ctx, m)
+	case *TransactionHistoryMutation:
+		return c.TransactionHistory.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	default:
@@ -516,6 +526,139 @@ func (c *LocalClient) mutate(ctx context.Context, m *LocalMutation) (Value, erro
 	}
 }
 
+// TransactionHistoryClient is a client for the TransactionHistory schema.
+type TransactionHistoryClient struct {
+	config
+}
+
+// NewTransactionHistoryClient returns a client for the TransactionHistory from the given config.
+func NewTransactionHistoryClient(c config) *TransactionHistoryClient {
+	return &TransactionHistoryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `transactionhistory.Hooks(f(g(h())))`.
+func (c *TransactionHistoryClient) Use(hooks ...Hook) {
+	c.hooks.TransactionHistory = append(c.hooks.TransactionHistory, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `transactionhistory.Intercept(f(g(h())))`.
+func (c *TransactionHistoryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TransactionHistory = append(c.inters.TransactionHistory, interceptors...)
+}
+
+// Create returns a builder for creating a TransactionHistory entity.
+func (c *TransactionHistoryClient) Create() *TransactionHistoryCreate {
+	mutation := newTransactionHistoryMutation(c.config, OpCreate)
+	return &TransactionHistoryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TransactionHistory entities.
+func (c *TransactionHistoryClient) CreateBulk(builders ...*TransactionHistoryCreate) *TransactionHistoryCreateBulk {
+	return &TransactionHistoryCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TransactionHistoryClient) MapCreateBulk(slice any, setFunc func(*TransactionHistoryCreate, int)) *TransactionHistoryCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TransactionHistoryCreateBulk{err: fmt.Errorf("calling to TransactionHistoryClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TransactionHistoryCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TransactionHistoryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TransactionHistory.
+func (c *TransactionHistoryClient) Update() *TransactionHistoryUpdate {
+	mutation := newTransactionHistoryMutation(c.config, OpUpdate)
+	return &TransactionHistoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TransactionHistoryClient) UpdateOne(th *TransactionHistory) *TransactionHistoryUpdateOne {
+	mutation := newTransactionHistoryMutation(c.config, OpUpdateOne, withTransactionHistory(th))
+	return &TransactionHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TransactionHistoryClient) UpdateOneID(id uint64) *TransactionHistoryUpdateOne {
+	mutation := newTransactionHistoryMutation(c.config, OpUpdateOne, withTransactionHistoryID(id))
+	return &TransactionHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TransactionHistory.
+func (c *TransactionHistoryClient) Delete() *TransactionHistoryDelete {
+	mutation := newTransactionHistoryMutation(c.config, OpDelete)
+	return &TransactionHistoryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TransactionHistoryClient) DeleteOne(th *TransactionHistory) *TransactionHistoryDeleteOne {
+	return c.DeleteOneID(th.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TransactionHistoryClient) DeleteOneID(id uint64) *TransactionHistoryDeleteOne {
+	builder := c.Delete().Where(transactionhistory.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TransactionHistoryDeleteOne{builder}
+}
+
+// Query returns a query builder for TransactionHistory.
+func (c *TransactionHistoryClient) Query() *TransactionHistoryQuery {
+	return &TransactionHistoryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTransactionHistory},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TransactionHistory entity by its id.
+func (c *TransactionHistoryClient) Get(ctx context.Context, id uint64) (*TransactionHistory, error) {
+	return c.Query().Where(transactionhistory.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TransactionHistoryClient) GetX(ctx context.Context, id uint64) *TransactionHistory {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *TransactionHistoryClient) Hooks() []Hook {
+	return c.hooks.TransactionHistory
+}
+
+// Interceptors returns the client interceptors.
+func (c *TransactionHistoryClient) Interceptors() []Interceptor {
+	return c.inters.TransactionHistory
+}
+
+func (c *TransactionHistoryClient) mutate(ctx context.Context, m *TransactionHistoryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TransactionHistoryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TransactionHistoryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TransactionHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TransactionHistoryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown TransactionHistory mutation op: %q", m.Op())
+	}
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -684,9 +827,9 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Google, Local, User []ent.Hook
+		Google, Local, TransactionHistory, User []ent.Hook
 	}
 	inters struct {
-		Google, Local, User []ent.Interceptor
+		Google, Local, TransactionHistory, User []ent.Interceptor
 	}
 )

@@ -118,6 +118,12 @@ service Ivysaur {
       body: "*"
     };
   }
+
+  rpc GetTransactionHistory (google.protobuf.Empty) returns (GetTransactionHistoryResponse) {
+    option (google.api.http) = {
+      get: "/ivysaur/transactions"
+    };
+  }
 }
 
 service Venusaur {
@@ -144,6 +150,20 @@ service Venusaur {
   rpc DecreaseBalance (DecreaseBalanceRequest) returns (DecreaseBalanceResponse) {
     option (google.api.http) = {
       post: "/venusaur/decrease-balance/{user_id}"
+      body: "*"
+    };
+  }
+
+  rpc StartTransaction (StartTransactionRequest) returns (StartTransactionResponse) {
+    option (google.api.http) = {
+      post: "/venusaur/transactions/start"
+      body: "*"
+    };
+  }
+
+  rpc CommitTransaction (CommitTransactionRequest) returns (CommitTransactionResponse) {
+    option (google.api.http) = {
+      post: "/venusaur/transactions/commit"
       body: "*"
     };
   }
@@ -360,5 +380,34 @@ message DecreaseBalanceRequest {
 }
 
 message DecreaseBalanceResponse {
+  bool success = 1;
+}
+
+message TransactionHistory {
+  uint64 id = 1;
+  float amount = 2;
+  string note = 3;
+  string created_at = 4;
+}
+
+message GetTransactionHistoryResponse {
+  repeated TransactionHistory history = 1;
+}
+
+message StartTransactionRequest {
+  uint64 user_id = 1;
+  float amount = 2;
+  string note = 3;
+}
+
+message StartTransactionResponse {
+  string transaction_code = 1;
+}
+
+message CommitTransactionRequest {
+  string transaction_code = 1;
+}
+
+message CommitTransactionResponse {
   bool success = 1;
 }
