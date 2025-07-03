@@ -16,6 +16,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/textproto"
 	"regexp"
 	"strings"
 	"time"
@@ -419,7 +420,13 @@ func uploadAvatar(ctx context.Context, base64Image string, userID uint64) (strin
 	_ = writer.WriteField("prefix", "avatar")
 	_ = writer.WriteField("Content-Type", mimeType)
 
-	part, _ := writer.CreateFormFile("file", filename)
+	h := make(textproto.MIMEHeader)
+	h.Set("Content-Disposition", fmt.Sprintf(`form-data; name="file"; filename="%s"`, filename))
+	h.Set("Content-Type", mimeType)
+	part, err := writer.CreatePart(h)
+	if err != nil {
+		return "", fmt.Errorf("failed to create part: %w", err)
+	}
 	_, _ = part.Write(buffer)
 	writer.Close()
 
