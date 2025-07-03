@@ -8,8 +8,16 @@ import (
 	"bulbasaur/pkg/ent/google"
 	"bulbasaur/pkg/ent/local"
 	"bulbasaur/pkg/ent/user"
+	"bytes"
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"io"
+	"mime/multipart"
+	"net/http"
+	"regexp"
+	"strings"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -150,6 +158,23 @@ func (u *userRepository) UpdateMetadata(ctx context.Context, tx tx.Tx, id uint64
 	existingUser, err := tx.Client().User.Get(ctx, id)
 	if err != nil {
 		return err
+	}
+
+	if metadata.AvatarPath != nil && strings.HasPrefix(*metadata.AvatarPath, "data:image/") {
+		uploadedUrl, err := uploadAvatar(ctx, *metadata.AvatarPath, existingUser.ID)
+		if err != nil {
+			return fmt.Errorf("failed to upload avatar: %w", err)
+		}
+
+		if existingUser.Metadata != nil && existingUser.Metadata.AvatarPath != nil {
+			old := *existingUser.Metadata.AvatarPath
+			defaultPrefix := "https://skillsharp-api.icu/storage/image?key=upload/image/default"
+			if !strings.HasPrefix(old, defaultPrefix) {
+				go deleteOldAvatar(ctx, old)
+			}
+		}
+
+		metadata.AvatarPath = &uploadedUrl
 	}
 
 	merged := u.mergeMetadata(existingUser.Metadata, metadata)
@@ -339,6 +364,92 @@ func (u *userRepository) mergeMetadata(oldMeta, newMeta *bulbasaur.Metadata) *bu
 	}
 
 	return oldMeta
+}
+
+func uploadAvatar(ctx context.Context, base64Image string, userID uint64) (string, error) {
+	if !strings.HasPrefix(base64Image, "data:image/") {
+		return "", fmt.Errorf("invalid image format")
+	}
+
+	parts := strings.Split(base64Image, ",")
+	if len(parts) != 2 {
+		return "", fmt.Errorf("invalid base64 image")
+	}
+	mimeMatches := regexp.MustCompile(`data:(.*);base64`).FindStringSubmatch(parts[0])
+	if len(mimeMatches) < 2 || !strings.HasPrefix(mimeMatches[1], "image/") {
+		return "", fmt.Errorf("unsupported mime type")
+	}
+
+	mimeType := mimeMatches[1]
+	buffer, err := base64.StdEncoding.DecodeString(parts[1])
+	if err != nil {
+		return "", fmt.Errorf("failed to decode base64: %w", err)
+	}
+	if len(buffer) > 2*1024*1024 {
+		return "", fmt.Errorf("image too large (max 2MB)")
+	}
+
+	now := time.Now()
+	ext := strings.Split(mimeType, "/")[1]
+	filename := fmt.Sprintf("avatar_%d_%s.%s", userID, now.Format("2006-01-02T15-04-05.000"), ext)
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	_ = writer.WriteField("serviceName", "upload")
+	_ = writer.WriteField("prefix", "avatar")
+	_ = writer.WriteField("Content-Type", mimeType)
+
+	part, _ := writer.CreateFormFile("file", filename)
+	_, _ = part.Write(buffer)
+	writer.Close()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "http://storage:8080/upload", body)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	client := &http.Client{Timeout: 1 * time.Minute}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		respBody, _ := io.ReadAll(resp.Body)
+		return "", fmt.Errorf("upload failed: %s", string(respBody))
+	}
+
+	var res struct {
+		Data struct {
+			Result struct {
+				Path string `json:"path"`
+			} `json:"result"`
+		} `json:"data"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
+		return "", err
+	}
+
+	avatarURL := fmt.Sprintf("https://skillsharp-api.icu/storage/image?key=%s", res.Data.Result.Path)
+	return avatarURL, nil
+}
+
+func deleteOldAvatar(ctx context.Context, avatarPath string) {
+	path := strings.TrimPrefix(avatarPath, "https://skillsharp-api.icu/storage/image?key=")
+	reqBody := map[string]string{"path": path}
+	body, _ := json.Marshal(reqBody)
+
+	req, _ := http.NewRequestWithContext(ctx, http.MethodPost, "http://storage:8080/delete", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{Timeout: 1 * time.Minute}
+	resp, err := client.Do(req)
+	if err != nil || resp.StatusCode != http.StatusOK {
+		fmt.Printf("Failed to delete old avatar: %v\n", err)
+	}
+	defer resp.Body.Close()
 }
 
 func (r *userRepository) SetPremiumStatus(ctx context.Context, userID uint64, isPremium bool, expires *time.Time) error {

@@ -188,13 +188,19 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 			return nil, err
 		}
 
+		meta := request.GetMetadata()
+		if meta != nil && meta.AvatarPath == nil {
+			defaultAvatar := "https://skillsharp-api.icu/storage/image?key=upload/image/default/default-client_5wXXdsygyo_2025070314.png"
+			meta.AvatarPath = &defaultAvatar
+		}
+
 		if txErr := tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
 			user, err = u.repo.UserRepository.CreateLocal(ctx, tx, tenantId,
 				request.GetLocal().GetUsername(),
 				request.GetLocal().GetPassword(),
 				request.GetLocal().GetConfirmPassword(),
 				request.GetLocal().GetEmail(),
-				request.GetMetadata(),
+				meta,
 				request.GetRole(),
 			)
 			return err
