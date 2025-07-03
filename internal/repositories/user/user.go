@@ -435,7 +435,7 @@ func uploadAvatar(ctx context.Context, base64Image string, userID uint64) (strin
 	if err != nil {
 		return "", err
 	}
-	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.Header.Set("Content-Type", "multipart/form-data")
 
 	client := &http.Client{Timeout: 1 * time.Minute}
 	resp, err := client.Do(req)
