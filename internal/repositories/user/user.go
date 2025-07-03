@@ -423,6 +423,14 @@ func uploadAvatar(ctx context.Context, base64Image string, userID uint64) (strin
 	_, _ = part.Write(buffer)
 	writer.Close()
 
+	fmt.Printf("Uploading avatar for user %d: %s\n", userID, filename)
+	fmt.Printf("Avatar size: %d bytes\n", len(buffer))
+	fmt.Printf("Avatar MIME type: %s\n", mimeType)
+	fmt.Printf("Avatar upload time: %s\n", now.Format(time.RFC3339))
+	fmt.Printf("Avatar upload prefix: %s\n", "avatar")
+	fmt.Printf("Avatar upload service: %s\n", "upload")
+	fmt.Printf("Header Content-Type: %s\n", writer.FormDataContentType())
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "http://storage:8080/upload", body)
 	if err != nil {
 		return "", err
