@@ -87,8 +87,17 @@ func (u *userRepository) CreateLocal(ctx context.Context, tx tx.Tx, tenantId, us
 		SetEmail(email).
 		SetRole(role).
 		SetMetadata(metadata).
-		SetBalance(150).
+		SetBalance(float64(150)).
 		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = tx.Client().TransactionHistory.Create().
+		SetUserID(user.ID).
+		SetAmount(float64(150)).
+		SetNote("Gift").
+		Exec(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -195,8 +204,17 @@ func (u *userRepository) CreateGoogle(ctx context.Context, tx tx.Tx, tenantId, e
 		SetRole(role).
 		SetEmail(email).
 		SetMetadata(metadata).
-		SetBalance(150).
+		SetBalance(float64(150)).
 		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = tx.Client().TransactionHistory.Create().
+		SetUserID(user.ID).
+		SetAmount(float64(150)).
+		SetNote("Gift").
+		Exec(ctx)
 	if err != nil {
 		return nil, err
 	}
