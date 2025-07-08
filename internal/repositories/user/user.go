@@ -481,15 +481,25 @@ func deleteOldAvatar(ctx context.Context, avatarPath string) {
 	reqBody := map[string]string{"path": path}
 	body, _ := json.Marshal(reqBody)
 
-	req, _ := http.NewRequestWithContext(ctx, http.MethodPost, "http://storage:8080/delete", bytes.NewBuffer(body))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "http://storage:8080/delete", bytes.NewBuffer(body))
+	if err != nil {
+		fmt.Printf("Failed to create delete request: %v\n", err)
+		return
+	}
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{Timeout: 1 * time.Minute}
 	resp, err := client.Do(req)
-	if err != nil || resp.StatusCode != http.StatusOK {
-		fmt.Printf("Failed to delete old avatar: %v\n", err)
+	if err != nil {
+		fmt.Printf("Failed to send delete request: %v\n", err)
+		return
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		respBody, _ := io.ReadAll(resp.Body)
+		fmt.Printf("Failed to delete old avatar, status: %d, response: %s\n", resp.StatusCode, string(respBody))
+	}
 }
 
 func (r *userRepository) SetPremiumStatus(ctx context.Context, userID uint64, isPremium bool, expires *time.Time) error {
