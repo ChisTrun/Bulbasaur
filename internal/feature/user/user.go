@@ -189,10 +189,9 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 		}
 
 		meta := request.GetMetadata()
-		if meta != nil && meta.AvatarPath == nil {
-			defaultAvatar := "https://skillsharp-api.icu/storage/image?key=upload/image/default/default-client_5wXXdsygyo_2025070314.png"
-			meta.AvatarPath = &defaultAvatar
-		}
+
+		defaultAvatar := "https://skillsharp-api.icu/storage/image?key=upload/image/default/default-client_5wXXdsygyo_2025070314.png"
+		meta.AvatarPath = &defaultAvatar
 
 		if txErr := tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
 			user, err = u.repo.UserRepository.CreateLocal(ctx, tx, tenantId,
@@ -423,7 +422,7 @@ func (u *userFeature) EmailVerification(ctx context.Context, request *bulbasaur.
 		return fmt.Errorf("failed to check OTP cooldown: %v", err)
 	}
 	if cooldown != "" {
-		return fmt.Errorf("too many request, please try again later")
+		return fmt.Errorf("please wait before requesting a new OTP, cooldown in progress")
 	}
 
 	// Generate 6-digit OTP
