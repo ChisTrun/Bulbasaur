@@ -159,7 +159,7 @@ func (u *userRepository) GetLocalByEmail(ctx context.Context, tx tx.Tx, tenantId
 	}
 
 	if ok := hash.CheckPasswordHash(hash.CreateInput([]string{tenantId, password}), user.Edges.Local.Password); !ok {
-		return nil, fmt.Errorf("incorrect password")
+		return nil, fmt.Errorf("invalid credentials")
 	}
 
 	return user, nil

@@ -902,7 +902,7 @@ func (u *userFeature) StartTransaction(ctx context.Context, request *bulbasaur.S
 		"amount": amount,
 		"note":   note,
 	}
-	if err := u.redis.SetJSON(ctx, key, value, time.Minute*10); err != nil {
+	if err := u.redis.SetJSON(ctx, key, value, time.Minute*30); err != nil {
 		return nil, fmt.Errorf("failed to cache transaction: %w", err)
 	}
 
