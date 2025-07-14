@@ -183,7 +183,8 @@ func (u *userRepository) UpdateMetadata(ctx context.Context, tx tx.Tx, id uint64
 		if existingUser.Metadata != nil && existingUser.Metadata.AvatarPath != nil {
 			old := *existingUser.Metadata.AvatarPath
 			defaultPrefix := "https://skillsharp-api.icu/storage/image?key=upload/image/default"
-			if !strings.HasPrefix(old, defaultPrefix) {
+			storagePrefix := "https://skillsharp-api.icu/storage/image"
+			if strings.HasPrefix(old, storagePrefix) && !strings.HasPrefix(old, defaultPrefix) {
 				go deleteOldAvatar(ctx, old)
 			}
 		}

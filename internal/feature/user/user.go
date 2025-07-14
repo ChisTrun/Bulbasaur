@@ -190,7 +190,7 @@ func (u *userFeature) SignUp(ctx context.Context, request *bulbasaur.SignUpReque
 
 		meta := request.GetMetadata()
 
-		defaultAvatar := "https://skillsharp-api.icu/storage/image?key=upload/image/default/default-client_5wXXdsygyo_2025070314.png"
+		defaultAvatar := "https://colormadehappy.com/wp-content/uploads/2022/11/Snowman-Drawing-5-1-1024x1024.jpg.webp"
 		meta.AvatarPath = &defaultAvatar
 
 		if txErr := tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
