@@ -154,6 +154,9 @@ func (u *userRepository) GetLocalByEmail(ctx context.Context, tx tx.Tx, tenantId
 		).
 		WithLocal().
 		Only(ctx)
+	if ent.IsNotFound(err) {
+		return nil, fmt.Errorf("account not found")
+	}
 	if err != nil {
 		return nil, err
 	}
