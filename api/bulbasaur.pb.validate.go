@@ -1801,6 +1801,8 @@ func (m *EmailVerificationRequest) validate(all bool) error {
 
 	// no validation rules for Email
 
+	// no validation rules for Username
+
 	if len(errors) > 0 {
 		return EmailVerificationRequestMultiError(errors)
 	}

@@ -393,6 +393,7 @@ func (u *userFeature) ListUser(ctx context.Context, request *bulbasaur.ListUsers
 
 func (u *userFeature) EmailVerification(ctx context.Context, request *bulbasaur.EmailVerificationRequest) error {
 	email := request.GetEmail()
+	username := request.GetUsername()
 
 	err := tx.WithTransaction(ctx, u.ent, func(ctx context.Context, tx tx.Tx) error {
 		exists, err := u.repo.UserRepository.IsEmailExists(ctx, tx, email)
@@ -401,6 +402,14 @@ func (u *userFeature) EmailVerification(ctx context.Context, request *bulbasaur.
 		}
 		if exists {
 			return fmt.Errorf("email already exists")
+		}
+
+		usernameExists, err := u.repo.UserRepository.IsUsernameExists(ctx, tx, username)
+		if err != nil {
+			return err
+		}
+		if usernameExists {
+			return fmt.Errorf("username already exists")
 		}
 
 		return nil

@@ -44,6 +44,7 @@ type UserRepository interface {
 	UpdateMetadata(ctx context.Context, tx tx.Tx, id uint64, metadata *bulbasaur.Metadata) error
 	List(ctx context.Context, userIds []uint64) ([]*ent.User, error)
 	IsEmailExists(ctx context.Context, tx tx.Tx, email string) (bool, error)
+	IsUsernameExists(ctx context.Context, tx tx.Tx, username string) (bool, error)
 	UpdatePassword(ctx context.Context, tx tx.Tx, tenantId, email, newPassword string) error
 	mergeMetadata(oldMeta, newMeta *bulbasaur.Metadata) *bulbasaur.Metadata
 	SetPremiumStatus(ctx context.Context, userID uint64, isPremium bool, expires *time.Time) error
@@ -90,6 +91,9 @@ func (u *userRepository) CreateLocal(ctx context.Context, tx tx.Tx, tenantId, us
 		SetMetadata(metadata).
 		SetBalance(float64(100)).
 		Save(ctx)
+	if ent.IsConstraintError(err) {
+		return nil, fmt.Errorf("user with this email already exists")
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -109,6 +113,9 @@ func (u *userRepository) CreateLocal(ctx context.Context, tx tx.Tx, tenantId, us
 		SetPassword(hashPass).
 		SetUserID(user.ID).
 		Save(ctx)
+	if ent.IsConstraintError(err) {
+		return nil, fmt.Errorf("user with this username already exists")
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -261,6 +268,19 @@ func (u *userRepository) IsEmailExists(ctx context.Context, tx tx.Tx, email stri
 	count, err := tx.Client().User.Query().
 		Where(
 			user.Email(email),
+		).
+		Count(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
+
+func (u *userRepository) IsUsernameExists(ctx context.Context, tx tx.Tx, username string) (bool, error) {
+	count, err := tx.Client().Local.Query().
+		Where(
+			local.Username(username),
 		).
 		Count(ctx)
 	if err != nil {

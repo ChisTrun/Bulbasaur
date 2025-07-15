@@ -284,6 +284,7 @@ message UpdateMetadataRequest {
 
 message EmailVerificationRequest {
   string email = 1;
+  string username = 2;
 }
 
 message ResetCodeVerificationRequest {
